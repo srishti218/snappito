@@ -5,6 +5,7 @@
   <title>Login - Snappito</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="toast.css">
   <style>
     :root {
       --primary: #10b981;
@@ -78,14 +79,61 @@
     .links { margin-top: 25px; font-size: 14px; color: var(--text-muted); }
     .links a { color: var(--secondary); text-decoration: none; font-weight: 500; }
     .links a:hover { text-decoration: underline; }
+    
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .modal-content {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 15px;
+      padding: 30px;
+      width: 90%;
+      max-width: 400px;
+      text-align: left;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 15px; right: 15px;
+      background: none; border: none;
+      color: white; font-size: 20px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
+<!-- Forgot Password Modal -->
+<div class="modal-overlay" id="forgotModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="toggleForgotModal(false)">✕</button>
+    <h3 style="font-family: 'Outfit'; margin-bottom: 10px;">Reset Password</h3>
+    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">Enter your email or phone number and we'll send you instructions.</p>
+    <form id="forgotForm">
+      <div class="input-group">
+        <label>Email or Phone</label>
+        <input type="text" id="forgotInput" required>
+      </div>
+      <button type="submit" class="btn" id="forgotBtn">Send Reset Link</button>
+    </form>
+  </div>
+</div>
+
 <div class="auth-card">
   <div style="font-family: 'Outfit'; font-size:24px; font-weight:800; margin-bottom: 20px;">Snappito<span>⚡</span></div>
   <h2>Welcome Back</h2>
-  <div id="error" class="error-msg"></div>
   
   <form id="loginForm">
     <div class="input-group">
@@ -95,6 +143,9 @@
     <div class="input-group">
       <label>Password</label>
       <input type="password" id="password" required>
+      <div style="text-align: right; margin-top: 5px;">
+        <a href="#" onclick="toggleForgotModal(true)" style="color: var(--secondary); font-size: 13px; text-decoration: none;">Forgot Password?</a>
+      </div>
     </div>
     <button type="submit" class="btn" id="submitBtn">Log In</button>
   </form>
@@ -105,15 +156,14 @@
   </div>
 </div>
 
+<script src="toast.js"></script>
 <script>
   document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('submitBtn');
-    const err = document.getElementById('error');
     
     btn.textContent = 'Logging in...';
     btn.disabled = true;
-    err.style.display = 'none';
 
     try {
       const response = await fetch('http://127.0.0.1:5000/api/auth/login', {
@@ -128,19 +178,80 @@
       
       if (response.ok) {
         localStorage.setItem('token', data.token);
-        window.location.href = 'dashboard.html';
+        showToast('Login successful! Redirecting...', 'success');
+        setTimeout(() => window.location.href = 'dashboard.html', 1500);
       } else {
-        err.textContent = data.error || 'Login failed. Please check your credentials.';
-        err.style.display = 'block';
+        showToast(data.error || 'Login failed. Please check your credentials.', 'error');
         btn.textContent = 'Log In';
         btn.disabled = false;
       }
     } catch (error) {
-      err.textContent = 'Network error. Make sure the server is running.';
-      err.style.display = 'block';
+      showToast('Network error. Make sure the server is running.', 'error');
       btn.textContent = 'Log In';
       btn.disabled = false;
     }
+  });
+  
+  // Forgot Password Logic
+  const forgotModal = document.getElementById('forgotModal');
+  window.toggleForgotModal = function(show) {
+    if(show) {
+      forgotModal.style.display = 'flex';
+      // Slight delay to allow display to apply before animating opacity
+      setTimeout(() => forgotModal.style.opacity = '1', 10);
+    } else {
+      forgotModal.style.opacity = '0';
+      setTimeout(() => forgotModal.style.display = 'none', 300);
+    }
+  };
+
+  document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('forgotBtn');
+    const input = document.getElementById('forgotInput').value;
+    
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    try {
+      const payload = input.includes('@') ? { email: input } : { phone_number: input };
+      
+      const response = await fetch('http://127.0.0.1:5000/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      if (response.ok) {
+        showToast('Password reset instructions sent!', 'success');
+        toggleForgotModal(false);
+      } else {
+        const data = await response.json();
+        showToast(data.error || 'Failed to send reset instructions.', 'error');
+      }
+    } catch (error) {
+      showToast('Network error. Make sure the server is running.', 'error');
+    }
+    
+    btn.textContent = 'Send Reset Link';
+    btn.disabled = false;
+  });
+
+  // Real-time Form Validation
+  document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', function() {
+      if(this.type === 'email' || this.id.toLowerCase().includes('email')) {
+        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value);
+        this.style.borderColor = isValid ? 'var(--primary)' : '#ef4444';
+      }
+      if(this.type === 'password') {
+        const isValid = this.value.length >= 6;
+        this.style.borderColor = isValid ? 'var(--primary)' : '#ef4444';
+      }
+      if(this.value === '') {
+        this.style.borderColor = 'rgba(255,255,255,0.1)';
+      }
+    });
   });
 </script>
 

@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="toast.css">
   
   <style>
     :root {
@@ -678,35 +679,8 @@
 
       <div class="input-group">
         <label for="service">Select Service</label>
-        <select id="service" name="Service" required>
-          <option value="" disabled selected>— Choose your service —</option>
-
-          <optgroup label="Basic Cleaning">
-            <option data-price="₹200 - ₹500" value="Sweeping & Mopping">Sweeping & Mopping</option>
-            <option data-price="₹200 - ₹400" value="Dusting">Dusting</option>
-            <option data-price="₹300 - ₹600" value="Kitchen Basic Clean">Kitchen Basic Clean</option>
-            <option data-price="₹300 - ₹600" value="Bathroom Basic Clean">Bathroom Basic Clean</option>
-          </optgroup>
-
-          <optgroup label="Deep Cleaning">
-            <option data-price="₹3000 - ₹8000" value="Full Home Deep Cleaning">Full Home Deep Cleaning</option>
-            <option data-price="₹1500 - ₹4000" value="Kitchen Deep Cleaning">Kitchen Deep Cleaning</option>
-            <option data-price="₹1200 - ₹3000" value="Bathroom Deep Cleaning">Bathroom Deep Cleaning</option>
-          </optgroup>
-
-          <optgroup label="Upholstery Cleaning">
-            <option data-price="₹500 - ₹2000" value="Sofa Cleaning">Sofa Cleaning</option>
-            <option data-price="₹800 - ₹2500" value="Carpet Cleaning">Carpet Cleaning</option>
-            <option data-price="₹500 - ₹1500" value="Mattress Cleaning">Mattress Cleaning</option>
-            <option data-price="₹500 - ₹2000" value="Curtain Cleaning">Curtain Cleaning</option>
-          </optgroup>
-
-          <optgroup label="Special Services">
-            <option data-price="₹1000 - ₹3000" value="Water Tank Cleaning">Water Tank Cleaning</option>
-            <option data-price="₹500 - ₹2000" value="Window Glass Cleaning">Window Glass Cleaning</option>
-            <option data-price="₹3000 - ₹10000" value="Post Construction Cleaning">Post Construction Cleaning</option>
-            <option data-price="₹500 - ₹2000" value="Solar Panel Cleaning">Solar Panel Cleaning</option>
-          </optgroup>
+        <select id="service" name="Service" required onchange="calculatePrice()">
+          <option value="" disabled selected>— Loading Services... —</option>
         </select>
         <div id="price-indicator" class="dynamic-price-box">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
@@ -732,6 +706,7 @@
   <p style="margin-top: 20px; color: var(--text-muted); font-size: 14px;">© 2026 Snappito. All rights reserved.</p>
 </footer>
 
+<script src="toast.js"></script>
 <script>
   // 1. Sticky Navbar
   const navbar = document.getElementById('navbar');
@@ -785,33 +760,17 @@
   nextInput.value = window.location.href;
 
   // 5. Make ALL Service Cards Clickable to Autofill and AutoScroll
-  document.querySelectorAll('.service').forEach((card) => {
-    card.addEventListener('click', function() {
-      const serviceName = this.getAttribute('data-service');
-      if(serviceName) {
-        // Find matching option in select
-        for(let i=0; i < serviceSelect.options.length; i++) {
-          if(serviceSelect.options[i].value === serviceName) {
-            serviceSelect.selectedIndex = i;
-            updatePriceIndicator();
-            break;
-          }
-        }
-        
-        // Smooth scroll to the booking form
-        document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
-        
-        // Slightly highlight the 'Select Service' box physically so the user knows it changed
-        serviceSelect.style.borderColor = 'var(--secondary)';
-        serviceSelect.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.2)';
-        
-        setTimeout(() => {
-          serviceSelect.style.borderColor = 'rgba(255,255,255,0.1)';
-          serviceSelect.style.boxShadow = 'none';
-        }, 1500);
-      }
-    });
-  });
+  function selectService(serviceId, price) {
+    serviceSelect.value = serviceId;
+    updatePriceIndicator();
+    document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+    serviceSelect.style.borderColor = 'var(--secondary)';
+    serviceSelect.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.2)';
+    setTimeout(() => {
+      serviceSelect.style.borderColor = 'rgba(255,255,255,0.1)';
+      serviceSelect.style.boxShadow = 'none';
+    }, 1500);
+  }
 
   // 6. Form Submission Interactivity & Backend API Integration
   const form = document.getElementById('main-form');
@@ -826,11 +785,9 @@
 
       const token = localStorage.getItem('token');
       if (token) {
-        // Logged in: POST to Flask Backend directly via Fetch API
-        e.preventDefault(); // Stop standard FormSubmit
-        
+        e.preventDefault();
         const bookingData = {
-          serviceId: document.getElementById('service').value, // Normally we'd pass actual UUID from backend, using string name for now
+          serviceId: document.getElementById('service').value,
           address: document.getElementById('address').value,
           instructions: 'Booked via Website UI'
         };
@@ -848,16 +805,18 @@
           if(res.ok || res.status === 201) {
             submitBtn.textContent = 'Booked Successfully!';
             submitBtn.style.background = 'var(--primary)';
-            setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+            showToast('Service Booked Successfully!', 'success');
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
           } else {
             submitBtn.textContent = 'Failed. Trying Email...';
-            setTimeout(() => { form.submit(); }, 1000); // Fall back to FormSubmit if backend rejects
+            showToast('Backend offline. Falling back to email.', 'error');
+            setTimeout(() => { form.submit(); }, 1500);
           }
         } catch(error) {
-           form.submit(); // fallback to FormSubmit if backend is offline
+           showToast('Backend unreachable. Falling back to email.', 'error');
+           form.submit();
         }
       }
-      // If not logged in, allows default standard FormSubmit
     }
   });
 
@@ -880,12 +839,10 @@
           const user = await response.json();
           const nameInput = document.getElementById('name');
           const phoneInput = document.getElementById('phone');
-          const addressInput = document.getElementById('address');
           
           if(user.full_name) nameInput.value = user.full_name;
           if(user.phone_number) phoneInput.value = user.phone_number;
           
-          // Handle Addresses Array from Backend
           try {
             const addrRes = await fetch('http://127.0.0.1:5000/api/user/addresses', {
               headers: { 'Authorization': `Bearer ${token}` }
@@ -893,7 +850,6 @@
             if(addrRes.ok) {
               const addresses = await addrRes.json();
               if(addresses && addresses.length > 0) {
-                // Replace textarea with a select dropdown
                 const addressGroup = document.getElementById('address-group');
                 let selectHTML = `<select id="address" name="Address" required>
                   <option value="" disabled selected>— Select your saved address —</option>`;
@@ -905,37 +861,62 @@
                   selectHTML += `<option value="${text}">${text}${addr.is_default ? ' (Default)' : ''}</option>`;
                 });
                 selectHTML += `</select>`;
-                
-                // Update DOM
                 addressGroup.innerHTML = `<label for="address">Select Address</label>` + selectHTML;
-              } else {
-                 // Fallback to primary user address in textarea
-                 fallbackPrimaryAddress(user);
               }
-            } else {
-               fallbackPrimaryAddress(user);
             }
-          } catch(e) {
-             fallbackPrimaryAddress(user);
-          }
-          
-          function fallbackPrimaryAddress(u) {
-            const addressInput = document.getElementById('address');
-            if(u.address && u.address.line1 && addressInput.tagName === 'TEXTAREA') {
-              let fullAddress = u.address.line1;
-              if(u.address.city) fullAddress += `, ${u.address.city}`;
-              if(u.address.state) fullAddress += `, ${u.address.state}`;
-              if(u.address.zip_code) fullAddress += ` ${u.address.zip_code}`;
-              addressInput.value = fullAddress;
-            }
-          }
+          } catch(e) {}
         }
-      } catch(e) {
-        // Backend offline or token expired, gracefully skip autofill
-      }
+      } catch(e) {}
     }
   }
   checkAuthState();
+  
+  // 8. Dynamic Service Loading
+  async function loadServices() {
+    try {
+      const res = await fetch('http://127.0.0.1:5000/api/services');
+      if(res.ok) {
+        const services = await res.json();
+        const grid = document.getElementById('services-grid');
+        const select = document.getElementById('service');
+        
+        grid.innerHTML = '';
+        select.innerHTML = '<option value="" disabled selected>— Choose specialized cleaning —</option>';
+        
+        services.forEach(s => {
+           grid.innerHTML += `
+            <div class="card" onclick="selectService('${s.id}', ${s.base_price})">
+              <div class="card-img" style="background-image: url('${s.image_url || 'https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&q=80&w=400'}')"></div>
+              <div class="card-content">
+                <h3>${s.name}</h3>
+                <p>${s.description || 'Professional home service'}</p>
+                <div class="price">From ₹${s.base_price}</div>
+              </div>
+            </div>`;
+            
+           select.innerHTML += `<option value="${s.id}" data-price="${s.base_price}">${s.name} - ₹${s.base_price}</option>`;
+        });
+      }
+    } catch(e) {
+      console.log('Could not load dynamic services, fallback to hardcoded needed or keep placeholder.');
+      document.getElementById('services-grid').innerHTML = '<p style="text-align: center; color: var(--text-muted); grid-column: 1 / -1;">We are performing maintenance. Please call us to book.</p>';
+    }
+  }
+  loadServices();
+
+  // 9. Real-time Form Validation
+  document.querySelectorAll('#main-form input, #main-form textarea').forEach(input => {
+    input.addEventListener('input', function() {
+      if(this.type === 'email' || this.id.toLowerCase().includes('email')) {
+        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value);
+        this.style.borderColor = isValid ? 'var(--primary)' : '#ef4444';
+      } else if (this.value.trim().length > 2) {
+        this.style.borderColor = 'var(--primary)';
+      } else {
+        this.style.borderColor = 'rgba(255,255,255,0.1)';
+      }
+    });
+  });
 </script>
 
 </body>

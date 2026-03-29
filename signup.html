@@ -5,6 +5,7 @@
   <title>Sign Up - Snappito</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="toast.css">
   <style>
     :root {
       --primary: #10b981;
@@ -84,7 +85,6 @@
 
 <div class="auth-card">
   <h2>Create Account</h2>
-  <div id="error" class="error-msg"></div>
   
   <form id="signupForm">
     <div class="input-group">
@@ -112,15 +112,14 @@
   </div>
 </div>
 
+<script src="toast.js"></script>
 <script>
   document.getElementById('signupForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('submitBtn');
-    const err = document.getElementById('error');
     
     btn.textContent = 'Creating Account...';
     btn.disabled = true;
-    err.style.display = 'none';
 
     try {
       const response = await fetch('http://127.0.0.1:5000/api/auth/signup', {
@@ -137,19 +136,35 @@
       
       if (response.ok) {
         localStorage.setItem('token', data.token);
-        window.location.href = 'dashboard.html';
+        showToast('Account created successfully! Redirecting...', 'success');
+        setTimeout(() => window.location.href = 'dashboard.html', 1500);
       } else {
-        err.textContent = data.error || 'Signup failed. Email might already exist.';
-        err.style.display = 'block';
+        showToast(data.error || 'Signup failed. Email might already exist.', 'error');
         btn.textContent = 'Sign Up';
         btn.disabled = false;
       }
     } catch (error) {
-      err.textContent = 'Network error. Make sure the server is running.';
-      err.style.display = 'block';
+      showToast('Network error. Make sure the server is running.', 'error');
       btn.textContent = 'Sign Up';
       btn.disabled = false;
     }
+  });
+
+  // Real-time Form Validation
+  document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', function() {
+      if(this.type === 'email' || this.id.toLowerCase().includes('email')) {
+        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value);
+        this.style.borderColor = isValid ? 'var(--primary)' : '#ef4444';
+      }
+      if(this.type === 'password') {
+        const isValid = this.value.length >= 6;
+        this.style.borderColor = isValid ? 'var(--primary)' : '#ef4444';
+      }
+      if(this.value === '') {
+        this.style.borderColor = 'rgba(255,255,255,0.1)';
+      }
+    });
   });
 </script>
 

@@ -160,14 +160,7 @@
     <p class="subtitle">Currently scheduled visits and their status.</p>
     
     <div class="booking-list" id="booking-list">
-      <!-- We will inject bookings here via API, using a placeholder for now since we haven't mapped the backend booking model 1:1 yet -->
-      <div class="booking-card">
-        <div>
-          <h4 style="font-size: 18px; margin-bottom:5px;">Kitchen Deep Cleaning</h4>
-          <p style="color: var(--text-muted); font-size: 14px;">Scheduled: Awaiting Confirmation</p>
-        </div>
-        <div class="status-badge">Pending</div>
-      </div>
+       <p style="color: var(--text-muted);">Loading your bookings...</p>
     </div>
   </div>
 </div>
@@ -193,12 +186,55 @@
         
         document.getElementById('loader').style.display = 'none';
         document.getElementById('content').style.display = 'block';
+        
+        loadBookings();
       } else {
         // Token invalid or expired
         logout();
       }
     } catch (e) {
       document.getElementById('loader').innerHTML = '<h2>Failed to connect to server.</h2><p>Make sure the backend is running.</p>';
+    }
+  }
+
+  async function loadBookings() {
+    try {
+      const response = await fetch('http://127.0.0.1:5000/api/bookings', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const list = document.getElementById('booking-list');
+      
+      if(response.ok) {
+        const bookings = await response.json();
+        if(bookings.length === 0) {
+          list.innerHTML = `<p style="color: var(--text-muted);">You have no bookings yet. <a href="index.html" style="color:var(--secondary)">Book one now!</a></p>`;
+          return;
+        }
+        
+        list.innerHTML = '';
+        bookings.forEach(b => {
+           let badgeColor = 'rgba(245, 158, 11, 0.2)';
+           let badgeText = 'var(--secondary)';
+           let statusLabel = b.status || 'Pending';
+           
+           if(statusLabel.toLowerCase() === 'completed') { badgeColor = 'rgba(16, 185, 129, 0.2)'; badgeText = 'var(--primary)'; }
+           if(statusLabel.toLowerCase() === 'cancelled') { badgeColor = 'rgba(239, 68, 68, 0.2)'; badgeText = '#ef4444'; }
+           if(statusLabel.toLowerCase() === 'confirmed') { badgeColor = 'rgba(59, 130, 246, 0.2)'; badgeText = '#3b82f6'; }
+
+           list.innerHTML += `
+            <div class="booking-card">
+              <div>
+                <h4 style="font-size: 18px; margin-bottom:5px;">Booking #${b.id.substring(0,6)}</h4>
+                <p style="color: var(--text-muted); font-size: 14px;">Date: ${b.scheduled_time || 'TBD'} | Address: ${b.address.line1 || 'Saved Address'}</p>
+              </div>
+              <div class="status-badge" style="background: ${badgeColor}; color: ${badgeText}; border-color: ${badgeText}">${statusLabel}</div>
+            </div>`;
+        });
+      } else {
+        list.innerHTML = `<p style="color: #ef4444;">Failed to load bookings.</p>`;
+      }
+    } catch(e) {
+        document.getElementById('booking-list').innerHTML = `<p style="color: #ef4444;">Error fetching live bookings.</p>`;
     }
   }
 
