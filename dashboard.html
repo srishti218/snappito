@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Snappito</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #10b981;
+      --secondary: #f59e0b;
+      --text-main: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.8);
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+      background: linear-gradient(-45deg, #022c22, #064e3b, #047857, #10b981);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      min-height: 100vh;
+      padding: 0;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    /* Navbar */
+    nav {
+      width: 100%;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(2, 44, 34, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .logo {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: white;
+      text-decoration: none;
+    }
+    .logo span { color: var(--secondary); }
+    .btn-logout {
+      padding: 10px 20px;
+      background: transparent;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,0.1); }
+
+    .container { max-width: 1000px; margin: 50px auto; padding: 0 20px; }
+    
+    .dashboard-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+    
+    h2 { font-family: 'Outfit', sans-serif; font-size: 32px; margin-bottom: 10px; }
+    .subtitle { color: var(--text-muted); margin-bottom: 30px; }
+    
+    .profile-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .info-item {
+      background: rgba(0,0,0,0.2);
+      padding: 15px 20px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .info-label { font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
+    .info-value { font-size: 18px; font-weight: 500; }
+    
+    .booking-list {
+      margin-top: 20px;
+    }
+    .booking-card {
+      background: rgba(0,0,0,0.2);
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 50px;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--secondary);
+      border: 1px solid rgba(245, 158, 11, 0.5);
+    }
+
+    #loader { text-align: center; padding: 50px; }
+    #content { display: none; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Snappito<span>⚡</span></a>
+  <button class="btn-logout" onclick="logout()">Logout</button>
+</nav>
+
+<div class="container" id="loader">
+  <h2>Loading your profile...</h2>
+</div>
+
+<div class="container" id="content">
+  <!-- Profile Panel -->
+  <div class="dashboard-panel">
+    <h2 id="greeting">Welcome!</h2>
+    <p class="subtitle">Manage your account and view your service status.</p>
+    
+    <div class="profile-info">
+      <div class="info-item">
+        <div class="info-label">Full Name</div>
+        <div class="info-value" id="val-name">...</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Email Address</div>
+        <div class="info-value" id="val-email">...</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Phone Number</div>
+        <div class="info-value" id="val-phone">...</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Account ID</div>
+        <div class="info-value" id="val-id" style="font-size: 14px; word-break: break-all;">...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bookings Panel -->
+  <div class="dashboard-panel">
+    <h2>Your Bookings</h2>
+    <p class="subtitle">Currently scheduled visits and their status.</p>
+    
+    <div class="booking-list" id="booking-list">
+      <!-- We will inject bookings here via API, using a placeholder for now since we haven't mapped the backend booking model 1:1 yet -->
+      <div class="booking-card">
+        <div>
+          <h4 style="font-size: 18px; margin-bottom:5px;">Kitchen Deep Cleaning</h4>
+          <p style="color: var(--text-muted); font-size: 14px;">Scheduled: Awaiting Confirmation</p>
+        </div>
+        <div class="status-badge">Pending</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'login.html'; // redirect if not logged in
+  }
+
+  async function loadProfile() {
+    try {
+      const response = await fetch('http://127.0.0.1:5000/api/user/profile', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        document.getElementById('greeting').innerText = `Welcome, ${data.full_name.split(' ')[0]}!`;
+        document.getElementById('val-name').innerText = data.full_name;
+        document.getElementById('val-email').innerText = data.email;
+        document.getElementById('val-phone').innerText = data.phone_number || 'N/A';
+        document.getElementById('val-id').innerText = data.id.split('-')[0] + '...';
+        
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+      } else {
+        // Token invalid or expired
+        logout();
+      }
+    } catch (e) {
+      document.getElementById('loader').innerHTML = '<h2>Failed to connect to server.</h2><p>Make sure the backend is running.</p>';
+    }
+  }
+
+  window.onload = loadProfile;
+
+  function logout() {
+    localStorage.removeItem('token');
+    window.location.href = 'index.html';
+  }
+</script>
+
+</body>
+</html>
