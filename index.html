@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Snappito - Quick Services</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f3d2e, #1f7a5c, #2ecc71);
+      color: white;
+    }
+
+    header {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    header h1 {
+      font-size: 50px;
+      margin: 0;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 14px 30px;
+      background: #f1c40f;
+      color: black;
+      font-weight: bold;
+      border-radius: 30px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .container {
+      padding: 30px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .category {
+      margin-top: 40px;
+    }
+
+    .category h2 {
+      border-left: 5px solid #f1c40f;
+      padding-left: 10px;
+      margin-bottom: 20px;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .service {
+      background: rgba(255,255,255,0.1);
+      padding: 15px;
+      border-radius: 10px;
+      transition: 0.3s;
+    }
+
+    .service:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateY(-5px);
+    }
+
+    .price {
+      color: #f1c40f;
+      font-weight: bold;
+    }
+
+    /* Booking Form */
+    #booking {
+      padding: 40px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      margin-top: 40px;
+      background: rgba(0,0,0,0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Snappito ⚡</h1>
+  <p>Quick Services. Instant Solutions.</p>
+  <a href="#booking" class="btn">📲 Book Service</a>
+</header>
+
+<div class="container">
+
+  <!-- Basic -->
+  <div class="category">
+    <h2>Basic Cleaning</h2>
+    <div class="services-grid">
+      <div class="service"><h3>Sweeping & Mopping</h3><p class="price">₹200 - ₹500</p></div>
+      <div class="service"><h3>Dusting</h3><p class="price">₹200 - ₹400</p></div>
+      <div class="service"><h3>Kitchen Basic</h3><p class="price">₹300 - ₹600</p></div>
+      <div class="service"><h3>Bathroom Basic</h3><p class="price">₹300 - ₹600</p></div>
+    </div>
+  </div>
+
+  <!-- Deep -->
+  <div class="category">
+    <h2>Deep Cleaning</h2>
+    <div class="services-grid">
+      <div class="service"><h3>Full Home</h3><p class="price">₹3000 - ₹8000</p></div>
+      <div class="service"><h3>Kitchen Deep</h3><p class="price">₹1500 - ₹4000</p></div>
+      <div class="service"><h3>Bathroom Deep</h3><p class="price">₹1200 - ₹3000</p></div>
+    </div>
+  </div>
+
+  <!-- Upholstery -->
+  <div class="category">
+    <h2>Upholstery</h2>
+    <div class="services-grid">
+      <div class="service"><h3>Sofa</h3><p class="price">₹500 - ₹2000</p></div>
+      <div class="service"><h3>Carpet</h3><p class="price">₹800 - ₹2500</p></div>
+      <div class="service"><h3>Mattress</h3><p class="price">₹500 - ₹1500</p></div>
+      <div class="service"><h3>Curtains</h3><p class="price">₹500 - ₹2000</p></div>
+    </div>
+  </div>
+
+  <!-- Special -->
+  <div class="category">
+    <h2>Special Services</h2>
+    <div class="services-grid">
+      <div class="service"><h3>Water Tank</h3><p class="price">₹1000 - ₹3000</p></div>
+      <div class="service"><h3>Window Glass</h3><p class="price">₹500 - ₹2000</p></div>
+      <div class="service"><h3>Construction</h3><p class="price">₹3000 - ₹10000</p></div>
+      <div class="service"><h3>Solar Panel</h3><p class="price">₹500 - ₹2000</p></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Booking Form -->
+<section id="booking">
+  <h2 style="text-align:center;">Book a Service</h2>
+
+  <form action="https://formsubmit.co/snappito04@gmail.com" method="POST">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_subject" value="New Snappito Booking">
+
+    <input type="text" name="Name" placeholder="Your Name" required>
+    <input type="text" name="Phone" placeholder="Phone Number" required>
+
+   <select name="Service" required>
+  <option value="">Select Service</option>
+
+  <!-- Basic Cleaning -->
+  <optgroup label="Basic Cleaning">
+    <option>Sweeping & Mopping</option>
+    <option>Dusting</option>
+    <option>Kitchen Basic Clean</option>
+    <option>Bathroom Basic Clean</option>
+  </optgroup>
+
+  <!-- Deep Cleaning -->
+  <optgroup label="Deep Cleaning">
+    <option>Full Home Deep Cleaning</option>
+    <option>Kitchen Deep Cleaning</option>
+    <option>Bathroom Deep Cleaning</option>
+  </optgroup>
+
+  <!-- Upholstery -->
+  <optgroup label="Upholstery Cleaning">
+    <option>Sofa Cleaning</option>
+    <option>Carpet Cleaning</option>
+    <option>Mattress Cleaning</option>
+    <option>Curtain Cleaning</option>
+  </optgroup>
+
+  <!-- Kitchen & Bathroom Special -->
+  <optgroup label="Kitchen & Bathroom Special">
+    <option>Chimney Cleaning</option>
+    <option>Sink Descaling</option>
+    <option>Toilet Stain Removal</option>
+  </optgroup>
+
+  <!-- Move Services -->
+  <optgroup label="Move Services">
+    <option>Move-in Cleaning</option>
+    <option>Move-out Cleaning</option>
+  </optgroup>
+
+  <!-- Special Services -->
+  <optgroup label="Special Services">
+    <option>Water Tank Cleaning</option>
+    <option>Window Glass Cleaning</option>
+    <option>Post Construction Cleaning</option>
+    <option>Solar Panel Cleaning</option>
+  </optgroup>
+
+</select>
+
+    <textarea name="Address" placeholder="Your Address" required></textarea>
+
+    <button type="submit" class="btn" style="width:100%;">Submit Booking</button>
+  </form>
+
+</section>
+
+<footer>
+  <p>📞 Call / WhatsApp: 7550170235</p>
+</footer>
+
+</body>
+</html>
