@@ -14,19 +14,29 @@
       --text-muted: rgba(255, 255, 255, 0.8);
       --glass-bg: rgba(255, 255, 255, 0.1);
       --glass-border: rgba(255, 255, 255, 0.2);
+      --bg-gradient: linear-gradient(-45deg, #022c22, #064e3b, #047857, #10b981);
+    }
+
+    body.light-theme {
+      --text-main: #1a2e22;
+      --text-muted: #4b6355;
+      --glass-bg: rgba(255, 255, 255, 0.6);
+      --glass-border: rgba(16, 185, 129, 0.2);
+      --bg-gradient: linear-gradient(-45deg, #ecfdf5, #d1fae5, #a7f3d0, #6ee7b7);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', sans-serif;
       color: var(--text-main);
-      background: linear-gradient(-45deg, #022c22, #064e3b, #047857, #10b981);
+      background: var(--bg-gradient);
       background-size: 400% 400%;
       animation: gradientBG 15s ease infinite;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      margin: 0;
+      transition: background 0.3s, color 0.3s;
     }
     @keyframes gradientBG {
       0% { background-position: 0% 50%; }
@@ -252,6 +262,22 @@
         this.style.borderColor = 'rgba(255,255,255,0.1)';
       }
     });
+  });
+
+  // Theme Toggle Logic
+  const themeBtn = document.createElement('button');
+  themeBtn.id = 'theme-toggle';
+  themeBtn.innerHTML = localStorage.getItem('theme') === 'light' ? '☀️' : '🌙';
+  themeBtn.style.cssText = 'position:fixed; top:20px; right:20px; background:var(--glass-bg); border:1px solid var(--glass-border); padding:10px; border-radius:50%; font-size:20px; cursor:pointer; color:var(--text-main); z-index:1000;';
+  document.body.appendChild(themeBtn);
+
+  if (localStorage.getItem('theme') === 'light') body.classList.add('light-theme');
+
+  themeBtn.addEventListener('click', () => {
+    body.classList.toggle('light-theme');
+    const isLight = body.classList.contains('light-theme');
+    themeBtn.innerHTML = isLight ? '☀️' : '🌙';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
   });
 </script>
 
