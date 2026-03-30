@@ -5,60 +5,83 @@
   <title>Dashboard - Snappito</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="toast.css">
   <style>
     :root {
       --primary: #10b981;
       --secondary: #f59e0b;
       --text-main: #ffffff;
-      --text-muted: rgba(255, 255, 255, 0.8);
+      --text-muted: rgba(255, 255, 255, 0.75);
       --glass-bg: rgba(255, 255, 255, 0.1);
       --glass-border: rgba(255, 255, 255, 0.2);
+      --bg-gradient: linear-gradient(-45deg, #022c22, #064e3b, #047857, #10b981);
+      --card-bg: rgba(0, 0, 0, 0.2);
+      --card-border: rgba(255, 255, 255, 0.07);
+      --nav-bg: rgba(2, 44, 34, 0.85);
+      --nav-text: #ffffff;
+    }
+
+    body.light-theme {
+      --text-main: #1a2e22;
+      --text-muted: #4b6355;
+      --glass-bg: rgba(255, 255, 255, 0.6);
+      --glass-border: rgba(16, 185, 129, 0.2);
+      --bg-gradient: linear-gradient(-45deg, #ecfdf5, #d1fae5, #a7f3d0, #6ee7b7);
+      --card-bg: rgba(255, 255, 255, 0.55);
+      --card-border: rgba(16, 185, 129, 0.15);
+      --nav-bg: rgba(236, 253, 245, 0.9);
+      --nav-text: #1a2e22;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', sans-serif;
       color: var(--text-main);
-      background: linear-gradient(-45deg, #022c22, #064e3b, #047857, #10b981);
+      background: var(--bg-gradient);
       background-size: 400% 400%;
       animation: gradientBG 15s ease infinite;
       min-height: 100vh;
-      padding: 0;
+      margin: 0;
+      transition: background 0.3s, color 0.3s;
     }
     @keyframes gradientBG {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
-    /* Navbar */
     nav {
       width: 100%;
-      padding: 20px 40px;
+      padding: 18px 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(2, 44, 34, 0.85);
-      backdrop-filter: blur(10px);
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--glass-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
     .logo {
       font-family: 'Outfit', sans-serif;
-      font-size: 28px;
+      font-size: 24px;
       font-weight: 800;
-      color: white;
+      color: var(--nav-text);
       text-decoration: none;
     }
     .logo span { color: var(--secondary); }
+    .nav-right { display: flex; align-items: center; gap: 15px; }
     .btn-logout {
-      padding: 10px 20px;
+      padding: 8px 20px;
       background: transparent;
-      color: white;
-      border: 1px solid rgba(255,255,255,0.3);
+      color: var(--nav-text);
+      border: 1px solid var(--glass-border);
       border-radius: 50px;
       cursor: pointer;
       font-weight: 600;
+      font-size: 14px;
       transition: all 0.3s;
     }
-    .btn-logout:hover { background: rgba(255,255,255,0.1); }
+    .btn-logout:hover { background: rgba(239,68,68,0.15); border-color: #ef4444; color: #ef4444; }
 
     .container { max-width: 1000px; margin: 50px auto; padding: 0 20px; }
     
@@ -81,22 +104,20 @@
       gap: 20px;
     }
     .info-item {
-      background: rgba(0,0,0,0.2);
+      background: var(--card-bg);
       padding: 15px 20px;
       border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.05);
+      border: 1px solid var(--card-border);
     }
     .info-label { font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
-    .info-value { font-size: 18px; font-weight: 500; }
+    .info-value { font-size: 18px; font-weight: 500; color: var(--text-main); }
     
-    .booking-list {
-      margin-top: 20px;
-    }
+    .booking-list { margin-top: 20px; }
     .booking-card {
-      background: rgba(0,0,0,0.2);
+      background: var(--card-bg);
       padding: 20px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
       margin-bottom: 15px;
       display: flex;
       justify-content: space-between;
@@ -121,7 +142,10 @@
 
 <nav>
   <a href="index.html" class="logo">Snappito<span>⚡</span></a>
-  <button class="btn-logout" onclick="logout()">Logout</button>
+  <div class="nav-right">
+    <button id="theme-toggle" style="background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 8px 12px; border-radius: 50px; font-size: 16px; cursor: pointer; color: var(--nav-text);">🌙</button>
+    <button class="btn-logout" onclick="logout()">Logout</button>
+  </div>
 </nav>
 
 <div class="container" id="loader">
@@ -129,27 +153,17 @@
 </div>
 
 <div class="container" id="content">
-  <!-- Profile Panel -->
-  <div class="dashboard-panel">
-    <h2 id="greeting">Welcome!</h2>
-    <p class="subtitle">Manage your account and view your service status.</p>
+   <div class="user-info">
+    <h2 id="user-name" style="font-family: 'Outfit';">Welcome, User</h2>
+    <p id="user-email" style="color: var(--text-muted); margin-top: 5px;">email@example.com</p>
+    <div id="user-phone" style="margin-top:5px; font-size: 14px; color: var(--text-muted);">+91 0000000000</div>
     
-    <div class="profile-info">
-      <div class="info-item">
-        <div class="info-label">Full Name</div>
-        <div class="info-value" id="val-name">...</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Email Address</div>
-        <div class="info-value" id="val-email">...</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Phone Number</div>
-        <div class="info-value" id="val-phone">...</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Account ID</div>
-        <div class="info-value" id="val-id" style="font-size: 14px; word-break: break-all;">...</div>
+    <div class="wallet-card" style="margin-top: 30px; background: var(--card-bg); border: 1px solid var(--card-border); padding: 20px; border-radius: 12px; backdrop-filter: blur(10px);">
+      <h4 style="font-family: 'Outfit'; margin-bottom: 5px; color: var(--text-main);">Your Wallet</h4>
+      <div style="font-size: 24px; font-weight: 800; color: var(--primary);">₹<span id="wallet-balance">0.00</span></div>
+      <div style="margin-top:15px; display:flex; gap:10px;">
+        <button onclick="toggleWalletModal(true)" class="btn" style="padding: 8px 15px; font-size:13px;">Add Funds</button>
+        <button onclick="loadTransactions()" class="btn" style="padding: 8px 15px; font-size:13px; background:transparent; border:1px solid var(--glass-border); color: var(--text-main);">History</button>
       </div>
     </div>
   </div>
@@ -178,11 +192,9 @@
       });
       if (response.ok) {
         const data = await response.json();
-        document.getElementById('greeting').innerText = `Welcome, ${data.full_name.split(' ')[0]}!`;
-        document.getElementById('val-name').innerText = data.full_name;
-        document.getElementById('val-email').innerText = data.email;
-        document.getElementById('val-phone').innerText = data.phone_number || 'N/A';
-        document.getElementById('val-id').innerText = data.id.split('-')[0] + '...';
+        document.getElementById('user-name').innerText = `Welcome, ${data.full_name.split(' ')[0]}!`;
+        document.getElementById('user-email').innerText = data.email;
+        document.getElementById('user-phone').innerText = data.phone_number || 'N/A';
         
         document.getElementById('loader').style.display = 'none';
         document.getElementById('content').style.display = 'block';
@@ -212,7 +224,7 @@
         }
         
         list.innerHTML = '';
-        bookings.forEach(b => {
+        for (const b of bookings) {
            let badgeColor = 'rgba(245, 158, 11, 0.2)';
            let badgeText = 'var(--secondary)';
            let statusLabel = b.status || 'Pending';
@@ -221,22 +233,164 @@
            if(statusLabel.toLowerCase() === 'cancelled') { badgeColor = 'rgba(239, 68, 68, 0.2)'; badgeText = '#ef4444'; }
            if(statusLabel.toLowerCase() === 'confirmed') { badgeColor = 'rgba(59, 130, 246, 0.2)'; badgeText = '#3b82f6'; }
 
+           let actionButtons = '';
+           if(statusLabel.toLowerCase() === 'pending' || statusLabel.toLowerCase() === 'confirmed') {
+             actionButtons = `
+               <div style="margin-top: 15px; display:flex; gap:10px;">
+                 <button class="btn" style="padding: 5px 12px; font-size: 12px; background: transparent; border: 1px solid #ef4444; color: #ef4444;" onclick="cancelBooking('${b.booking_id}')">Cancel</button>
+                 <button class="btn" style="padding: 5px 12px; font-size: 12px; background: transparent; border: 1px solid var(--secondary); color: var(--secondary);" onclick="rescheduleBooking('${b.booking_id}')">Reschedule</button>
+               </div>`;
+           } else if(statusLabel.toLowerCase() === 'completed') {
+             actionButtons = `
+               <div style="margin-top: 15px;">
+                 <button class="btn" style="padding: 5px 12px; font-size: 12px;" onclick="rateBooking('${b.booking_id}', '${b.service_id}')">Rate Service</button>
+               </div>`;
+           }
+
+           let proInfo = '';
+           if(b.professional_id) {
+             const proRes = await fetch(`http://127.0.0.1:5000/api/professional/${b.professional_id}`, {
+               headers: { 'Authorization': `Bearer ${token}` }
+             });
+             if(proRes.ok) {
+               const pro = await proRes.json();
+               proInfo = `<div style="margin-top: 10px; font-size: 13px; color: var(--text-muted); display:flex; align-items:center; gap:8px;">
+                 <div style="width:24px; height:24px; border-radius:50%; background:var(--glass-bg); display:flex; align-items:center; justify-content:center;">👤</div>
+                 <span>Assigned: <b>${pro.full_name}</b></span>
+               </div>`;
+             }
+           }
+
            list.innerHTML += `
-            <div class="booking-card">
-              <div>
-                <h4 style="font-size: 18px; margin-bottom:5px;">Booking #${b.id.substring(0,6)}</h4>
-                <p style="color: var(--text-muted); font-size: 14px;">Date: ${b.scheduled_time || 'TBD'} | Address: ${b.address.line1 || 'Saved Address'}</p>
+            <div class="booking-card" style="margin-bottom: 20px;">
+              <div style="width: 100%;">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                  <h4 style="font-size: 18px; margin-bottom:5px;">Booking #${b.booking_id.substring(0,8).toUpperCase()}</h4>
+                  <div class="status-badge" style="background: ${badgeColor}; color: ${badgeText}; border-color: ${badgeText}">${statusLabel}</div>
+                </div>
+                <p style="color: var(--text-muted); font-size: 14px;">Date: ${b.scheduled_time ? new Date(b.scheduled_time).toLocaleString() : 'TBD'}</p>
+                <p style="color: var(--text-muted); font-size: 14px;">Address: ${b.address || 'Saved Address'}</p>
+                ${proInfo}
+                ${actionButtons}
               </div>
-              <div class="status-badge" style="background: ${badgeColor}; color: ${badgeText}; border-color: ${badgeText}">${statusLabel}</div>
             </div>`;
-        });
+        }
       } else {
         list.innerHTML = `<p style="color: #ef4444;">Failed to load bookings.</p>`;
       }
     } catch(e) {
+        console.error(e);
         document.getElementById('booking-list').innerHTML = `<p style="color: #ef4444;">Error fetching live bookings.</p>`;
     }
   }
+
+  async function loadWallet() {
+    try {
+      const res = await fetch('http://127.0.0.1:5000/api/wallet', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if(res.ok) {
+        const data = await res.json();
+        document.getElementById('wallet-balance').textContent = (data.balance || 0).toFixed(2);
+      }
+    } catch(e) {}
+  }
+  loadWallet();
+
+  // Theme Toggle (now in navbar)
+  const themeToggle = document.getElementById('theme-toggle');
+  const body = document.body;
+  if(localStorage.getItem('theme') === 'light') {
+    body.classList.add('light-theme');
+    themeToggle.textContent = '☀️';
+  }
+  themeToggle.addEventListener('click', () => {
+    body.classList.toggle('light-theme');
+    const isLight = body.classList.contains('light-theme');
+    themeToggle.textContent = isLight ? '☀️' : '🌙';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  });
+
+  // Action Functions
+  window.cancelBooking = async function(id) {
+    if(!confirm('Are you sure you want to cancel this booking?')) return;
+    try {
+      const res = await fetch('http://127.0.0.1:5000/api/booking/cancel', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ booking_id: id })
+      });
+      if(res.ok) {
+        showToast('Booking cancelled successfully', 'info');
+        loadBookings();
+      }
+    } catch(e) { showToast('Error cancelling booking', 'error'); }
+  };
+
+  window.rescheduleBooking = function(id) {
+    const newTime = prompt('Enter new date and time (YYYY-MM-DD HH:MM):', '2026-04-01 10:00');
+    if(!newTime) return;
+    fetch('http://127.0.0.1:5000/api/booking/reschedule', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ booking_id: id, new_time: newTime })
+    }).then(res => {
+      if(res.ok) {
+        showToast('Rescheduled successfully!', 'success');
+        loadBookings();
+      }
+    });
+  };
+
+  window.toggleWalletModal = function(show) {
+    if(show) {
+      const amount = prompt('Enter amount to add to wallet (₹):', '500');
+      if(!amount || isNaN(amount)) return;
+      fetch('http://127.0.0.1:5000/api/wallet/add', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: parseFloat(amount) })
+      }).then(res => {
+        if(res.ok) {
+          showToast(`₹${amount} added to wallet!`, 'success');
+          loadWallet();
+        }
+      });
+    }
+  };
+
+  window.rateBooking = async function(bookingId, serviceId) {
+    const rating = prompt('Enter rating (1-5 stars):', '5');
+    if(!rating || isNaN(rating) || rating < 1 || rating > 5) return;
+    const comment = prompt('Any feedback for us?', 'Great service!');
+    
+    try {
+      const res = await fetch(`http://127.0.0.1:5000/api/service/reviews/${serviceId}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rating: parseInt(rating), comment: comment, booking_id: bookingId })
+      });
+      if(res.ok) {
+        showToast('Thank you for your feedback!', 'success');
+      }
+    } catch(e) { showToast('Error submitting review', 'error'); }
+  };
+
+  window.loadTransactions = async function() {
+    try {
+      const res = await fetch('http://127.0.0.1:5000/api/wallet/transactions', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if(res.ok) {
+        const transactions = await res.json();
+        let msg = 'Recent Transactions:\n';
+        transactions.slice(0, 5).forEach(t => {
+          msg += `- ${t.type.toUpperCase()}: ₹${t.amount} (${t.description})\n`;
+        });
+        alert(msg || 'No recent transactions.');
+      }
+    } catch(e) { showToast('Error loading history', 'error'); }
+  };
 
   window.onload = loadProfile;
 
@@ -245,6 +399,6 @@
     window.location.href = 'index.html';
   }
 </script>
-
+<script src="toast.js"></script>
 </body>
 </html>
