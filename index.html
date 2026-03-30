@@ -15,13 +15,21 @@
   <style>
     :root {
       --primary: #10b981;
-      --primary-dark: #059669;
       --secondary: #f59e0b;
       --text-main: #ffffff;
       --text-muted: rgba(255, 255, 255, 0.8);
-      --glass-bg: rgba(255, 255, 255, 0.08);
-      --glass-border: rgba(255, 255, 255, 0.15);
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --bg-gradient: linear-gradient(-45deg, #022c22, #064e3b, #047857, #10b981);
       --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    body.light-theme {
+      --text-main: #1a2e22;
+      --text-muted: #4b6355;
+      --glass-bg: rgba(255, 255, 255, 0.6);
+      --glass-border: rgba(16, 185, 129, 0.2);
+      --bg-gradient: linear-gradient(-45deg, #ecfdf5, #d1fae5, #a7f3d0, #6ee7b7);
     }
 
     * {
@@ -34,11 +42,13 @@
     body {
       font-family: 'Inter', sans-serif;
       color: var(--text-main);
-      background: linear-gradient(-45deg, #022c22, #064e3b, #047857, #10b981);
+      background: var(--bg-gradient);
       background-size: 400% 400%;
       animation: gradientBG 15s ease infinite;
       min-height: 100vh;
       overflow-x: hidden;
+      margin: 0;
+      transition: background 0.3s, color 0.3s;
     }
 
     @keyframes gradientBG {
@@ -51,7 +61,6 @@
       font-family: 'Outfit', sans-serif;
     }
 
-    /* Navbar */
     nav {
       position: fixed;
       top: 0;
@@ -61,14 +70,16 @@
       justify-content: space-between;
       align-items: center;
       z-index: 1000;
-      transition: background 0.3s ease, backdrop-filter 0.3s ease;
+      background: rgba(1, 28, 18, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      transition: background 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease;
     }
 
     nav.scrolled {
-      background: rgba(2, 44, 34, 0.85);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--glass-border);
-      padding: 15px 40px;
+      background: rgba(1, 22, 14, 0.97);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+      padding: 14px 40px;
     }
 
     .logo {
@@ -171,6 +182,7 @@
       max-width: 1000px;
       box-shadow: var(--glass-shadow);
       line-height: 1.7;
+      scroll-margin-top: 90px;
     }
     
     .info-section h3 {
@@ -290,6 +302,67 @@
       padding-top: 15px;
       border-top: 1px solid rgba(255,255,255,0.1);
       width: 100%;
+    }
+
+    /* Dynamic Service Cards (from /api/services) */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+      padding: 10px 0;
+    }
+
+    .card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease, border-color 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: var(--primary);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+    }
+
+    .card-img {
+      width: 100%;
+      height: 180px;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .card-content {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .card-content h3 {
+      font-size: 19px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+
+    .card-content p {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .card-content .price {
+      border-top: 1px solid var(--glass-border);
+      margin-top: 15px;
     }
 
     /* Booking Section */
@@ -434,6 +507,17 @@
       border-top: 1px solid rgba(255,255,255,0.05);
     }
 
+    body.light-theme footer {
+      background: #064e3b;
+      border-top: 1px solid #047857;
+      color: #d1fae5;
+    }
+
+    body.light-theme footer p,
+    body.light-theme footer small {
+      color: #a7f3d0;
+    }
+
     .contact-bubble {
       display: inline-flex;
       align-items: center;
@@ -479,6 +563,7 @@
     <a href="#how-it-works" class="nav-link">How it Works</a>
     <a href="#services" class="nav-link">Services</a>
     <a href="login.html" class="nav-link" id="nav-login" style="color: var(--secondary);">Login / Sign Up</a>
+    <button id="theme-toggle" class="btn" style="background: var(--glass-bg); padding: 8px 12px; font-size: 18px;">🌙</button>
   </div>
   <a href="#booking" class="btn" id="nav-action-btn">Book Now</a>
 </nav>
@@ -519,138 +604,18 @@
     </div>
   </section>
 
-  <h2 class="section-title" id="services">Our Services</h2>
-
-  <!-- Basic -->
-  <section class="category scroll-anim">
-    <h2>Basic Cleaning</h2>
-    <div class="services-grid">
-      <div class="service" data-service="Sweeping & Mopping">
-        <div>
-          <h3>Sweeping & Mopping</h3>
-          <p style="color:var(--text-muted); font-size:14px; margin-top:5px;">Daily essentials for a tidy home.</p>
-        </div>
-        <p class="price">₹200 - ₹500</p>
-      </div>
-      <div class="service" data-service="Dusting">
-        <div>
-          <h3>Dusting</h3>
-          <p style="color:var(--text-muted); font-size:14px; margin-top:5px;">Comprehensive surface wipe-downs.</p>
-        </div>
-        <p class="price">₹200 - ₹400</p>
-      </div>
-      <div class="service" data-service="Kitchen Basic Clean">
-        <div>
-          <h3>Kitchen Basic</h3>
-          <p style="color:var(--text-muted); font-size:14px; margin-top:5px;">Surface cleaning and tidying.</p>
-        </div>
-        <p class="price">₹300 - ₹600</p>
-      </div>
-      <div class="service" data-service="Bathroom Basic Clean">
-        <div>
-          <h3>Bathroom Basic</h3>
-          <p style="color:var(--text-muted); font-size:14px; margin-top:5px;">Quick scrub and sanitization.</p>
-        </div>
-        <p class="price">₹300 - ₹600</p>
-      </div>
+  <section id="services" class="container" style="padding: 80px 20px; scroll-margin-top: 90px;">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <h2 style="font-family: 'Outfit'; font-size: 36px;">Our <span style="color: var(--secondary)">Services</span></h2>
+      <p style="color: var(--text-muted); max-width: 600px; margin: 10px auto;">Choose from our carefully curated list of professional home solutions. Click any service to begin booking.</p>
     </div>
-  </section>
-
-  <!-- Deep -->
-  <section class="category scroll-anim">
-    <h2>Deep Cleaning</h2>
-    <div class="services-grid">
-      <div class="service" data-service="Full Home Deep Cleaning">
-        <div>
-          <h3>Full Home</h3>
-          <p style="color:var(--text-muted); font-size:14px; margin-top:5px;">A-to-Z intensive home scrubbing.</p>
-        </div>
-        <p class="price">₹3000 - ₹8000</p>
-      </div>
-      <div class="service" data-service="Kitchen Deep Cleaning">
-        <div>
-          <h3>Kitchen Deep</h3>
-          <p style="color:var(--text-muted); font-size:14px; margin-top:5px;">Includes appliances and tight spaces.</p>
-        </div>
-        <p class="price">₹1500 - ₹4000</p>
-      </div>
-      <div class="service" data-service="Bathroom Deep Cleaning">
-        <div>
-          <h3>Bathroom Deep</h3>
-          <p style="color:var(--text-muted); font-size:14px; margin-top:5px;">Stain removal and deep scaling.</p>
-        </div>
-        <p class="price">₹1200 - ₹3000</p>
-      </div>
+    <div style="max-width: 500px; margin: 0 auto 40px; position: relative;">
+      <input type="text" id="service-search" placeholder="Search for a service..."
+             style="width: 100%; padding: 15px 45px 15px 20px; border-radius: 50px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); font-size: 16px; backdrop-filter: blur(10px);">
+      <span style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted);">🔍</span>
     </div>
-  </section>
-
-  <!-- Upholstery -->
-  <section class="category scroll-anim">
-    <h2>Upholstery</h2>
-    <div class="services-grid">
-      <div class="service" data-service="Sofa Cleaning">
-        <div>
-          <h3>Sofa & Seating</h3>
-          <p style="color:var(--text-muted); font-size:14px; margin-top:5px;">Vacuuming and shampooing.</p>
-        </div>
-        <p class="price">₹500 - ₹2000</p>
-      </div>
-      <div class="service" data-service="Carpet Cleaning">
-        <div>
-          <h3>Carpet</h3>
-          <p style="color:var(--text-muted); font-size:14px; margin-top:5px;">Deep stain extraction.</p>
-        </div>
-        <p class="price">₹800 - ₹2500</p>
-      </div>
-      <div class="service" data-service="Mattress Cleaning">
-        <div>
-          <h3>Mattress</h3>
-          <p style="color:var(--text-muted); font-size:14px; margin-top:5px;">Dustmite removal and sanitization.</p>
-        </div>
-        <p class="price">₹500 - ₹1500</p>
-      </div>
-      <div class="service" data-service="Curtain Cleaning">
-        <div>
-          <h3>Curtains</h3>
-          <p style="color:var(--text-muted); font-size:14px; margin-top:5px;">Steam cleaning and refreshing.</p>
-        </div>
-        <p class="price">₹500 - ₹2000</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Special -->
-  <section class="category scroll-anim">
-    <h2>Special Services</h2>
-    <div class="services-grid">
-      <div class="service" data-service="Water Tank Cleaning">
-        <div>
-          <h3>Water Tank</h3>
-          <p style="color:var(--text-muted); font-size:14px; margin-top:5px;">Mechanized draining and cleaning.</p>
-        </div>
-        <p class="price">₹1000 - ₹3000</p>
-      </div>
-      <div class="service" data-service="Window Glass Cleaning">
-        <div>
-          <h3>Window Glass</h3>
-          <p style="color:var(--text-muted); font-size:14px; margin-top:5px;">Streak-free exterior & interior wash.</p>
-        </div>
-        <p class="price">₹500 - ₹2000</p>
-      </div>
-      <div class="service" data-service="Post Construction Cleaning">
-        <div>
-          <h3>Post Construction</h3>
-          <p style="color:var(--text-muted); font-size:14px; margin-top:5px;">Debris, paint specks, and dust removal.</p>
-        </div>
-        <p class="price">₹3000 - ₹10000</p>
-      </div>
-      <div class="service" data-service="Solar Panel Cleaning">
-        <div>
-          <h3>Solar Panel</h3>
-          <p style="color:var(--text-muted); font-size:14px; margin-top:5px;">Maximize efficiency with clean panels.</p>
-        </div>
-        <p class="price">₹500 - ₹2000</p>
-      </div>
+    <div class="grid" id="services-grid">
+      <p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center;">Loading services...</p>
     </div>
   </section>
 
@@ -872,17 +837,32 @@
   checkAuthState();
   
   // 8. Dynamic Service Loading
-  async function loadServices() {
+  let allServices = [];
+  async function loadServices(query = '') {
     try {
-      const res = await fetch('http://127.0.0.1:5000/api/services');
+      const url = query ? `http://127.0.0.1:5000/api/search?q=${encodeURIComponent(query)}` : 'http://127.0.0.1:5000/api/services';
+      const res = await fetch(url);
       if(res.ok) {
-        const services = await res.json();
+        const data = await res.json();
         const grid = document.getElementById('services-grid');
         const select = document.getElementById('service');
         
-        grid.innerHTML = '';
-        select.innerHTML = '<option value="" disabled selected>— Choose specialized cleaning —</option>';
+        let services = [];
+        if (query) {
+          services = data;
+        } else {
+          data.categories.forEach(cat => services.push(...cat.services));
+          allServices = services;
+        }
         
+        grid.innerHTML = '';
+        if (!query) select.innerHTML = '<option value="" disabled selected>— Choose specialized cleaning —</option>';
+        
+        if (services.length === 0) {
+          grid.innerHTML = '<p style="text-align: center; color: var(--text-muted); grid-column: 1 / -1;">No services found matching your search.</p>';
+          return;
+        }
+
         services.forEach(s => {
            grid.innerHTML += `
             <div class="card" onclick="selectService('${s.id}', ${s.base_price})">
@@ -894,17 +874,42 @@
               </div>
             </div>`;
             
-           select.innerHTML += `<option value="${s.id}" data-price="${s.base_price}">${s.name} - ₹${s.base_price}</option>`;
+           if (!query) select.innerHTML += `<option value="${s.id}" data-price="${s.base_price}">${s.name} - ₹${s.base_price}</option>`;
         });
       }
     } catch(e) {
-      console.log('Could not load dynamic services, fallback to hardcoded needed or keep placeholder.');
+      console.log('Error loading services:', e);
       document.getElementById('services-grid').innerHTML = '<p style="text-align: center; color: var(--text-muted); grid-column: 1 / -1;">We are performing maintenance. Please call us to book.</p>';
     }
   }
   loadServices();
 
-  // 9. Real-time Form Validation
+  // Search Debounce
+  let searchTimeout;
+  document.getElementById('service-search').addEventListener('input', function(e) {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      loadServices(e.target.value);
+    }, 300);
+  });
+
+  // 9. Theme Toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  const body = document.body;
+  
+  if (localStorage.getItem('theme') === 'light') {
+    body.classList.add('light-theme');
+    themeToggle.textContent = '☀️';
+  }
+
+  themeToggle.addEventListener('click', () => {
+    body.classList.toggle('light-theme');
+    const isLight = body.classList.contains('light-theme');
+    themeToggle.textContent = isLight ? '☀️' : '🌙';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  });
+
+  // 10. Real-time Form Validation
   document.querySelectorAll('#main-form input, #main-form textarea').forEach(input => {
     input.addEventListener('input', function() {
       if(this.type === 'email' || this.id.toLowerCase().includes('email')) {
