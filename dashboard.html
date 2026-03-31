@@ -510,7 +510,7 @@
     const amt = document.getElementById('wallet-amount').value;
     const payBtn = document.getElementById('pay-btn');
     
-    // Check fields
+    // Check fields for simulation (still good for UX)
     if(selectedPaymentMethod === 'UPI' && !document.getElementById('upi-id').value) {
       showToast('Please enter your UPI ID', 'error'); return;
     }
@@ -518,35 +518,75 @@
       showToast('Please enter your Card Number', 'error'); return;
     }
 
-    payBtn.textContent = 'Verifying Details...';
+    payBtn.textContent = 'Initializing Razorpay...';
     payBtn.disabled = true;
 
-    // Simulate "Real Connection" Gateway verification
-    setTimeout(async () => {
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/wallet/add`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            amount: parseFloat(amt),
-            payment_method: selectedPaymentMethod,
-            payment_ref: 'PAY-' + Math.random().toString(36).substring(2, 9).toUpperCase()
-          })
-        });
-        if(res.ok) {
-          showToast(`Success! ₹${amt} confirmed via ${selectedPaymentMethod}.`, 'success');
-          toggleWalletModal(false);
-          loadWallet();
-        } else {
-          showToast('Payment verification failed.', 'error');
+    try {
+      // 1. Create Order on Backend
+      const orderRes = await fetch(`${API_BASE_URL}/api/payment/razorpay/create-order`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: parseFloat(amt) })
+      });
+      
+      if(!orderRes.ok) throw new Error('Order creation failed');
+      const orderData = await orderRes.json();
+
+      // 2. Configure Razorpay Options
+      const options = {
+        "key": orderData.key_id,
+        "amount": orderData.amount * 100, // already in paise from backend but client needs it too
+        "currency": "INR",
+        "name": "Snappito Wallet",
+        "description": `Top-up for ${user_name}`,
+        "order_id": orderData.order_id,
+        "handler": async function (response) {
+          // 3. Verify Payment on Backend
+          payBtn.textContent = 'Verifying Payment...';
+          const verifyRes = await fetch(`${API_BASE_URL}/api/payment/razorpay/verify`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              amount: parseFloat(amt)
+            })
+          });
+
+          if(verifyRes.ok) {
+            showToast(`Payment Successful! ₹${amt} added to wallet.`, 'success');
+            toggleWalletModal(false);
+            loadWallet();
+          } else {
+            showToast('Signature verification failed!', 'error');
+          }
+          payBtn.textContent = 'Verify & Add Funds';
+          payBtn.disabled = false;
+        },
+        "prefill": {
+          "name": user_name,
+          "email": user_email || "",
+          "contact": user_phone || ""
+        },
+        "theme": { "color": "#10b981" },
+        "modal": {
+          "ondismiss": function() {
+            payBtn.textContent = 'Verify & Add Funds';
+            payBtn.disabled = false;
+          }
         }
-      } catch(e) {
-        showToast('Payment system unreachable.', 'error');
-      } finally {
-        payBtn.textContent = 'Verify & Add Funds';
-        payBtn.disabled = false;
-      }
-    }, 2000);
+      };
+
+      // 4. Open Razorpay Modal
+      const rzp = new Razorpay(options);
+      rzp.open();
+
+    } catch(e) {
+      showToast(e.message || 'Payment system error', 'error');
+      payBtn.textContent = 'Verify & Add Funds';
+      payBtn.disabled = false;
+    }
   };
 
   window.rateBooking = async function(bookingId, serviceId) {
@@ -591,5 +631,6 @@
 </script>
 <script src="config.js"></script>
 <script src="toast.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </body>
 </html>
