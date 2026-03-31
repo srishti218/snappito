@@ -15,6 +15,7 @@
       --glass-bg: rgba(255, 255, 255, 0.1);
       --glass-border: rgba(255, 255, 255, 0.2);
       --bg-gradient: linear-gradient(-45deg, #022c22, #064e3b, #047857, #10b981);
+      --bg-fallback: #022c22;
       --card-bg: rgba(0, 0, 0, 0.2);
       --card-border: rgba(255, 255, 255, 0.07);
       --nav-bg: rgba(2, 44, 34, 0.85);
@@ -27,6 +28,7 @@
       --glass-bg: rgba(255, 255, 255, 0.6);
       --glass-border: rgba(16, 185, 129, 0.2);
       --bg-gradient: linear-gradient(-45deg, #ecfdf5, #d1fae5, #a7f3d0, #6ee7b7);
+      --bg-fallback: #ecfdf5;
       --card-bg: rgba(255, 255, 255, 0.55);
       --card-border: rgba(16, 185, 129, 0.15);
       --nav-bg: rgba(236, 253, 245, 0.9);
@@ -36,9 +38,11 @@
     body {
       font-family: 'Inter', sans-serif;
       color: var(--text-main);
-      background: var(--bg-gradient);
+      background-color: var(--bg-fallback);
+      background-image: var(--bg-gradient);
       background-size: 400% 400%;
       animation: gradientBG 15s ease infinite;
+      will-change: background-position;
       min-height: 100vh;
       margin: 0;
       transition: background 0.3s, color 0.3s;
