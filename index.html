@@ -897,7 +897,11 @@
       const actionBtn = document.getElementById('nav-action-btn');
       actionBtn.textContent = 'Dashboard';
       actionBtn.href = 'dashboard.html';
-      actionBtn.style.background = 'rgba(255,255,255,0.2)';
+      actionBtn.style.background = 'rgba(255, 255, 255, 0.15)';
+      actionBtn.style.color = '#ffffff';
+      actionBtn.style.fontWeight = '800';
+      actionBtn.style.border = '1px solid rgba(255, 255, 255, 0.3)';
+      actionBtn.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
       
       try {
         const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
