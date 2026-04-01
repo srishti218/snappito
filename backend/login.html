@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Snappito</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="toast.css">
+  <style>
+    :root {
+      --primary: #10b981;
+      --secondary: #f59e0b;
+      --text-main: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.8);
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --bg-gradient: linear-gradient(-45deg, #022c22, #064e3b, #047857, #10b981);
+      --bg-fallback: #022c22;
+    }
+
+    body.light-theme {
+      --text-main: #1a2e22;
+      --text-muted: #4b6355;
+      --glass-bg: rgba(255, 255, 255, 0.6);
+      --glass-border: rgba(16, 185, 129, 0.2);
+      --bg-gradient: linear-gradient(-45deg, #ecfdf5, #d1fae5, #a7f3d0, #6ee7b7);
+      --bg-fallback: #ecfdf5;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+      background-color: var(--bg-fallback);
+      background-image: var(--bg-gradient);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      will-change: background-position;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      transition: background 0.3s, color 0.3s;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .auth-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    h2 { font-family: 'Outfit', sans-serif; font-size: 32px; margin-bottom: 30px; }
+    .input-group { text-align: left; margin-bottom: 20px; }
+    label { font-size: 14px; font-weight: 500; color: var(--text-muted); margin-bottom: 8px; display: block; }
+    input {
+      width: 100%;
+      padding: 14px 20px;
+      background: rgba(0, 0, 0, 0.2);
+      color: white;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      font-size: 16px;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s;
+    }
+    input:focus { outline: none; border-color: var(--primary); background: rgba(0,0,0,0.3); }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--secondary);
+      color: #111;
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+    .btn:hover { background: #fbbf24; transform: translateY(-2px); }
+    .error-msg { color: #f87171; font-size: 14px; margin-bottom: 15px; display: none; }
+    .links { margin-top: 25px; font-size: 14px; color: var(--text-muted); }
+    .links a { color: var(--secondary); text-decoration: none; font-weight: 500; }
+    .links a:hover { text-decoration: underline; }
+    
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .modal-content {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 15px;
+      padding: 30px;
+      width: 90%;
+      max-width: 400px;
+      text-align: left;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 15px; right: 15px;
+      background: none; border: none;
+      color: white; font-size: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Forgot Password Modal -->
+<div class="modal-overlay" id="forgotModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="toggleForgotModal(false)">✕</button>
+    <h3 style="font-family: 'Outfit'; margin-bottom: 10px;">Reset Password</h3>
+    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">Enter your email or phone number and we'll send you instructions.</p>
+    <form id="forgotForm">
+      <div class="input-group">
+        <label>Email or Phone</label>
+        <input type="text" id="forgotInput" required>
+      </div>
+      <button type="submit" class="btn" id="forgotBtn">Send Reset Link</button>
+    </form>
+  </div>
+</div>
+
+<div class="auth-card">
+  <div style="font-family: 'Outfit'; font-size:24px; font-weight:800; margin-bottom: 20px;">Snappito<span>⚡</span></div>
+  <h2>Welcome Back</h2>
+  
+  <form id="loginForm">
+    <div class="input-group">
+      <label>Email Address</label>
+      <input type="email" id="email" required>
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="password" required>
+      <div style="text-align: right; margin-top: 5px;">
+        <a href="#" onclick="toggleForgotModal(true)" style="color: var(--secondary); font-size: 13px; text-decoration: none;">Forgot Password?</a>
+      </div>
+    </div>
+    <button type="submit" class="btn" id="submitBtn">Log In</button>
+  </form>
+  
+  <div class="links">
+    Don't have an account? <a href="signup.html">Sign Up</a><br><br>
+    <a href="index.html">← Back to Home</a>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="toast.js"></script>
+<script>
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    
+    btn.textContent = 'Logging in...';
+    btn.disabled = true;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: document.getElementById('email').value,
+          password: document.getElementById('password').value
+        })
+      });
+      const data = await response.json();
+      
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        showToast('Login successful! Redirecting...', 'success');
+        setTimeout(() => window.location.href = 'dashboard.html', 1500);
+      } else {
+        showToast(data.error || 'Login failed. Please check your credentials.', 'error');
+        btn.textContent = 'Log In';
+        btn.disabled = false;
+      }
+    } catch (error) {
+      showToast('Network error. Make sure the server is running.', 'error');
+      btn.textContent = 'Log In';
+      btn.disabled = false;
+    }
+  });
+  
+  // Forgot Password Logic
+  const forgotModal = document.getElementById('forgotModal');
+  window.toggleForgotModal = function(show) {
+    if(show) {
+      forgotModal.style.display = 'flex';
+      // Slight delay to allow display to apply before animating opacity
+      setTimeout(() => forgotModal.style.opacity = '1', 10);
+    } else {
+      forgotModal.style.opacity = '0';
+      setTimeout(() => forgotModal.style.display = 'none', 300);
+    }
+  };
+
+  document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('forgotBtn');
+    const input = document.getElementById('forgotInput').value;
+    
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    try {
+      const payload = input.includes('@') ? { email: input } : { phone_number: input };
+      
+      const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      if (response.ok) {
+        showToast('Password reset instructions sent!', 'success');
+        toggleForgotModal(false);
+      } else {
+        const data = await response.json();
+        showToast(data.error || 'Failed to send reset instructions.', 'error');
+      }
+    } catch (error) {
+      showToast('Network error. Make sure the server is running.', 'error');
+    }
+    
+    btn.textContent = 'Send Reset Link';
+    btn.disabled = false;
+  });
+
+  // Real-time Form Validation
+  document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', function() {
+      if(this.type === 'email' || this.id.toLowerCase().includes('email')) {
+        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value);
+        this.style.borderColor = isValid ? 'var(--primary)' : '#ef4444';
+      }
+      if(this.type === 'password') {
+        const isValid = this.value.length >= 6;
+        this.style.borderColor = isValid ? 'var(--primary)' : '#ef4444';
+      }
+      if(this.value === '') {
+        this.style.borderColor = 'rgba(255,255,255,0.1)';
+      }
+    });
+  });
+
+  // Theme Toggle Logic
+  const themeBtn = document.createElement('button');
+  themeBtn.id = 'theme-toggle';
+  themeBtn.innerHTML = localStorage.getItem('theme') === 'light' ? '☀️' : '🌙';
+  themeBtn.style.cssText = 'position:fixed; top:20px; right:20px; background:var(--glass-bg); border:1px solid var(--glass-border); padding:10px; border-radius:50%; font-size:20px; cursor:pointer; color:var(--text-main); z-index:1000;';
+  document.body.appendChild(themeBtn);
+
+  if (localStorage.getItem('theme') === 'light') body.classList.add('light-theme');
+
+  themeBtn.addEventListener('click', () => {
+    body.classList.toggle('light-theme');
+    const isLight = body.classList.contains('light-theme');
+    themeBtn.innerHTML = isLight ? '☀️' : '🌙';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  });
+</script>
+
+</body>
+</html>
