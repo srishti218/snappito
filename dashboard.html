@@ -187,71 +187,25 @@
 
 <!-- Wallet Payment Modal -->
 <div id="walletModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); z-index: 2000; justify-content: center; align-items: center;">
-  <div class="modal-content" style="background: var(--glass-bg); border: 2px solid var(--glass-border); padding: 40px; border-radius: 20px; width: 90%; max-width: 500px; color: white;">
+  <div class="modal-content" style="background: var(--glass-bg); border: 2px solid var(--glass-border); padding: 40px; border-radius: 20px; width: 90%; max-width: 450px; color: white; text-align: center;">
+    <button class="close-modal" onclick="toggleWalletModal(false)" style="position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
     <h2 style="font-family: 'Outfit'; margin-bottom: 25px; font-size: 28px;">Add Funds to Wallet</h2>
+    <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 16px;">Quickly top up your balance via UPI, Card, or Net Banking.</p>
     
     <div id="wallet-step-1">
-      <label style="display: block; font-size: 16px; color: var(--text-muted); margin-bottom: 12px; font-weight: 500;">1. Select or Enter Amount</label>
-      <div class="quick-amounts">
-        <div class="quick-amt" onclick="setWalletAmount(500)">₹500</div>
-        <div class="quick-amt" onclick="setWalletAmount(1000)">₹1000</div>
-        <div class="quick-amt" onclick="setWalletAmount(2000)">₹2000</div>
+      <div class="quick-amounts" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 25px;">
+        <div class="quick-amt" onclick="setWalletAmount(500)" style="padding: 12px; border: 1px solid var(--glass-border); border-radius: 10px; cursor: pointer; transition: all 0.3s ease;">₹500</div>
+        <div class="quick-amt" onclick="setWalletAmount(1000)" style="padding: 12px; border: 1px solid var(--glass-border); border-radius: 10px; cursor: pointer; transition: all 0.3s ease;">₹1000</div>
+        <div class="quick-amt" onclick="setWalletAmount(2000)" style="padding: 12px; border: 1px solid var(--glass-border); border-radius: 10px; cursor: pointer; transition: all 0.3s ease;">₹2000</div>
       </div>
-      <input type="number" id="wallet-amount" placeholder="Enter custom amount (₹)" style="width: 100%; padding: 16px; background: rgba(0,0,0,0.25); border: 1px solid var(--glass-border); border-radius: 12px; color: white; margin-bottom: 25px; font-size: 18px;">
+      <input type="number" id="wallet-amount" placeholder="Enter custom amount (₹)" style="width: 100%; padding: 16px; background: rgba(0,0,0,0.25); border: 1px solid var(--glass-border); border-radius: 12px; color: white; margin-bottom: 30px; font-size: 18px; text-align: center;">
 
-      <label style="display: block; font-size: 16px; color: var(--text-muted); margin-bottom: 15px; font-weight: 500;">2. Select Payment Method</label>
-      <div class="payment-methods">
-        <div class="payment-option active" onclick="selectPaymentMethod(this, 'UPI')">
-          <span>📱</span>
-          <div>
-            <div class="opt-title">UPI (Google Pay/PhonePe)</div>
-            <div class="opt-desc">Fastest & Secure</div>
-          </div>
-        </div>
-        <div class="payment-option" onclick="selectPaymentMethod(this, 'Card')">
-          <span>💳</span>
-          <div>
-            <div class="opt-title">Credit / Debit Card</div>
-            <div class="opt-desc">Global payments support</div>
-          </div>
-        </div>
-        <div class="payment-option" onclick="selectPaymentMethod(this, 'NetBanking')">
-          <span>🏦</span>
-          <div>
-            <div class="opt-title">Net Banking</div>
-            <div class="opt-desc">50+ Banks Integrated</div>
-          </div>
-        </div>
-      </div>
-      <div style="display: flex; gap: 15px; margin-top: 30px;">
-        <button class="btn" onclick="toggleWalletModal(false)" style="flex: 1; background: transparent; border: 1px solid var(--glass-border); color: white; padding: 14px; font-size: 16px;">Cancel</button>
-        <button class="btn" onclick="goToPaymentDetails()" style="flex: 2; padding: 14px; font-size: 16px;">Continue to Pay</button>
-      </div>
-    </div>
+      <button id="pay-btn" class="btn" onclick="processWalletPayment()" style="width: 100%; padding: 16px; font-size: 18px; font-weight: 600; border-radius: 14px; background: var(--secondary); color: white; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);">
+        Proceed to Checkout
+      </button>
 
-    <!-- Step 2: Details -->
-    <div id="wallet-step-2" style="display: none;">
-      <div style="margin-bottom: 25px;">
-        <p id="method-title" style="font-size: 20px; font-weight: 600; margin-bottom: 5px;">Enter UPI Details</p>
-        <p style="font-size: 14px; color: var(--text-muted);">Amount: <b id="final-amt" style="color: var(--secondary); font-size: 18px;">₹0</b></p>
-      </div>
-      
-      <div id="upi-fields" class="input-group">
-        <label>UPI ID (e.g., yourname@okaxis)</label>
-        <input type="text" id="upi-id" placeholder="e.g. varun@okaxis" style="padding: 14px; font-size: 16px;">
-      </div>
-      <div id="card-fields" class="input-group" style="display: none;">
-        <label>Card Number</label>
-        <input type="text" id="card-num" placeholder="XXXX XXXX XXXX XXXX" style="padding: 14px; font-size: 16px; margin-bottom: 15px;">
-        <div style="display:flex; gap:10px;">
-          <input type="text" placeholder="MM/YY" style="flex:1; padding: 12px; font-size: 14px;">
-          <input type="password" placeholder="CVV" style="flex:1; padding: 12px; font-size: 14px;">
-        </div>
-      </div>
-
-      <div style="display: flex; gap: 15px; margin-top: 35px;">
-        <button class="btn" onclick="backToAmounts()" style="flex: 1; background: transparent; border: 1px solid var(--glass-border); color: white; padding: 14px; font-size: 16px;">Back</button>
-        <button id="pay-btn" class="btn" onclick="processWalletPayment()" style="flex: 2; padding: 14px; font-size: 16px;">Verify & Add Funds</button>
+      <div style="margin-top: 25px; display: flex; align-items: center; justify-content: center; gap: 10px; opacity: 0.6; font-size: 12px;">
+        <i class="fas fa-lock"></i> <span>Securely processed by Razorpay</span>
       </div>
     </div>
   </div>
@@ -483,48 +437,23 @@
     });
   };
 
-  let selectedPaymentMethod = 'UPI';
-  window.selectPaymentMethod = function(el, method) {
-    document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('active'));
-    el.classList.add('active');
-    selectedPaymentMethod = method;
+  window.toggleWalletModal = function(show) {
+    document.getElementById('walletModal').style.display = show ? 'flex' : 'none';
   };
 
-  window.goToPaymentDetails = function() {
-    const amt = document.getElementById('wallet-amount').value;
-    if(!amt || isNaN(amt) || amt <= 0) {
-      showToast('Please enter a valid amount', 'error');
-      return;
-    }
-    
-    document.getElementById('wallet-step-1').style.display = 'none';
-    document.getElementById('wallet-step-2').style.display = 'block';
-    document.getElementById('final-amt').innerText = `₹${amt}`;
-    
-    // UI Swapping based on method
-    document.getElementById('upi-fields').style.display = selectedPaymentMethod === 'UPI' ? 'block' : 'none';
-    document.getElementById('card-fields').style.display = selectedPaymentMethod === 'Card' ? 'block' : 'none';
-    document.getElementById('method-title').innerText = `Enter ${selectedPaymentMethod} Details`;
-  };
-
-  window.backToAmounts = function() {
-    document.getElementById('wallet-step-1').style.display = 'block';
-    document.getElementById('wallet-step-2').style.display = 'none';
+  window.setWalletAmount = function(amt) {
+    document.getElementById('wallet-amount').value = amt;
   };
 
   window.processWalletPayment = async function() {
     const amt = document.getElementById('wallet-amount').value;
     const payBtn = document.getElementById('pay-btn');
     
-    // Check fields for simulation (still good for UX)
-    if(selectedPaymentMethod === 'UPI' && !document.getElementById('upi-id').value) {
-      showToast('Please enter your UPI ID', 'error'); return;
-    }
-    if(selectedPaymentMethod === 'Card' && !document.getElementById('card-num').value) {
-      showToast('Please enter your Card Number', 'error'); return;
+    if(!amt || amt <= 0) {
+      showToast('Please enter a valid amount', 'error'); return;
     }
 
-    payBtn.textContent = 'Initializing Razorpay...';
+    payBtn.textContent = 'Launching Gateway...';
     payBtn.disabled = true;
 
     try {
@@ -541,14 +470,13 @@
       // 2. Configure Razorpay Options
       const options = {
         "key": orderData.key_id,
-        "amount": orderData.amount * 100, // already in paise from backend but client needs it too
+        "amount": orderData.amount * 100, 
         "currency": "INR",
-        "name": "Snappito Wallet",
-        "description": `Top-up for ${user_name}`,
+        "name": "Snappito",
+        "description": `Wallet Top-up: ${user_name}`,
         "order_id": orderData.order_id,
         "handler": async function (response) {
-          // 3. Verify Payment on Backend
-          payBtn.textContent = 'Verifying Payment...';
+          payBtn.textContent = 'Finalizing...';
           const verifyRes = await fetch(`${API_BASE_URL}/api/payment/razorpay/verify`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -561,13 +489,13 @@
           });
 
           if(verifyRes.ok) {
-            showToast(`Payment Successful! ₹${amt} added to wallet.`, 'success');
+            showToast(`Success! ₹${amt} added.`, 'success');
             toggleWalletModal(false);
             loadWallet();
           } else {
-            showToast('Signature verification failed!', 'error');
+            showToast('Payment verification failed!', 'error');
           }
-          payBtn.textContent = 'Verify & Add Funds';
+          payBtn.textContent = 'Proceed to Checkout';
           payBtn.disabled = false;
         },
         "prefill": {
@@ -578,19 +506,18 @@
         "theme": { "color": "#10b981" },
         "modal": {
           "ondismiss": function() {
-            payBtn.textContent = 'Verify & Add Funds';
+            payBtn.textContent = 'Proceed to Checkout';
             payBtn.disabled = false;
           }
         }
       };
 
-      // 4. Open Razorpay Modal
       const rzp = new Razorpay(options);
       rzp.open();
 
     } catch(e) {
-      showToast(e.message || 'Payment system error', 'error');
-      payBtn.textContent = 'Verify & Add Funds';
+      showToast(e.message || 'Payment error', 'error');
+      payBtn.textContent = 'Proceed to Checkout';
       payBtn.disabled = false;
     }
   };
