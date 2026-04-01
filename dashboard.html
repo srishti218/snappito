@@ -232,11 +232,23 @@
     .form-group input, .form-group select {
       width: 100%;
       padding: 12px 15px;
-      background: rgba(0,0,0,0.2);
+      background: rgba(255,255,255,0.05);
       border: 1px solid var(--glass-border);
       border-radius: 10px;
-      color: white;
+      color: var(--text-main);
       font-size: 16px;
+      transition: all 0.3s;
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      background: rgba(255,255,255,0.1);
+      border-color: var(--primary);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+    }
+    body.light-theme .form-group input, body.light-theme .form-group select {
+      background: #ffffff;
+      border-color: #d1d5db;
+      color: #1a2e22;
     }
     
     .booking-list { margin-top: 20px; }
@@ -397,14 +409,19 @@
       <div id="tab-info" class="tab-content">
         <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
             <label style="display: block; margin-bottom: 15px; font-size: 13px; text-transform: uppercase; color: var(--secondary); letter-spacing: 1.5px; font-weight: 600;">Choose Your Avatar</label>
-            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
-              <div class="avatar-selection" id="avatar-options" style="margin-bottom: 0;">
-                <!-- Dynamically rendered -->
+            <div style="display: flex; align-items: flex-start; gap: 30px; flex-wrap: wrap;">
+              <div id="selected-avatar-preview" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); padding: 5px; background: var(--bg-fallback); flex-shrink: 0;">
+                <img src="" id="modal-preview-img" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
               </div>
-              <div style="padding-left: 20px; border-left: 1px solid var(--glass-border);">
-                <p style="font-size: 13px; margin-bottom: 8px; font-weight: 500; color: var(--text-main);">Or use a custom photo:</p>
-                <input type="file" id="custom-avatar-input" style="display: none;" accept="image/*" onchange="handleCustomAvatar(this)">
-                <button onclick="document.getElementById('custom-avatar-input').click()" class="btn" style="padding: 10px 20px; border: 1.5px dashed var(--primary); background: rgba(16, 185, 129, 0.05); color: var(--primary); font-size: 13px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s;">📷 Upload Photo</button>
+              <div style="flex: 1; min-width: 250px;">
+                <div class="avatar-selection" id="avatar-options" style="margin-bottom: 20px;">
+                  <!-- Dynamically rendered -->
+                </div>
+                <div style="padding-top: 15px; border-top: 1px solid var(--glass-border);">
+                  <p style="font-size: 13px; margin-bottom: 8px; font-weight: 500; color: var(--text-main);">Or use a custom photo:</p>
+                  <input type="file" id="custom-avatar-input" style="display: none;" accept="image/*" onchange="handleCustomAvatar(this)">
+                  <button onclick="document.getElementById('custom-avatar-input').click()" class="btn" style="padding: 10px 20px; border: 1.5px dashed var(--primary); background: rgba(16, 185, 129, 0.05); color: var(--primary); font-size: 13px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s;">📷 Upload Photo</button>
+                </div>
               </div>
             </div>
           </div>
@@ -433,8 +450,8 @@
         </div>
         
         <div style="display: flex; gap: 15px; margin-top: 30px;">
-          <button class="btn-logout" onclick="closeProfileModal()" style="flex: 1; padding: 15px;">Discard</button>
-          <button id="save-profile-btn" class="btn" onclick="saveProfileChanges()" style="flex: 2; padding: 15px; border-radius: 14px; background: var(--primary); border: none; font-weight: 600;">Save Changes</button>
+          <button id="discard-profile-btn" class="btn-logout" onclick="closeProfileModal()" style="flex: 1; padding: 15px; border-radius: 14px;">Close</button>
+          <button id="save-profile-btn" class="btn" onclick="saveProfileChanges()" style="flex: 2; padding: 15px; border-radius: 14px; background: var(--primary); border: none; font-weight: 600; display: none;">Save Changes</button>
         </div>
       </div>
 
@@ -444,8 +461,8 @@
           <!-- Dynamically rendered -->
         </div>
         
-        <div style="margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.03); border: 1px dashed var(--glass-border); border-radius: 16px;">
-          <h4 style="margin-bottom: 20px; font-family: 'Outfit';">Add New Address</h4>
+        <div style="margin-top: 30px; padding: 25px; background: rgba(255,255,255,0.03); border: 1.5px dashed var(--glass-border); border-radius: 20px;">
+          <h4 style="margin-bottom: 20px; font-family: 'Outfit'; font-weight: 800; color: var(--text-main);">Add New Address</h4>
           <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
             <div class="form-group">
               <label>Pincode / Zip Code</label>
@@ -496,7 +513,8 @@
     window.location.href = 'login.html'; // redirect if not logged in
   }
 
-  let user_name = '', user_email = '', user_phone = '', user_avatar = '';
+  let user_name = '', user_email = '', user_phone = '', user_avatar = '', user_gender = '';
+  let initial_state = {};
   let editingAddressId = null;
 
   const AVATAR_PRESETS = [
@@ -529,8 +547,24 @@
         document.getElementById('edit-email').value = data.email;
         document.getElementById('edit-phone').value = data.phone || '';
         document.getElementById('edit-gender').value = data.gender || '';
+        
+        // Update previews
+        document.getElementById('main-avatar').src = user_avatar;
+        const previewImg = document.getElementById('modal-preview-img');
+        if (previewImg) previewImg.src = user_avatar;
 
         renderAvatarOptions();
+        
+        // Save initial state for dirty check
+        initial_state = {
+          full_name: data.full_name,
+          email: data.email,
+          phone: data.phone || '',
+          gender: data.gender || '',
+          profile_image: user_avatar
+        };
+        updateSaveButtonVisibility();
+
         document.getElementById('loader').style.display = 'none';
         document.getElementById('content').style.display = 'block';
         
@@ -552,16 +586,49 @@
         <img src="${url}" alt="Avatar">
       </div>
     `).join('');
+    
+    // Update preview in modal
+    const previewImg = document.getElementById('modal-preview-img');
+    if (previewImg) previewImg.src = user_avatar;
   }
 
   window.selectAvatar = function(url) {
     user_avatar = url;
     renderAvatarOptions();
+    updateSaveButtonVisibility();
   };
+
+  function updateSaveButtonVisibility() {
+    const currentState = {
+      full_name: document.getElementById('edit-name').value,
+      email: document.getElementById('edit-email').value,
+      phone: document.getElementById('edit-phone').value,
+      gender: document.getElementById('edit-gender').value,
+      profile_image: user_avatar
+    };
+
+    const isDirty = JSON.stringify(currentState) !== JSON.stringify(initial_state);
+    const saveBtn = document.getElementById('save-profile-btn');
+    const discardBtn = document.getElementById('discard-profile-btn');
+    
+    if (isDirty) {
+      saveBtn.style.display = 'block';
+      discardBtn.innerText = 'Discard Changes';
+    } else {
+      saveBtn.style.display = 'none';
+      discardBtn.innerText = 'Close';
+    }
+  }
+
+  // Add listeners to all inputs
+  ['edit-name', 'edit-email', 'edit-phone', 'edit-gender'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateSaveButtonVisibility);
+  });
 
   window.openProfileModal = function() {
     document.getElementById('profileModal').style.display = 'flex';
     switchTab('info');
+    updateSaveButtonVisibility();
   };
 
   window.closeProfileModal = function() {
@@ -669,20 +736,18 @@
       return;
     }
     list.innerHTML = addresses.map(a => `
-      <div class="address-card">
-        <h4 style="display:flex; align-items:center; justify-content:space-between;">
-           ${a.label ? `<span class="badge-default" style="background:var(--secondary); color:#000; margin-left:0; margin-right:10px;">${a.label.toUpperCase()}</span>` : ''}
-           <span style="flex:1">${a.city || 'Home'}</span>
-           ${a.is_default ? '<span class="badge-default">Default</span>' : ''}
-        </h4>
-        <p class="address-text">
-          ${a.line1}<br>
-          ${a.city}, ${a.state} ${a.zipcode}
-        </p>
-        <div style="display: flex; gap: 10px; margin-top: 10px;">
-          <button onclick="editAddress('${a.id}')" style="background:none; border:none; color:var(--primary); font-size:12px; cursor:pointer;"><i class="fas fa-edit"></i> Edit</button>
-          ${!a.is_default ? `<button onclick="setDefaultAddress('${a.id}')" style="background:none; border:none; color:var(--secondary); font-size:12px; cursor:pointer;">Set Default</button>` : ''}
-          <button onclick="deleteAddress('${a.id}')" style="background:none; border:none; color:#ef4444; font-size:12px; cursor:pointer;">Delete</button>
+      <div class="address-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 25px; border-radius: 20px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 12px;">
+           <span style="font-family:'Outfit'; font-weight:800; font-size:16px; color:var(--secondary); text-transform:uppercase;">${a.label || 'ADDRESS'}</span>
+           ${a.is_default ? '<span class="badge-default" style="margin-left:auto;">Default</span>' : ''}
+        </div>
+        <p style="font-size: 15px; color: var(--text-main); font-weight: 600; margin-bottom: 4px;">${a.line1}</p>
+        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">${a.city}, ${a.state} ${a.zipcode}</p>
+        
+        <div style="display: flex; gap: 15px; border-top: 1px solid var(--glass-border); pt: 15px; margin-top: 5px; padding-top: 12px;">
+          <button onclick="editAddress('${a.id}')" style="background:none; border:none; color:var(--primary); font-size:13px; font-weight:600; cursor:pointer;"><i class="fas fa-edit"></i> Edit</button>
+          ${!a.is_default ? `<button onclick="setDefaultAddress('${a.id}')" style="background:none; border:none; color:var(--secondary); font-size:13px; font-weight:600; cursor:pointer;">Set Default</button>` : ''}
+          <button onclick="deleteAddress('${a.id}')" style="background:none; border:none; color:#ef4444; font-size:13px; font-weight:600; cursor:pointer;">Delete</button>
         </div>
       </div>
     `).join('');
