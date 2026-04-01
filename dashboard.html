@@ -25,14 +25,16 @@
     body.light-theme {
       --text-main: #1a2e22;
       --text-muted: #4b6355;
-      --glass-bg: rgba(255, 255, 255, 0.6);
-      --glass-border: rgba(16, 185, 129, 0.2);
-      --bg-gradient: linear-gradient(-45deg, #ecfdf5, #d1fae5, #a7f3d0, #6ee7b7);
-      --bg-fallback: #ecfdf5;
-      --card-bg: rgba(255, 255, 255, 0.55);
-      --card-border: rgba(16, 185, 129, 0.15);
-      --nav-bg: rgba(236, 253, 245, 0.9);
-      --nav-text: #1a2e22;
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --glass-border: rgba(16, 185, 129, 0.3);
+      --bg-gradient: linear-gradient(-45deg, #f0fdf4, #dcfce7, #bbf7d0, #86efac);
+      --bg-fallback: #f0fdf4;
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --card-border: rgba(16, 185, 129, 0.2);
+      --nav-bg: rgba(240, 253, 244, 0.95);
+      --nav-text: #064e3b;
+      --input-bg: #ffffff;
+      --input-border: #d1d5db;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -135,7 +137,7 @@
     .btn-edit-profile {
       background: rgba(255,255,255,0.1);
       border: 1px solid var(--glass-border);
-      color: white;
+      color: var(--text-main);
       padding: 10px 20px;
       border-radius: 50px;
       font-size: 14px;
@@ -415,12 +417,18 @@
           </div>
           <div class="form-group">
             <label>Gender</label>
-            <select id="edit-gender">
-              <option value="">Select Gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
+            <select id="edit-gender" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-main);">
+              <option value="" style="background: var(--bg-fallback);">Select Gender</option>
+              <option value="male" style="background: var(--bg-fallback);">Male</option>
+              <option value="female" style="background: var(--bg-fallback);">Female</option>
+              <option value="other" style="background: var(--bg-fallback);">Other</option>
             </select>
+          </div>
+          
+          <div style="margin-top: 20px; text-align: center; grid-column: span 2;">
+            <p style="font-size: 14px; margin-bottom: 10px; opacity: 0.8;">Or upload your own photo:</p>
+            <input type="file" id="custom-avatar-input" style="display: none;" accept="image/*" onchange="handleCustomAvatar(this)">
+            <button onclick="document.getElementById('custom-avatar-input').click()" class="btn" style="padding: 8px 20px; border: 1px solid var(--primary); background: transparent; color: var(--primary); font-size: 13px;">📷 Upload Photo</button>
           </div>
         </div>
         
@@ -489,11 +497,13 @@
   }
 
   let user_name = '', user_email = '', user_phone = '', user_avatar = '';
+  let editingAddressId = null;
+
   const AVATAR_PRESETS = [
-    '/home/varun/.gemini/antigravity/brain/871faeb3-0fa8-4e04-b2ae-d1dda9247f1b/snappito_modern_avatar_1775003453487.png',
-    '/home/varun/.gemini/antigravity/brain/871faeb3-0fa8-4e04-b2ae-d1dda9247f1b/avatar_man_1_1775003654394.png',
-    '/home/varun/.gemini/antigravity/brain/871faeb3-0fa8-4e04-b2ae-d1dda9247f1b/avatar_woman_2_1775003668088.png',
-    '/home/varun/.gemini/antigravity/brain/871faeb3-0fa8-4e04-b2ae-d1dda9247f1b/avatar_abstract_1_1775003685364.png'
+    'assets/avatars/snappito_modern_avatar_1775003453487.png',
+    'assets/avatars/avatar_man_1_1775003654394.png',
+    'assets/avatars/avatar_woman_2_1775003668088.png',
+    'assets/avatars/avatar_abstract_1_1775003685364.png'
   ];
 
   async function loadProfile() {
@@ -564,6 +574,20 @@
     
     document.getElementById(`tab-${tab}`).style.display = 'block';
     document.getElementById(`tab-${tab}-btn`).classList.add('active');
+  };
+
+  window.handleCustomAvatar = function(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        user_avatar = e.target.result;
+        // Add to main display instantly
+        document.getElementById('main-avatar').src = user_avatar;
+        renderAvatarOptions();
+        showToast('Photo uploaded! Click Save to persist.', 'success');
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
   };
 
   window.saveProfileChanges = async function() {
@@ -655,13 +679,38 @@
           ${a.line1}<br>
           ${a.city}, ${a.state} ${a.zipcode}
         </p>
-        <div style="display: flex; gap: 10px;">
-          ${!a.is_default ? `<button onclick="setDefaultAddress('${a.id}')" style="background:none; border:none; color:var(--primary); font-size:12px; cursor:pointer;">Set Default</button>` : ''}
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button onclick="editAddress('${a.id}')" style="background:none; border:none; color:var(--primary); font-size:12px; cursor:pointer;"><i class="fas fa-edit"></i> Edit</button>
+          ${!a.is_default ? `<button onclick="setDefaultAddress('${a.id}')" style="background:none; border:none; color:var(--secondary); font-size:12px; cursor:pointer;">Set Default</button>` : ''}
           <button onclick="deleteAddress('${a.id}')" style="background:none; border:none; color:#ef4444; font-size:12px; cursor:pointer;">Delete</button>
         </div>
       </div>
     `).join('');
   }
+
+  window.editAddress = async function(id) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/user/address/${id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const addr = await res.json();
+        editingAddressId = id;
+        document.getElementById('new-addr-label').value = addr.label || '';
+        document.getElementById('new-addr-line').value = addr.line1 || '';
+        document.getElementById('new-addr-city').value = addr.city || '';
+        document.getElementById('new-addr-state').value = addr.state || '';
+        document.getElementById('new-addr-zip').value = addr.zipcode || '';
+        
+        const btn = document.getElementById('add-addr-btn');
+        btn.innerText = 'Update Address';
+        btn.style.background = 'var(--secondary)';
+        
+        // Scroll to form
+        document.querySelector('#tab-addresses .form-grid').parentElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    } catch(e) { showToast('Failed to load address', 'error'); }
+  };
 
   window.addNewAddress = async function() {
     const btn = document.getElementById('add-addr-btn');
@@ -680,21 +729,28 @@
       return;
     }
 
-    btn.innerText = 'Adding...';
+    btn.innerText = editingAddressId ? 'Updating...' : 'Adding...';
     try {
-      const res = await fetch(`${API_BASE_URL}/api/user/addresses`, {
-        method: 'POST',
+      const url = editingAddressId ? `${API_BASE_URL}/api/user/address/${editingAddressId}` : `${API_BASE_URL}/api/user/addresses`;
+      const method = editingAddressId ? 'PUT' : 'POST';
+      
+      const res = await fetch(url, {
+        method: method,
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
       if (res.ok) {
-        showToast('Address added!', 'success');
+        showToast(editingAddressId ? 'Address updated!' : 'Address added!', 'success');
         loadAddresses();
+        // Reset form
         ['new-addr-label', 'new-addr-line', 'new-addr-city', 'new-addr-state', 'new-addr-zip'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('pincode-status').innerText = '';
+        editingAddressId = null;
+        btn.innerText = '+ Add Address';
+        btn.style.background = 'var(--primary)';
       }
-    } catch (e) { showToast('Error adding address', 'error'); }
-    finally { btn.innerText = '+ Add Address'; }
+    } catch (e) { showToast('Error saving address', 'error'); }
+    finally { if (!editingAddressId) btn.innerText = '+ Add Address'; }
   };
 
   window.deleteAddress = async function(id) {
