@@ -649,8 +649,48 @@
       <div class="input-group">
         <label for="service">Select Service</label>
         <select id="service" name="Service" required onchange="calculatePrice()">
-          <option value="" disabled selected>— Loading Services... —</option>
-        </select>
+
+  <option value="">Select Service</option>
+
+  <optgroup label="Basic Cleaning">
+    <option>Sweeping & Mopping</option>
+    <option>Dusting</option>
+    <option>Kitchen Basic Clean</option>
+    <option>Bathroom Basic Clean</option>
+  </optgroup>
+
+  <optgroup label="Deep Cleaning">
+    <option>Full Home Deep Cleaning</option>
+    <option>Kitchen Deep Cleaning</option>
+    <option>Bathroom Deep Cleaning</option>
+  </optgroup>
+
+  <optgroup label="Upholstery Cleaning">
+    <option>Sofa Cleaning</option>
+    <option>Carpet Cleaning</option>
+    <option>Mattress Cleaning</option>
+    <option>Curtain Cleaning</option>
+  </optgroup>
+
+  <optgroup label="Kitchen & Bathroom Special">
+    <option>Chimney Cleaning</option>
+    <option>Sink Descaling</option>
+    <option>Toilet Stain Removal</option>
+  </optgroup>
+
+  <optgroup label="Move Services">
+    <option>Move-in Cleaning</option>
+    <option>Move-out Cleaning</option>
+  </optgroup>
+
+  <optgroup label="Special Services">
+    <option>Water Tank Cleaning</option>
+    <option>Window Glass Cleaning</option>
+    <option>Post Construction Cleaning</option>
+    <option>Solar Panel Cleaning</option>
+  </optgroup>
+
+</select>
         <div id="price-indicator" class="dynamic-price-box">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
           Estimated Cost: <strong id="price-val">-</strong>
