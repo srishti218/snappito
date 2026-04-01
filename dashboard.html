@@ -439,6 +439,15 @@
         <div style="margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.03); border: 1px dashed var(--glass-border); border-radius: 16px;">
           <h4 style="margin-bottom: 20px; font-family: 'Outfit';">Add New Address</h4>
           <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="form-group">
+              <label>Pincode / Zip Code</label>
+              <input type="text" id="new-addr-zip" placeholder="XXXXXX" oninput="fetchAddressFromPincode(this.value)">
+              <small id="pincode-status" style="display: block; margin-top: 5px; font-size: 11px; opacity: 0.7;"></small>
+            </div>
+            <div class="form-group">
+              <label>Address Label (e.g. Home, Office)</label>
+              <input type="text" id="new-addr-label" placeholder="Home / Mom / Friend">
+            </div>
             <div class="form-group" style="grid-column: span 2;">
               <label>Address Line</label>
               <input type="text" id="new-addr-line" placeholder="Street, Building, Apartment">
@@ -451,11 +460,7 @@
               <label>State</label>
               <input type="text" id="new-addr-state" placeholder="e.g. Maharashtra">
             </div>
-            <div class="form-group">
-              <label>Zip Code</label>
-              <input type="text" id="new-addr-zip" placeholder="XXXXXX">
-            </div>
-            <div class="form-group">
+            <div class="form-group" style="display: none;">
               <label>Country</label>
               <input type="text" id="new-addr-country" value="India">
             </div>
@@ -604,6 +609,35 @@
     } catch (e) {}
   }
 
+  window.fetchAddressFromPincode = async function(pincode) {
+    const status = document.getElementById('pincode-status');
+    const cityInput = document.getElementById('new-addr-city');
+    const stateInput = document.getElementById('new-addr-state');
+
+    if (pincode.length === 6) {
+      status.innerText = 'Searching...';
+      status.style.color = 'var(--secondary)';
+      try {
+        const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+        const data = await res.json();
+        if (data[0].Status === 'Success') {
+          const postOffice = data[0].PostOffice[0];
+          cityInput.value = postOffice.District;
+          stateInput.value = postOffice.State;
+          status.innerText = '✓ Multi-filled city & state';
+          status.style.color = 'var(--primary)';
+        } else {
+          status.innerText = 'Pincode not found';
+          status.style.color = '#ef4444';
+        }
+      } catch (e) {
+        status.innerText = 'Check auto-fill failed';
+      }
+    } else {
+      status.innerText = '';
+    }
+  };
+
   function renderAddresses(addresses) {
     const list = document.getElementById('address-list');
     if (!addresses || addresses.length === 0) {
@@ -613,7 +647,9 @@
     list.innerHTML = addresses.map(a => `
       <div class="address-card">
         <h4 style="display:flex; align-items:center; justify-content:space-between;">
-          ${a.city || 'Home'} ${a.is_default ? '<span class="badge-default">Default</span>' : ''}
+           ${a.label ? `<span class="badge-default" style="background:var(--secondary); color:#000; margin-left:0; margin-right:10px;">${a.label.toUpperCase()}</span>` : ''}
+           <span style="flex:1">${a.city || 'Home'}</span>
+           ${a.is_default ? '<span class="badge-default">Default</span>' : ''}
         </h4>
         <p class="address-text">
           ${a.line1}<br>
@@ -630,6 +666,7 @@
   window.addNewAddress = async function() {
     const btn = document.getElementById('add-addr-btn');
     const data = {
+      label: document.getElementById('new-addr-label').value,
       line1: document.getElementById('new-addr-line').value,
       city: document.getElementById('new-addr-city').value,
       state: document.getElementById('new-addr-state').value,
@@ -638,8 +675,8 @@
       is_default: false
     };
 
-    if (!data.line1 || !data.city) {
-      showToast('Please fill all address fields', 'error');
+    if (!data.line1 || !data.city || !data.zipcode) {
+      showToast('Please fill all required address fields', 'error');
       return;
     }
 
@@ -653,7 +690,8 @@
       if (res.ok) {
         showToast('Address added!', 'success');
         loadAddresses();
-        ['new-addr-line', 'new-addr-city', 'new-addr-state', 'new-addr-zip'].forEach(id => document.getElementById(id).value = '');
+        ['new-addr-label', 'new-addr-line', 'new-addr-city', 'new-addr-state', 'new-addr-zip'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('pincode-status').innerText = '';
       }
     } catch (e) { showToast('Error adding address', 'error'); }
     finally { btn.innerText = '+ Add Address'; }

@@ -657,10 +657,40 @@
         </div>
       </div>
 
-      <div class="input-group" id="address-group">
-        <label for="address">Full Address</label>
-        <textarea id="address" name="Address" placeholder="Apt, Street, City..." required></textarea>
-      </div>
+      <div class="form-group">
+          <label>Service Address</label>
+          <select id="booking-address" onchange="handleAddressChange(this.value)">
+            <option value="">Select an address</option>
+            <option value="new">+ Add New Address</option>
+          </select>
+        </div>
+
+        <!-- Inline Smart Address Form -->
+        <div id="inline-address-container" style="display: none; margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.03); border: 1px dashed var(--glass-border); border-radius: 12px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="form-group">
+              <label style="font-size: 11px;">Pincode</label>
+              <input type="text" id="inline-addr-zip" placeholder="XXXXXX" oninput="fetchAddressFromPincodeInline(this.value)" style="padding: 8px; font-size: 13px;">
+              <small id="inline-pincode-status" style="display: block; font-size: 10px; opacity: 0.7;"></small>
+            </div>
+            <div class="form-group">
+              <label style="font-size: 11px;">Label (e.g. Home)</label>
+              <input type="text" id="inline-addr-label" placeholder="Home/Work" style="padding: 8px; font-size: 13px;">
+            </div>
+            <div class="form-group" style="grid-column: span 2;">
+              <label style="font-size: 11px;">Address Line</label>
+              <input type="text" id="inline-addr-line" placeholder="Street/Building" style="padding: 8px; font-size: 13px;">
+            </div>
+            <div class="form-group">
+              <label style="font-size: 11px;">City</label>
+              <input type="text" id="inline-addr-city" style="padding: 8px; font-size: 13px;">
+            </div>
+            <div class="form-group">
+              <label style="font-size: 11px;">State</label>
+              <input type="text" id="inline-addr-state" style="padding: 8px; font-size: 13px;">
+            </div>
+          </div>
+        </div>
 
       <button type="submit" class="btn submit-btn" id="submit-btn-form">Confirm Booking</button>
     </form>
@@ -754,43 +784,112 @@
       submitBtn.style.color = '#ffffff';
 
       const token = localStorage.getItem('token');
-      if (token) {
-        e.preventDefault();
-        const bookingData = {
-          serviceId: document.getElementById('service').value,
-          address: document.getElementById('address').value,
-          instructions: 'Booked via Website UI'
-        };
-
-        try {
-          const res = await fetch(`${API_BASE_URL}/api/bookings`, {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}` 
-            },
-            body: JSON.stringify(bookingData)
-          });
-          
-          if(res.ok || res.status === 201) {
-            submitBtn.textContent = 'Booked Successfully!';
-            submitBtn.style.background = 'var(--primary)';
-            showToast('Service Booked Successfully!', 'success');
-            setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
-          } else {
-            submitBtn.textContent = 'Failed. Trying Email...';
-            showToast('Backend offline. Falling back to email.', 'error');
-            setTimeout(() => { form.submit(); }, 1500);
-          }
-        } catch(error) {
-           showToast('Backend unreachable. Falling back to email.', 'error');
-           form.submit();
+      
+      const addrSelect = document.getElementById('booking-address');
+      let finalAddress = '';
+      
+      if(addrSelect.value === 'new') {
+        const label = document.getElementById('inline-addr-label').value;
+        const line1 = document.getElementById('inline-addr-line').value;
+        const city = document.getElementById('inline-addr-city').value;
+        const state = document.getElementById('inline-addr-state').value;
+        const zip = document.getElementById('inline-addr-zip').value;
+        
+        if(!line1 || !city || !zip) {
+          showToast('Please complete the new address fields', 'error');
+          return;
         }
+        
+        // Construct string for booking
+        finalAddress = `${label ? '['+label.toUpperCase()+'] ' : ''}${line1}, ${city} - ${zip}`;
+        
+        // Save to backend if logged in
+        if(token) {
+          try {
+            await fetch(`${API_BASE_URL}/api/user/addresses`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ label, line1, city, state, zipcode: zip, country: 'India' })
+            });
+          } catch(e) { console.error('Address save failed', e); }
+        }
+      } else if (addrSelect.value) {
+        // Get the full text from the selected option (including the address)
+        finalAddress = addrSelect.options[addrSelect.selectedIndex].text;
+      } else {
+        showToast('Please select or add an address', 'error');
+        return;
+      }
+
+      const bookingData = {
+        service_id: document.getElementById('service').value,
+        scheduled_time: document.getElementById('date').value + 'T' + document.getElementById('time').value + ':00',
+        address: finalAddress,
+        instructions: 'Booked via Website UI'
+      };
+
+      if (!token) {
+         showToast('Please login to book services.', 'warning');
+         setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+         return;
+      }
+
+      submitBtn.textContent = 'Processing...';
+      submitBtn.disabled = true;
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/service/book`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify(bookingData)
+        });
+        
+        if(res.ok) {
+          showToast('Booking Confirmed!', 'success');
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+        } else {
+          showToast('Booking failed. Please try again.', 'error');
+          submitBtn.textContent = 'Confirm Booking';
+          submitBtn.disabled = false;
+        }
+      } catch(error) {
+        showToast('Connection error.', 'error');
+        submitBtn.textContent = 'Confirm Booking';
+        submitBtn.disabled = false;
       }
     }
   });
 
-  // 7. Dynamic Auth Routing & Profile Auto-Fill
+  // Smart Address Logic
+  window.handleAddressChange = function(val) {
+    const container = document.getElementById('inline-address-container');
+    container.style.display = (val === 'new') ? 'block' : 'none';
+  };
+
+  window.fetchAddressFromPincodeInline = async function(pincode) {
+    const status = document.getElementById('inline-pincode-status');
+    const cityInput = document.getElementById('inline-addr-city');
+    const stateInput = document.getElementById('inline-addr-state');
+
+    if (pincode.length === 6) {
+      status.innerText = 'Searching...';
+      try {
+        const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+        const data = await res.json();
+        if (data[0].Status === 'Success') {
+          const postOffice = data[0].PostOffice[0];
+          cityInput.value = postOffice.District;
+          stateInput.value = postOffice.State;
+          status.innerText = '✓ Success';
+          status.style.color = 'var(--primary)';
+        } else {
+          status.innerText = 'Not found';
+          status.style.color = '#ef4444';
+        }
+      } catch (e) { status.innerText = 'Error'; }
+    } else { status.innerText = ''; }
+  };
+
   async function checkAuthState() {
     const token = localStorage.getItem('token');
     if (token) {
@@ -799,7 +898,6 @@
       actionBtn.textContent = 'Dashboard';
       actionBtn.href = 'dashboard.html';
       actionBtn.style.background = 'rgba(255,255,255,0.2)';
-      actionBtn.style.color = 'white';
       
       try {
         const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
@@ -807,34 +905,32 @@
         });
         if(response.ok) {
           const user = await response.json();
-          const nameInput = document.getElementById('name');
-          const phoneInput = document.getElementById('phone');
+          if(user.full_name) document.getElementById('name').value = user.full_name;
+          if(user.phone) document.getElementById('phone').value = user.phone;
           
-          if(user.full_name) nameInput.value = user.full_name;
-          if(user.phone_number) phoneInput.value = user.phone_number;
-          
-          try {
-            const addrRes = await fetch(`${API_BASE_URL}/api/user/addresses`, {
-              headers: { 'Authorization': `Bearer ${token}` }
+          // Load Addresses into Booking Dropdown
+          const addrRes = await fetch(`${API_BASE_URL}/api/user/addresses`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if(addrRes.ok) {
+            const addresses = await addrRes.json();
+            const select = document.getElementById('booking-address');
+            // Keep "Select an address" and "+ Add New Address"
+            const options = addresses.map(addr => {
+              const label = addr.label ? `[${addr.label.toUpperCase()}] ` : '';
+              const text = `${label}${addr.line1}, ${addr.city} (${addr.zipcode})`;
+              return `<option value="${addr.id}" ${addr.is_default ? 'selected' : ''}>${text}</option>`;
             });
-            if(addrRes.ok) {
-              const addresses = await addrRes.json();
-              if(addresses && addresses.length > 0) {
-                const addressGroup = document.getElementById('address-group');
-                let selectHTML = `<select id="address" name="Address" required>
-                  <option value="" disabled selected>— Select your saved address —</option>`;
-                
-                addresses.forEach(addr => {
-                  let text = `${addr.line1}`;
-                  if(addr.city) text += `, ${addr.city}`;
-                  if(addr.zipcode) text += ` ${addr.zipcode}`;
-                  selectHTML += `<option value="${text}">${text}${addr.is_default ? ' (Default)' : ''}</option>`;
-                });
-                selectHTML += `</select>`;
-                addressGroup.innerHTML = `<label for="address">Select Address</label>` + selectHTML;
-              }
+            
+            select.innerHTML = '<option value="">Select an address</option>' + 
+                               options.join('') + 
+                               '<option value="new">+ Add New Address</option>';
+            
+            // If default address is selected, ensure inline form is hidden
+            if(select.value !== 'new' && select.value !== '') {
+               handleAddressChange(select.value);
             }
-          } catch(e) {}
+          }
         }
       } catch(e) {}
     }
