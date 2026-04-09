@@ -152,7 +152,7 @@
       if (response.ok) {
         localStorage.setItem('token', data.token);
         showToast('Account created successfully! Redirecting...', 'success');
-        setTimeout(() => window.location.href = 'dashboard.html', 1500);
+        setTimeout(() => window.location.href = '/dashboard', 1500);
       } else {
         showToast(data.error || 'Signup failed. Email might already exist.', 'error');
         btn.textContent = 'Sign Up';

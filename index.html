@@ -870,7 +870,7 @@
 
       if (!token) {
          showToast('Please login to book services.', 'warning');
-         setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+         setTimeout(() => { window.location.href = '/login'; }, 1000);
          return;
       }
 
@@ -886,7 +886,7 @@
         
         if(res.ok) {
           showToast('Booking Confirmed!', 'success');
-          setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+          setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
         } else {
           showToast('Booking failed. Please try again.', 'error');
           submitBtn.textContent = 'Confirm Booking';
@@ -936,7 +936,7 @@
       document.getElementById('nav-login').style.display = 'none';
       const actionBtn = document.getElementById('nav-action-btn');
       actionBtn.textContent = 'Dashboard';
-      actionBtn.href = 'dashboard.html';
+      actionBtn.href = '/dashboard';
       actionBtn.style.background = 'rgba(255, 255, 255, 0.15)';
       actionBtn.style.color = '#ffffff';
       actionBtn.style.fontWeight = '800';

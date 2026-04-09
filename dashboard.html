@@ -361,7 +361,7 @@
 <nav>
   <div style="display:flex; align-items:center; gap:30px;">
     <a href="/" class="logo">Snappito<span>⚡</span></a>
-    <a href="index.html#services" style="color: var(--nav-text); text-decoration: none; font-size: 14px; font-weight: 500; opacity: 0.8; transition: opacity 0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.8">
+    <a href="/#services" style="color: var(--nav-text); text-decoration: none; font-size: 14px; font-weight: 500; opacity: 0.8; transition: opacity 0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.8">
       <i class="fas fa-search" style="margin-right: 5px;"></i> Explore Services
     </a>
   </div>
@@ -523,7 +523,7 @@
 <script>
   const token = localStorage.getItem('token');
   if (!token) {
-    window.location.href = 'login.html'; // redirect if not logged in
+    window.location.href = '/login'; // redirect if not logged in
   }
 
   let user_name = '', user_email = '', user_phone = '', user_avatar = '', user_gender = '';
@@ -1112,7 +1112,7 @@
 
   function logout() {
     localStorage.removeItem('token');
-    window.location.href = 'index.html';
+    window.location.href = '/';
   }
 </script>
 <script src="config.js"></script>
