@@ -1069,5 +1069,35 @@
   });
 </script>
 
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const p = window.location.pathname.substring(1);
+    if (p && document.getElementById(p)) {
+      setTimeout(() => document.getElementById(p).scrollIntoView(), 100);
+    }
+  });
+  document.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', function(e) {
+      let href = this.getAttribute('href');
+      let id = null;
+      if (href && (href.startsWith('#') || href.startsWith('/#'))) {
+        id = href.replace('/#', '').replace('#', '');
+      } else if (href && href.startsWith('/') && href.length > 1) {
+        id = href.substring(1);
+      }
+      
+      if (id) {
+        let el = document.getElementById(id);
+        if (el) {
+          e.preventDefault();
+          el.scrollIntoView({ behavior: 'smooth' });
+          history.pushState(null, null, '/' + id);
+        }
+      }
+    });
+  });
+</script>
 </body>
+
 </html>
