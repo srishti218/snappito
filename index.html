@@ -1008,7 +1008,16 @@
           return;
         }
 
-        services.forEach(s => {
+        if (!query) {
+          services.forEach(s => {
+            select.innerHTML += `<option value="${s.id}" data-price="${s.base_price}">${s.name} - ₹${s.base_price}</option>`;
+          });
+        }
+
+        let displayLimit = window.showAllServices ? services.length : 5;
+        let servicesToShow = query ? services : services.slice(0, displayLimit);
+
+        servicesToShow.forEach(s => {
            grid.innerHTML += `
             <div class="card" onclick="selectService('${s.id}', ${s.base_price})">
               <div class="card-img" style="background-image: url('${s.image_url || 'https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&q=80&w=400'}')"></div>
@@ -1018,9 +1027,17 @@
                 <div class="price">From ₹${s.base_price}</div>
               </div>
             </div>`;
-            
-           if (!query) select.innerHTML += `<option value="${s.id}" data-price="${s.base_price}">${s.name} - ₹${s.base_price}</option>`;
         });
+
+        if (!query && !window.showAllServices && services.length > 5) {
+           grid.innerHTML += `
+            <div class="card" onclick="window.showAllServices=true; loadServices();" style="display: flex; align-items: center; justify-content: center; background: transparent; border: 2px dashed var(--primary); cursor: pointer; box-shadow: none; min-height: 250px;">
+              <div style="text-align: center;">
+                <h3 style="color: var(--primary); font-size: 24px;">+${services.length - 5} More</h3>
+                <p style="color: var(--text-muted); margin-top: 10px;">View All Services</p>
+              </div>
+            </div>`;
+        }
       }
     } catch(e) {
       console.log('Error loading services:', e);
