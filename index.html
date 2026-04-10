@@ -992,51 +992,65 @@
         const grid = document.getElementById('services-grid');
         const select = document.getElementById('service');
         
-        let services = [];
-        if (query) {
-          services = data;
-        } else {
-          data.categories.forEach(cat => services.push(...cat.services));
-          allServices = services;
+        if (!query) {
+          select.innerHTML = '<option value="" disabled selected>— Choose specialized cleaning —</option>';
+          data.categories.forEach(cat => {
+            cat.services.forEach(s => {
+              select.innerHTML += `<option value="${s.id}" data-price="${s.base_price}">${s.name} - ₹${s.base_price}</option>`;
+            });
+          });
         }
         
         grid.innerHTML = '';
-        if (!query) select.innerHTML = '<option value="" disabled selected>— Choose specialized cleaning —</option>';
         
-        if (services.length === 0) {
-          grid.innerHTML = '<p style="text-align: center; color: var(--text-muted); grid-column: 1 / -1;">No services found matching your search.</p>';
-          return;
-        }
+        window.toggleCategory = window.toggleCategory || function(id) {
+          const el = document.getElementById('cat-' + id);
+          if (el.style.display === 'none') {
+            el.style.display = 'grid';
+          } else {
+            el.style.display = 'none';
+          }
+        };
 
-        if (!query) {
-          services.forEach(s => {
-            select.innerHTML += `<option value="${s.id}" data-price="${s.base_price}">${s.name} - ₹${s.base_price}</option>`;
+        if (query) {
+          if (data.length === 0) {
+            grid.innerHTML = '<p style="text-align: center; color: var(--text-muted); grid-column: 1 / -1;">No services found matching your search.</p>';
+            return;
+          }
+          data.forEach(s => {
+             grid.innerHTML += `
+              <div class="card" onclick="selectService('${s.id}', ${s.base_price})">
+                <div class="card-img" style="background-image: url('${s.image_url || 'https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&q=80&w=400'}')"></div>
+                <div class="card-content">
+                  <h3>${s.name}</h3>
+                  <p>${s.description || 'Professional home service'}</p>
+                  <div class="price">From ₹${s.base_price}</div>
+                </div>
+              </div>`;
           });
-        }
-
-        let displayLimit = window.showAllServices ? services.length : 5;
-        let servicesToShow = query ? services : services.slice(0, displayLimit);
-
-        servicesToShow.forEach(s => {
-           grid.innerHTML += `
-            <div class="card" onclick="selectService('${s.id}', ${s.base_price})">
-              <div class="card-img" style="background-image: url('${s.image_url || 'https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&q=80&w=400'}')"></div>
-              <div class="card-content">
-                <h3>${s.name}</h3>
-                <p>${s.description || 'Professional home service'}</p>
-                <div class="price">From ₹${s.base_price}</div>
+        } else {
+          data.categories.forEach(cat => {
+            let catHtml = `
+              <div class="category-header" onclick="toggleCategory('${cat.id}')" style="grid-column: 1 / -1; background: var(--bg-card); padding: 22px 30px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.01)'" onmouseout="this.style.transform='scale(1)'">
+                <h3 style="margin: 0; color: var(--text); font-size: 22px;">${cat.name}</h3>
+                <span style="color: var(--primary); font-weight: bold; font-size: 16px;">▼ Expand</span>
               </div>
-            </div>`;
-        });
-
-        if (!query && !window.showAllServices && services.length > 5) {
-           grid.innerHTML += `
-            <div class="card" onclick="window.showAllServices=true; loadServices();" style="display: flex; align-items: center; justify-content: center; background: transparent; border: 2px dashed var(--primary); cursor: pointer; box-shadow: none; min-height: 250px;">
-              <div style="text-align: center;">
-                <h3 style="color: var(--primary); font-size: 24px;">+${services.length - 5} More</h3>
-                <p style="color: var(--text-muted); margin-top: 10px;">View All Services</p>
-              </div>
-            </div>`;
+              <div class="category-content grid" id="cat-${cat.id}" style="display: none; grid-column: 1 / -1; width: 100%; margin-top: -15px;">
+            `;
+            cat.services.forEach(s => {
+              catHtml += `
+                <div class="card" onclick="selectService('${s.id}', ${s.base_price})" style="margin: 0;">
+                  <div class="card-img" style="background-image: url('${s.image_url || 'https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&q=80&w=400'}')"></div>
+                  <div class="card-content">
+                    <h3>${s.name}</h3>
+                    <p>${s.description || 'Professional home service'}</p>
+                    <div class="price">From ₹${s.base_price}</div>
+                  </div>
+                </div>`;
+            });
+            catHtml += `</div>`;
+            grid.innerHTML += catHtml;
+          });
         }
       }
     } catch(e) {
