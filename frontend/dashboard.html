@@ -457,8 +457,53 @@
           </div>
           <div class="form-group">
             <label>Phone Number</label>
-            <input type="text" id="edit-phone" placeholder="+91 0000000000">
+            <div class="phone-input-container">
+              <span class="phone-prefix">+91</span>
+              <input type="text" id="edit-phone" placeholder="0000000000" maxlength="10">
+            </div>
           </div>
+          <style>
+            .phone-input-container {
+              display: flex;
+              align-items: center;
+              background: rgba(255,255,255,0.05);
+              border: 1px solid var(--glass-border);
+              border-radius: 10px;
+              overflow: hidden;
+              transition: all 0.3s;
+            }
+            .phone-input-container:focus-within {
+              border-color: var(--primary);
+              background: rgba(255,255,255,0.1);
+              box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+            }
+            .phone-prefix {
+              padding: 0 15px;
+              color: var(--secondary);
+              font-weight: 800;
+              border-right: 1px solid var(--glass-border);
+              background: rgba(255,255,255,0.03);
+              height: 46px;
+              display: flex;
+              align-items: center;
+              user-select: none;
+            }
+            .phone-input-container input {
+              border: none !important;
+              background: transparent !important;
+              box-shadow: none !important;
+              padding: 12px 15px !important;
+              margin: 0 !important;
+            }
+            body.light-theme .phone-input-container { background: #ffffff; border-color: #d1d5db; }
+            body.light-theme .phone-prefix { border-right-color: #d1d5db; background: #f9fafb; }
+            body.light-theme .phone-input-container input { color: #1a2e22; }
+          </style>
+          <script>
+            document.getElementById('edit-phone').addEventListener('input', function(e) {
+              this.value = this.value.replace(/\D/g, '').substring(0, 10);
+            });
+          </script>
           <div class="form-group">
             <label>Gender</label>
             <select id="edit-gender">
@@ -554,19 +599,25 @@
         const data = await response.json();
         user_name = data.full_name;
         user_email = data.email;
-        user_phone = data.phone || '';
+        // Formatter function: Extract last 10 digits for the input field
+        const getDigits = (p) => {
+          if (!p) return '';
+          return p.replace(/^\+91\s?/, '').replace(/\D/g, '').substring(0, 10);
+        };
+
+        user_phone = getDigits(data.phone);
         user_avatar = data.profile_image || AVATAR_PRESETS[0];
 
-        // Update display
+        // Update display (keep prefix for display text)
         document.getElementById('display-name').innerText = `Welcome, ${data.full_name.split(' ')[0]}!`;
         document.getElementById('display-email').innerHTML = `<i class="far fa-envelope"></i> ${data.email}`;
-        document.getElementById('display-phone').innerHTML = `<i class="fas fa-phone-alt"></i> ${data.phone || 'N/A'}`;
+        document.getElementById('display-phone').innerHTML = `<i class="fas fa-phone-alt"></i> +91 ${user_phone || 'N/A'}`;
         document.getElementById('main-avatar').src = user_avatar;
         
-        // Pre-fill form
+        // Pre-fill form (digits only)
         document.getElementById('edit-name').value = data.full_name;
         document.getElementById('edit-email').value = data.email;
-        document.getElementById('edit-phone').value = data.phone || '';
+        document.getElementById('edit-phone').value = user_phone;
         document.getElementById('edit-gender').value = data.gender || '';
         
         // Update previews
@@ -580,7 +631,7 @@
         initial_state = {
           full_name: data.full_name,
           email: data.email,
-          phone: data.phone || '',
+          phone: user_phone,
           gender: data.gender || '',
           profile_image: user_avatar
         };
@@ -686,7 +737,7 @@
     const data = {
       full_name: document.getElementById('edit-name').value,
       email: document.getElementById('edit-email').value,
-      phone: document.getElementById('edit-phone').value,
+      phone: '+91 ' + document.getElementById('edit-phone').value,
       gender: document.getElementById('edit-gender').value,
       profile_image: user_avatar
     };

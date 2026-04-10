@@ -643,8 +643,52 @@
 
       <div class="input-group">
         <label for="phone">Phone Number</label>
-        <input type="tel" id="phone" name="Phone" placeholder="Mobile number" required pattern="[0-9]{10,12}" title="Please enter a valid 10 to 12 digit phone number">
+        <div class="phone-input-container">
+          <span class="phone-prefix">+91</span>
+          <input type="tel" id="phone" name="Phone" placeholder="Mobile number" required pattern="[0-9]{10}" title="Please enter a 10-digit mobile number">
+        </div>
       </div>
+      <style>
+        .phone-input-container {
+          display: flex;
+          align-items: center;
+          background: rgba(0, 0, 0, 0.2);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 12px;
+          overflow: hidden;
+          transition: all 0.3s ease;
+        }
+        .phone-input-container:focus-within {
+          border-color: var(--primary);
+          background: rgba(0, 0, 0, 0.3);
+          box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+        .phone-prefix {
+          padding: 0 15px;
+          color: var(--secondary);
+          font-weight: 800;
+          font-size: 16px;
+          border-right: 1px solid rgba(255,255,255,0.1);
+          user-select: none;
+          background: rgba(255,255,255,0.03);
+          height: 52px;
+          display: flex;
+          align-items: center;
+        }
+        .phone-input-container input {
+          border: none !important;
+          background: transparent !important;
+          box-shadow: none !important;
+          padding: 16px 15px !important;
+          margin: 0 !important;
+        }
+      </style>
+      <script>
+        document.getElementById('phone').addEventListener('input', function(e) {
+          // Only allow digits and limit to 10
+          this.value = this.value.replace(/\D/g, '').substring(0, 10);
+        });
+      </script>
 
       <div class="input-group">
         <label for="service">Select Service</label>
@@ -817,6 +861,7 @@
   const submitBtn = document.getElementById('submit-btn-form');
 
   form.addEventListener('submit', async function(e) {
+    e.preventDefault();
     if(form.checkValidity()) {
       submitBtn.textContent = 'Processing Booking...';
       submitBtn.disabled = true;
@@ -950,7 +995,7 @@
         if(response.ok) {
           const user = await response.json();
           if(user.full_name) document.getElementById('name').value = user.full_name;
-          if(user.phone) document.getElementById('phone').value = user.phone;
+          if(user.phone) document.getElementById('phone').value = user.phone.replace(/^\+91\s?/, '');
           
           // Load Addresses into Booking Dropdown
           const addrRes = await fetch(`${API_BASE_URL}/api/user/addresses`, {

@@ -111,8 +111,50 @@
     </div>
     <div class="input-group">
       <label>Phone Number</label>
-      <input type="tel" id="phone" required>
+      <div class="phone-input-container">
+        <span class="phone-prefix">+91</span>
+        <input type="tel" id="phone" placeholder="0000000000" required pattern="[0-9]{10}" title="Please enter your 10-digit mobile number">
+      </div>
     </div>
+    <style>
+      .phone-input-container {
+        display: flex;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.3s;
+      }
+      .phone-input-container:focus-within {
+        border-color: var(--primary);
+        background: rgba(0, 0, 0, 0.3);
+      }
+      .phone-prefix {
+        padding: 0 12px;
+        color: var(--secondary);
+        font-weight: 800;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        font-size: 15px;
+        user-select: none;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        background: rgba(255,255,255,0.03);
+      }
+      .phone-input-container input {
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        flex: 1;
+        padding: 12px !important;
+      }
+    </style>
+    <script>
+      document.getElementById('phone').addEventListener('input', function(e) {
+        this.value = this.value.replace(/\D/g, '').substring(0, 10);
+      });
+    </script>
     <div class="input-group">
       <label>Password</label>
       <input type="password" id="password" required minlength="6">
@@ -143,7 +185,7 @@
         body: JSON.stringify({
           full_name: document.getElementById('fullname').value,
           email: document.getElementById('email').value,
-          phone: document.getElementById('phone').value,
+          phone: '+91 ' + document.getElementById('phone').value,
           password: document.getElementById('password').value
         })
       });
