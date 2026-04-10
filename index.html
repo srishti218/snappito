@@ -1029,13 +1029,13 @@
               </div>`;
           });
         } else {
-          data.categories.forEach(cat => {
+          data.categories.forEach((cat, index) => {
             let catHtml = `
-              <div class="category-header" onclick="toggleCategory('${cat.id}')" style="grid-column: 1 / -1; background: var(--bg-card); padding: 22px 30px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.01)'" onmouseout="this.style.transform='scale(1)'">
+              <div class="category-header" onclick="toggleCategory('${index}')" style="grid-column: 1 / -1; background: var(--bg-card); padding: 22px 30px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.01)'" onmouseout="this.style.transform='scale(1)'">
                 <h3 style="margin: 0; color: var(--text); font-size: 22px;">${cat.name}</h3>
                 <span style="color: var(--primary); font-weight: bold; font-size: 16px;">▼ Expand</span>
               </div>
-              <div class="category-content grid" id="cat-${cat.id}" style="display: none; grid-column: 1 / -1; width: 100%; margin-top: -15px;">
+              <div class="category-content grid" id="cat-${index}" style="display: none; grid-column: 1 / -1; width: 100%; margin-top: -15px;">
             `;
             cat.services.forEach(s => {
               catHtml += `
