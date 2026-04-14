@@ -16,22 +16,22 @@
     :root {
       --primary: #10b981;
       --secondary: #f59e0b;
+      --text-main: #111827;
+      --text-muted: #4b5563;
+      --glass-bg: #ffffff;
+      --glass-border: #e5e7eb;
+      --bg-color: #F9FAFB;
+      --glass-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+      --radius-lg: 16px;
+    }
+
+    /* Keep dark theme as optional class */
+    body.dark-theme {
       --text-main: #ffffff;
       --text-muted: rgba(255, 255, 255, 0.8);
       --glass-bg: rgba(255, 255, 255, 0.1);
       --glass-border: rgba(255, 255, 255, 0.2);
-      --bg-gradient: linear-gradient(-45deg, #022c22, #064e3b, #047857, #10b981);
-      --bg-fallback: #022c22;
-      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-    }
-
-    body.light-theme {
-      --text-main: #1a2e22;
-      --text-muted: #4b6355;
-      --glass-bg: rgba(255, 255, 255, 0.6);
-      --glass-border: rgba(16, 185, 129, 0.2);
-      --bg-gradient: linear-gradient(-45deg, #ecfdf5, #d1fae5, #a7f3d0, #6ee7b7);
-      --bg-fallback: #ecfdf5;
+      --bg-color: #022c22;
     }
 
     * {
@@ -44,21 +44,11 @@
     body {
       font-family: 'Inter', sans-serif;
       color: var(--text-main);
-      background-color: var(--bg-fallback);
-      background-image: var(--bg-gradient);
-      background-size: 400% 400%;
-      animation: gradientBG 15s ease infinite;
-      will-change: background-position;
+      background-color: var(--bg-color);
       min-height: 100vh;
       overflow-x: hidden;
       margin: 0;
       transition: background 0.3s, color 0.3s;
-    }
-
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -144,22 +134,23 @@
     header.hero {
       text-align: center;
       padding: 160px 20px 80px;
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
     }
 
     .hero h1 {
-      font-size: clamp(40px, 8vw, 72px);
+      font-size: clamp(40px, 8vw, 64px);
       line-height: 1.1;
-      margin-bottom: 20px;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      margin-bottom: 24px;
+      color: #064e3b;
+      font-weight: 800;
     }
 
     .hero p {
-      font-size: clamp(18px, 3vw, 24px);
-      color: var(--text-muted);
+      font-size: clamp(18px, 3vw, 22px);
+      color: #374151;
       margin-bottom: 40px;
-      font-weight: 300;
+      font-weight: 400;
     }
 
     .container {
@@ -204,10 +195,11 @@
     
     .step-card {
       text-align: center;
-      padding: 20px;
-      background: rgba(0,0,0,0.15);
-      border-radius: 15px;
-      border: 1px solid rgba(255,255,255,0.05);
+      padding: 30px 20px;
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
     }
     
     .step-card .icon {
@@ -317,30 +309,29 @@
     }
 
     .card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
       overflow: hidden;
       cursor: pointer;
-      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease, border-color 0.3s ease;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
       display: flex;
       flex-direction: column;
     }
 
     .card:hover {
-      transform: translateY(-8px) scale(1.02);
+      transform: translateY(-4px);
       border-color: var(--primary);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.08);
     }
 
     .card-img {
       width: 100%;
-      height: 180px;
+      height: 200px;
       background-size: cover;
       background-position: center;
+      border-bottom: 1px solid #f3f4f6;
     }
 
     .card-content {
@@ -367,6 +358,192 @@
     .card-content .price {
       border-top: 1px solid var(--glass-border);
       margin-top: 15px;
+    }
+
+    /* Premium Services Section Redesign */
+    .premium-services {
+      position: relative;
+      width: 100%;
+      border-radius: 40px;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+      margin: 60px 0;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 50px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .premium-services::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%),
+                  linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%);
+      z-index: 1;
+    }
+
+    .premium-services > * {
+      position: relative;
+      z-index: 2;
+    }
+
+    .ps-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .ps-titles h4 {
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .ps-titles h2 {
+      font-size: clamp(32px, 5vw, 48px);
+      max-width: 500px;
+      line-height: 1.2;
+      color: white;
+      font-weight: 800;
+    }
+
+    .ps-view-all {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      transition: opacity 0.3s;
+    }
+
+    .ps-view-all:hover {
+      opacity: 0.8;
+    }
+
+    .ps-view-all .arrow-circle {
+      width: 32px;
+      height: 32px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+    }
+
+    .ps-cards-row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 20px;
+      margin-top: 40px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      scrollbar-width: none; /* Firefox */
+    }
+
+    .ps-cards-row::-webkit-scrollbar {
+      display: none; /* Chrome/Safari */
+    }
+
+    .ps-card {
+      position: relative;
+      height: 220px;
+      border-radius: 20px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background-size: cover;
+      background-position: center;
+      min-width: 160px;
+    }
+
+    .ps-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    }
+
+    .ps-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+    }
+
+    .ps-card-content {
+      position: absolute;
+      width: 100%;
+      bottom: 0;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      z-index: 3;
+    }
+
+    .ps-card-content h3 {
+      font-size: 14px;
+      font-weight: 800;
+      color: white;
+      line-height: 1.2;
+      max-width: 80%;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .ps-card .arrow-btn {
+      width: 24px;
+      height: 24px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #000;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: transform 0.3s;
+    }
+
+    .ps-card:hover .arrow-btn {
+      transform: translateX(3px) scale(1.1);
+    }
+
+    @media (max-width: 1024px) {
+      .ps-cards-row {
+        grid-template-columns: repeat(6, 200px);
+      }
+      .premium-services {
+        padding: 30px;
+        min-height: 500px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .premium-services {
+        margin: 40px -10px;
+        border-radius: 20px;
+        padding: 20px;
+      }
+      .ps-header {
+        flex-direction: row;
+        align-items: center;
+      }
+      .ps-titles h2 {
+        font-size: 24px;
+      }
     }
 
     /* Booking Section */
@@ -543,17 +720,89 @@
     @media (max-width: 768px) {
       nav { padding: 15px 20px; }
       nav.scrolled { padding: 15px 20px; }
-      .nav-links { display: none; } /* hide links on mobile for simplicity, or keep a hamburger menu */
+      .nav-links { display: none; }
       .logo { font-size: 24px; }
       .btn { padding: 10px 20px; font-size: 14px; }
-      
-      .booking-wrapper {
-        padding: 30px 20px;
-        border-radius: 20px;
-      }
-      
       .category h2 { font-size: 28px; }
       .info-section { padding: 30px 20px; }
+    }
+
+    /* ─── Catalog Directory Accordion ──────────────────────────── */
+    .catalog-category {
+      margin-bottom: 12px;
+    }
+
+    .catalog-cat-header {
+      width: 100%; background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px; padding: 18px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; gap: 16px;
+      transition: background 0.25s, transform 0.2s;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+    .catalog-cat-header:hover {
+      background: rgba(255,255,255,0.13);
+      transform: translateY(-1px);
+    }
+
+    .cch-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 19px; font-weight: 700;
+      color: var(--text-main); text-align: left;
+    }
+    .cch-meta { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .cch-count {
+      font-size: 12px; color: var(--text-muted);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--glass-border);
+      padding: 3px 10px; border-radius: 50px;
+    }
+    .cch-chevron {
+      font-size: 13px; font-weight: 700;
+      color: var(--primary);
+    }
+
+    .catalog-service-list {
+      padding: 10px 8px 4px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+
+    .catalog-service-link {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 13px 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--text-main);
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      gap: 12px;
+    }
+    .catalog-service-link:hover {
+      background: rgba(16,185,129,0.12);
+      border-color: rgba(16,185,129,0.3);
+      transform: translateX(4px);
+    }
+
+    .csl-name { font-size: 15px; font-weight: 500; flex: 1; }
+    .csl-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .csl-price {
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px; font-weight: 700;
+      color: var(--secondary);
+    }
+    .csl-arrow {
+      font-size: 16px; color: var(--primary);
+      transition: transform 0.2s;
+    }
+    .catalog-service-link:hover .csl-arrow { transform: translateX(3px); }
+
+    @media (max-width: 600px) {
+      .catalog-cat-header { padding: 15px 18px; }
+      .cch-name { font-size: 17px; }
+      .catalog-service-link { padding: 11px 16px; }
     }
   </style>
 </head>
@@ -569,7 +818,7 @@
     <a href="/login" class="nav-link" id="nav-login" style="color: var(--secondary);">Login / Sign Up</a>
     <button id="theme-toggle" class="btn" style="background: var(--glass-bg); padding: 8px 12px; font-size: 18px;">🌙</button>
   </div>
-  <a href="#booking" class="btn" id="nav-action-btn">Book Now</a>
+  <a href="#full-services" class="btn" id="nav-action-btn">View Services</a>
 </nav>
 
 <header class="hero">
@@ -597,8 +846,8 @@
       </div>
       <div class="step-card">
         <div class="icon">📅</div>
-        <h4>2. Book Instantly</h4>
-        <p style="font-size: 14px; color: var(--text-muted); margin-top: 10px;">Fill out the form below. Get a price estimate instantly.</p>
+        <h4>2. Review &amp; Book</h4>
+        <p style="font-size: 14px; color: var(--text-muted); margin-top: 10px;">See exactly what's included, then book in seconds.</p>
       </div>
       <div class="step-card">
         <div class="icon">✨</div>
@@ -608,10 +857,70 @@
     </div>
   </section>
 
-  <section id="services" class="container" style="padding: 80px 20px; scroll-margin-top: 90px;">
+  <!-- Premium Services Section -->
+  <section id="services" class="premium-services" style="background-image: url('assets/premium/hero_bg.png');">
+    <div class="ps-header">
+      <div class="ps-titles">
+        <h4>Services</h4>
+        <h2>What Can Your House Help Do?</h2>
+      </div>
+      <a href="#full-services" class="ps-view-all" id="view-all-btn">
+        View All 
+        <div class="arrow-circle">➔</div>
+      </a>
+    </div>
+
+    <div class="ps-cards-row">
+      <!-- Dishwashing -->
+      <a class="ps-card" href="/service-detail?service=utensils" style="background-image: url('assets/premium/dishwashing.png'); text-decoration:none;">
+        <div class="ps-card-content">
+          <h3>Dishwashing</h3>
+          <div class="arrow-btn">➔</div>
+        </div>
+      </a>
+      <!-- Kitchen Cleaning -->
+      <a class="ps-card" href="/service-detail?service=kitchen-cleaning" style="background-image: url('assets/premium/kitchen.png'); text-decoration:none;">
+        <div class="ps-card-content">
+          <h3>Kitchen Cleaning</h3>
+          <div class="arrow-btn">➔</div>
+        </div>
+      </a>
+      <!-- Fan Cleaning -->
+      <a class="ps-card" href="/service-detail?service=fan-cleaning" style="background-image: url('assets/premium/fan.png'); text-decoration:none;">
+        <div class="ps-card-content">
+          <h3>Fan Cleaning</h3>
+          <div class="arrow-btn">➔</div>
+        </div>
+      </a>
+      <!-- Window Cleaning -->
+      <a class="ps-card" href="/service-detail?service=windows-cleaning" style="background-image: url('assets/premium/window.png'); text-decoration:none;">
+        <div class="ps-card-content">
+          <h3>Window Cleaning</h3>
+          <div class="arrow-btn">➔</div>
+        </div>
+      </a>
+      <!-- Laundry Help -->
+      <a class="ps-card" href="/service-detail?service=laundry" style="background-image: url('assets/premium/laundry.png'); text-decoration:none;">
+        <div class="ps-card-content">
+          <h3>Laundry Help</h3>
+          <div class="arrow-btn">➔</div>
+        </div>
+      </a>
+      <!-- Bathroom Cleaning -->
+      <a class="ps-card" href="/service-detail?service=bathroom-cleaning" style="background-image: url('assets/premium/bathroom.png'); text-decoration:none;">
+        <div class="ps-card-content">
+          <h3>Bathroom Cleaning</h3>
+          <div class="arrow-btn">➔</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Full Services Catalog (Hidden by default or accessible via View All) -->
+  <section id="full-services" style="padding: 80px 20px; scroll-margin-top: 90px;">
     <div style="text-align: center; margin-bottom: 20px;">
-      <h2 style="font-family: 'Outfit'; font-size: 36px;">Our <span style="color: var(--secondary)">Services</span></h2>
-      <p style="color: var(--text-muted); max-width: 600px; margin: 10px auto;">Choose from our carefully curated list of professional home solutions. Click any service to begin booking.</p>
+      <h2 style="font-family: 'Outfit'; font-size: 36px;">Our <span style="color: var(--secondary)">Catalog</span></h2>
+      <p style="color: var(--text-muted); max-width: 600px; margin: 10px auto;">Browse our complete list of specialized home solutions.</p>
     </div>
     <div style="max-width: 500px; margin: 0 auto 40px; position: relative;">
       <input type="text" id="service-search" placeholder="Search for a service..."
@@ -619,167 +928,56 @@
       <span style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted);">🔍</span>
     </div>
     <div class="grid" id="services-grid">
-      <p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center;">Loading services...</p>
+      <p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center;">Loading all services...</p>
     </div>
   </section>
 
 </main>
 
-<!-- Booking Form -->
-<section id="booking" class="scroll-anim">
-  <div class="booking-wrapper">
-    <h2>Schedule a Visit</h2>
-    <p class="subtitle">Fill out the form below and our team will get back to you instantly.</p>
-
-    <form action="https://formsubmit.co/snappito04@gmail.com" method="POST" id="main-form">
-      <input type="hidden" name="_captcha" value="false">
-      <input type="hidden" name="_subject" value="New Snappito Booking">
-      <input type="hidden" name="_next" value="">
-
-      <div class="input-group">
-        <label for="name">Full Name</label>
-        <input type="text" id="name" name="Name" placeholder="e.g. John Doe" required>
-      </div>
-
-      <div class="input-group">
-        <label for="phone">Phone Number</label>
-        <div class="phone-input-container">
-          <span class="phone-prefix">+91</span>
-          <input type="tel" id="phone" name="Phone" placeholder="Mobile number" required pattern="[0-9]{10}" title="Please enter a 10-digit mobile number">
-        </div>
-      </div>
-      <style>
-        .phone-input-container {
-          display: flex;
-          align-items: center;
-          background: rgba(0, 0, 0, 0.2);
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 12px;
-          overflow: hidden;
-          transition: all 0.3s ease;
-        }
-        .phone-input-container:focus-within {
-          border-color: var(--primary);
-          background: rgba(0, 0, 0, 0.3);
-          box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-        }
-        .phone-prefix {
-          padding: 0 15px;
-          color: var(--secondary);
-          font-weight: 800;
-          font-size: 16px;
-          border-right: 1px solid rgba(255,255,255,0.1);
-          user-select: none;
-          background: rgba(255,255,255,0.03);
-          height: 52px;
-          display: flex;
-          align-items: center;
-        }
-        .phone-input-container input {
-          border: none !important;
-          background: transparent !important;
-          box-shadow: none !important;
-          padding: 16px 15px !important;
-          margin: 0 !important;
-        }
-      </style>
-      <script>
-        document.getElementById('phone').addEventListener('input', function(e) {
-          // Only allow digits and limit to 10
-          this.value = this.value.replace(/\D/g, '').substring(0, 10);
-        });
-      </script>
-
-      <div class="input-group">
-        <label for="service">Select Service</label>
-        <select id="service" name="Service" required onchange="calculatePrice()">
-
-  <option value="">Select Service</option>
-
-  <optgroup label="Basic Cleaning">
-    <option>Sweeping & Mopping</option>
-    <option>Dusting</option>
-    <option>Kitchen Basic Clean</option>
-    <option>Bathroom Basic Clean</option>
-  </optgroup>
-
-  <optgroup label="Deep Cleaning">
-    <option>Full Home Deep Cleaning</option>
-    <option>Kitchen Deep Cleaning</option>
-    <option>Bathroom Deep Cleaning</option>
-  </optgroup>
-
-  <optgroup label="Upholstery Cleaning">
-    <option>Sofa Cleaning</option>
-    <option>Carpet Cleaning</option>
-    <option>Mattress Cleaning</option>
-    <option>Curtain Cleaning</option>
-  </optgroup>
-
-  <optgroup label="Kitchen & Bathroom Special">
-    <option>Chimney Cleaning</option>
-    <option>Sink Descaling</option>
-    <option>Toilet Stain Removal</option>
-  </optgroup>
-
-  <optgroup label="Move Services">
-    <option>Move-in Cleaning</option>
-    <option>Move-out Cleaning</option>
-  </optgroup>
-
-  <optgroup label="Special Services">
-    <option>Water Tank Cleaning</option>
-    <option>Window Glass Cleaning</option>
-    <option>Post Construction Cleaning</option>
-    <option>Solar Panel Cleaning</option>
-  </optgroup>
-
-</select>
-        <div id="price-indicator" class="dynamic-price-box">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-          Estimated Cost: <strong id="price-val">-</strong>
-        </div>
-      </div>
-
-      <div class="form-group">
-          <label>Service Address</label>
-          <select id="booking-address" onchange="handleAddressChange(this.value)">
-            <option value="">Select an address</option>
-            <option value="new">+ Add New Address</option>
-          </select>
-        </div>
-
-        <!-- Inline Smart Address Form -->
-        <div id="inline-address-container" style="display: none; margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.03); border: 1px dashed var(--glass-border); border-radius: 12px;">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div class="form-group">
-              <label style="font-size: 11px;">Pincode</label>
-              <input type="text" id="inline-addr-zip" placeholder="XXXXXX" oninput="fetchAddressFromPincodeInline(this.value)" style="padding: 8px; font-size: 13px;">
-              <small id="inline-pincode-status" style="display: block; font-size: 10px; opacity: 0.7;"></small>
-            </div>
-            <div class="form-group">
-              <label style="font-size: 11px;">Label (e.g. Home)</label>
-              <input type="text" id="inline-addr-label" placeholder="Home/Work" style="padding: 8px; font-size: 13px;">
-            </div>
-            <div class="form-group" style="grid-column: span 2;">
-              <label style="font-size: 11px;">Address Line</label>
-              <input type="text" id="inline-addr-line" placeholder="Street/Building" style="padding: 8px; font-size: 13px;">
-            </div>
-            <div class="form-group">
-              <label style="font-size: 11px;">City</label>
-              <input type="text" id="inline-addr-city" style="padding: 8px; font-size: 13px;">
-            </div>
-            <div class="form-group">
-              <label style="font-size: 11px;">State</label>
-              <input type="text" id="inline-addr-state" style="padding: 8px; font-size: 13px;">
-            </div>
-          </div>
-        </div>
-
-      <button type="submit" class="btn submit-btn" id="submit-btn-form">Confirm Booking</button>
-    </form>
+<!-- ─── Can't find what you're looking for? CTA ──────────────── -->
+<section id="help-cta" class="scroll-anim" style="padding: 80px 20px;">
+  <div style="max-width: 640px; margin: 0 auto; background: rgba(255,255,255,0.08); backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,0.16); border-radius: 28px; padding: 48px 40px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.25);">
+    <div style="font-size: 52px; margin-bottom: 18px;">🤔</div>
+    <h2 style="font-size: 30px; margin-bottom: 12px;">Can't find what you're<br>looking for?</h2>
+    <p style="color: var(--text-muted); font-size: 16px; line-height: 1.7; max-width: 440px; margin: 0 auto 32px;">Our catalog is growing. If you need a custom service, have a special request, or just want to chat — reach out to us directly.</p>
+    <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+      <a href="tel:8747858018" style="display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px; background: var(--secondary); color: #111827; font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 800; border-radius: 50px; text-decoration: none; box-shadow: 0 4px 20px rgba(245,158,11,0.35); transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        📞 Call Us
+      </a>
+      <a href="https://wa.me/918747858018" target="_blank" style="display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px; background: rgba(255,255,255,0.1); color: white; font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700; border-radius: 50px; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.10)'">
+        💬 WhatsApp
+      </a>
+    </div>
   </div>
 </section>
+
+<!-- Placeholder to prevent broken script references -->
+<script>
+  // Booking form removed — booking is initiated from /service-detail only.
+  // Auth state check for nav button still applies.
+  async function checkAuthState() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const loginLink = document.getElementById('nav-login');
+      if(loginLink) loginLink.style.display = 'none';
+      const actionBtn = document.getElementById('nav-action-btn');
+      if(actionBtn) {
+        actionBtn.textContent = 'Dashboard';
+        actionBtn.href = '/dashboard';
+        actionBtn.style.background = 'rgba(255, 255, 255, 0.15)';
+        actionBtn.style.color = '#ffffff';
+        actionBtn.style.fontWeight = '800';
+        actionBtn.style.border = '1px solid rgba(255, 255, 255, 0.3)';
+        actionBtn.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
+      }
+    }
+  }
+  checkAuthState();
+</script>
+
+<!-- Booking form removed. All booking flows go through /service-detail → /booking -->
+
+<!-- (orphaned form HTML removed) -->
 
 <footer id="contact">
   <div class="contact-bubble" onclick="window.location.href='tel:8747858018'">
@@ -792,7 +990,7 @@
 <script src="config.js"></script>
 <script src="toast.js"></script>
 <script>
-  // 1. Sticky Navbar
+  // ─── 1. Sticky Navbar ──────────────────────────────────────────
   const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => {
     if (window.scrollY > 50) {
@@ -802,7 +1000,7 @@
     }
   });
 
-  // 2. Scroll Animations (Intersection Observer)
+  // ─── 2. Scroll Animations ────────────────────────────────────
   const observerOptions = {
     threshold: 0.1,
     rootMargin: "0px 0px -50px 0px"
@@ -821,357 +1019,141 @@
     observer.observe(el);
   });
 
-  // 3. Dynamic Price Mapping logic
-  const serviceSelect = document.getElementById('service');
-  const priceIndicator = document.getElementById('price-indicator');
-  const priceVal = document.getElementById('price-val');
-
-  function updatePriceIndicator() {
-    const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
-    if(selectedOption && selectedOption.hasAttribute('data-price')) {
-      const price = selectedOption.getAttribute('data-price');
-      priceVal.textContent = price;
-      priceIndicator.style.display = 'flex';
-    } else {
-      priceIndicator.style.display = 'none';
-    }
-  }
-
-  serviceSelect.addEventListener('change', updatePriceIndicator);
-
-  // 4. Set Next URL dynamically so FormSubmit redirects back smoothly
-  const nextInput = document.querySelector('input[name="_next"]');
-  nextInput.value = window.location.href;
-
-  // 5. Make ALL Service Cards Clickable to Autofill and AutoScroll
-  function selectService(serviceId, price) {
-    serviceSelect.value = serviceId;
-    updatePriceIndicator();
-    document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
-    serviceSelect.style.borderColor = 'var(--secondary)';
-    serviceSelect.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.2)';
-    setTimeout(() => {
-      serviceSelect.style.borderColor = 'rgba(255,255,255,0.1)';
-      serviceSelect.style.boxShadow = 'none';
-    }, 1500);
-  }
-
-  // 6. Form Submission Interactivity & Backend API Integration
-  const form = document.getElementById('main-form');
-  const submitBtn = document.getElementById('submit-btn-form');
-
-  form.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    if(form.checkValidity()) {
-      submitBtn.textContent = 'Processing Booking...';
-      submitBtn.disabled = true;
-      submitBtn.style.background = '#6b7280'; 
-      submitBtn.style.color = '#ffffff';
-
-      const token = localStorage.getItem('token');
-      
-      const addrSelect = document.getElementById('booking-address');
-      let finalAddress = '';
-      
-      if(addrSelect.value === 'new') {
-        const label = document.getElementById('inline-addr-label').value;
-        const line1 = document.getElementById('inline-addr-line').value;
-        const city = document.getElementById('inline-addr-city').value;
-        const state = document.getElementById('inline-addr-state').value;
-        const zip = document.getElementById('inline-addr-zip').value;
-        
-        if(!line1 || !city || !zip) {
-          showToast('Please complete the new address fields', 'error');
-          return;
-        }
-        
-        // Construct string for booking
-        finalAddress = `${label ? '['+label.toUpperCase()+'] ' : ''}${line1}, ${city} - ${zip}`;
-        
-        // Save to backend if logged in
-        if(token) {
-          try {
-            await fetch(`${API_BASE_URL}/api/user/addresses`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ label, line1, city, state, zipcode: zip, country: 'India' })
-            });
-          } catch(e) { console.error('Address save failed', e); }
-        }
-      } else if (addrSelect.value) {
-        // Get the full text from the selected option (including the address)
-        finalAddress = addrSelect.options[addrSelect.selectedIndex].text;
-      } else {
-        showToast('Please select or add an address', 'error');
-        return;
-      }
-
-      const bookingData = {
-        service_id: document.getElementById('service').value,
-        scheduled_time: document.getElementById('date').value + 'T' + document.getElementById('time').value + ':00',
-        address: finalAddress,
-        instructions: 'Booked via Website UI'
-      };
-
-      if (!token) {
-         showToast('Please login to book services.', 'warning');
-         setTimeout(() => { window.location.href = '/login'; }, 1000);
-         return;
-      }
-
-      submitBtn.textContent = 'Processing...';
-      submitBtn.disabled = true;
-
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/service/book`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify(bookingData)
-        });
-        
-        if(res.ok) {
-          showToast('Booking Confirmed!', 'success');
-          setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
-        } else {
-          showToast('Booking failed. Please try again.', 'error');
-          submitBtn.textContent = 'Confirm Booking';
-          submitBtn.disabled = false;
-        }
-      } catch(error) {
-        showToast('Connection error.', 'error');
-        submitBtn.textContent = 'Confirm Booking';
-        submitBtn.disabled = false;
-      }
-    }
-  });
-
-  // Smart Address Logic
-  window.handleAddressChange = function(val) {
-    const container = document.getElementById('inline-address-container');
-    container.style.display = (val === 'new') ? 'block' : 'none';
-  };
-
-  window.fetchAddressFromPincodeInline = async function(pincode) {
-    const status = document.getElementById('inline-pincode-status');
-    const cityInput = document.getElementById('inline-addr-city');
-    const stateInput = document.getElementById('inline-addr-state');
-
-    if (pincode.length === 6) {
-      status.innerText = 'Searching...';
-      try {
-        const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
-        const data = await res.json();
-        if (data[0].Status === 'Success') {
-          const postOffice = data[0].PostOffice[0];
-          cityInput.value = postOffice.District;
-          stateInput.value = postOffice.State;
-          status.innerText = '✓ Success';
-          status.style.color = 'var(--primary)';
-        } else {
-          status.innerText = 'Not found';
-          status.style.color = '#ef4444';
-        }
-      } catch (e) { status.innerText = 'Error'; }
-    } else { status.innerText = ''; }
-  };
-
+  // ─── 3. Auth State (nav button) ───────────────────────────────
   async function checkAuthState() {
     const token = localStorage.getItem('token');
+    const loginLink = document.getElementById('nav-login');
+    const actionBtn  = document.getElementById('nav-action-btn');
     if (token) {
-      document.getElementById('nav-login').style.display = 'none';
-      const actionBtn = document.getElementById('nav-action-btn');
-      actionBtn.textContent = 'Dashboard';
-      actionBtn.href = '/dashboard';
-      actionBtn.style.background = 'rgba(255, 255, 255, 0.15)';
-      actionBtn.style.color = '#ffffff';
-      actionBtn.style.fontWeight = '800';
-      actionBtn.style.border = '1px solid rgba(255, 255, 255, 0.3)';
-      actionBtn.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
-      
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if(response.ok) {
-          const user = await response.json();
-          if(user.full_name) document.getElementById('name').value = user.full_name;
-          if(user.phone) document.getElementById('phone').value = user.phone.replace(/^\+91\s?/, '');
-          
-          // Load Addresses into Booking Dropdown
-          const addrRes = await fetch(`${API_BASE_URL}/api/user/addresses`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-          if(addrRes.ok) {
-            const addresses = await addrRes.json();
-            const select = document.getElementById('booking-address');
-            // Keep "Select an address" and "+ Add New Address"
-            const options = addresses.map(addr => {
-              const label = addr.label ? `[${addr.label.toUpperCase()}] ` : '';
-              const text = `${label}${addr.line1}, ${addr.city} (${addr.zipcode})`;
-              return `<option value="${addr.id}" ${addr.is_default ? 'selected' : ''}>${text}</option>`;
-            });
-            
-            select.innerHTML = '<option value="">Select an address</option>' + 
-                               options.join('') + 
-                               '<option value="new">+ Add New Address</option>';
-            
-            // If default address is selected, ensure inline form is hidden
-            if(select.value !== 'new' && select.value !== '') {
-               handleAddressChange(select.value);
-            }
-          }
-        }
-      } catch(e) {}
+      if (loginLink) loginLink.style.display = 'none';
+      if (actionBtn) {
+        actionBtn.textContent = 'Dashboard';
+        actionBtn.href = '/dashboard';
+        actionBtn.style.background = 'rgba(255,255,255,0.15)';
+        actionBtn.style.color = '#ffffff';
+        actionBtn.style.fontWeight = '800';
+        actionBtn.style.border = '1px solid rgba(255,255,255,0.3)';
+        actionBtn.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+      }
     }
   }
   checkAuthState();
-  
-  // 8. Dynamic Service Loading
-  let allServices = [];
-  async function loadServices(query = '') {
-    try {
-      const url = query ? `${API_BASE_URL}/api/search?q=${encodeURIComponent(query)}` : `${API_BASE_URL}/api/services`;
-      const res = await fetch(url);
-      if(res.ok) {
-        const data = await res.json();
-        const grid = document.getElementById('services-grid');
-        const select = document.getElementById('service');
-        
-        if (!query) {
-          select.innerHTML = '<option value="" disabled selected>— Choose specialized cleaning —</option>';
-          data.categories.forEach(cat => {
-            cat.services.forEach(s => {
-              select.innerHTML += `<option value="${s.id}" data-price="${s.base_price}">${s.name} - ₹${s.base_price}</option>`;
-            });
-          });
-        }
-        
-        grid.innerHTML = '';
-        
-        window.toggleCategory = window.toggleCategory || function(id) {
-          const el = document.getElementById('cat-' + id);
-          if (el.style.display === 'none') {
-            el.style.display = 'grid';
-          } else {
-            el.style.display = 'none';
-          }
-        };
 
-        if (query) {
-          if (data.length === 0) {
-            grid.innerHTML = '<p style="text-align: center; color: var(--text-muted); grid-column: 1 / -1;">No services found matching your search.</p>';
-            return;
-          }
-          data.forEach(s => {
-             grid.innerHTML += `
-              <div class="card" onclick="selectService('${s.id}', ${s.base_price})">
-                <div class="card-img" style="background-image: url('${s.image_url || 'https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&q=80&w=400'}')"></div>
-                <div class="card-content">
-                  <h3>${s.name}</h3>
-                  <p>${s.description || 'Professional home service'}</p>
-                  <div class="price">From ₹${s.base_price}</div>
-                </div>
-              </div>`;
-          });
-        } else {
-          data.categories.forEach((cat, index) => {
-            let catHtml = `
-              <div class="category-header" onclick="toggleCategory('${index}')" style="grid-column: 1 / -1; background: var(--bg-card); padding: 22px 30px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.01)'" onmouseout="this.style.transform='scale(1)'">
-                <h3 style="margin: 0; color: var(--text); font-size: 22px;">${cat.name}</h3>
-                <span style="color: var(--primary); font-weight: bold; font-size: 16px;">▼ Expand</span>
-              </div>
-              <div class="category-content grid" id="cat-${index}" style="display: none; grid-column: 1 / -1; width: 100%; margin-top: -15px;">
-            `;
-            cat.services.forEach(s => {
-              catHtml += `
-                <div class="card" onclick="selectService('${s.id}', ${s.base_price})" style="margin: 0;">
-                  <div class="card-img" style="background-image: url('${s.image_url || 'https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&q=80&w=400'}')"></div>
-                  <div class="card-content">
-                    <h3>${s.name}</h3>
-                    <p>${s.description || 'Professional home service'}</p>
-                    <div class="price">From ₹${s.base_price}</div>
-                  </div>
-                </div>`;
-            });
-            catHtml += `</div>`;
-            grid.innerHTML += catHtml;
-          });
+  // ─── 4. Service Catalog (directory links — no booking here) ───
+  // Converts a service name to a URL-friendly slug
+  function toSlug(name) {
+    return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
+
+  // Default fallback image for services without one
+  const FALLBACK_IMG = 'https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&q=80&w=400';
+
+  // Expand / collapse category accordion
+  window.toggleCategory = function(id) {
+    const el  = document.getElementById('cat-' + id);
+    const btn = document.getElementById('cat-btn-' + id);
+    const open = el.style.display !== 'none';
+    el.style.display  = open ? 'none' : 'block';
+    if (btn) btn.textContent = open ? '▼ Expand' : '▲ Collapse';
+  };
+
+  async function loadServices(query = '') {
+    const grid = document.getElementById('services-grid');
+    const url  = query
+      ? `${API_BASE_URL}/api/search?q=${encodeURIComponent(query)}`
+      : `${API_BASE_URL}/api/services`;
+
+    try {
+      const res  = await fetch(url);
+      if (!res.ok) throw new Error('Network error');
+      const data = await res.json();
+      grid.innerHTML = '';
+
+      // ── Search results: flat card grid linking to /service-detail
+      if (query) {
+        const services = Array.isArray(data) ? data : (data.services || []);
+        if (services.length === 0) {
+          grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);grid-column:1/-1">No services found. <a href="tel:8747858018" style="color:var(--secondary)">Call us</a> for custom requests.</p>';
+          return;
         }
+        services.forEach(s => {
+          const slug = toSlug(s.name);
+          grid.innerHTML += `
+            <a class="card" href="/service-detail?service=${slug}" style="text-decoration:none;">
+              <div class="card-img" style="background-image:url('${s.image_url || FALLBACK_IMG}')"></div>
+              <div class="card-content">
+                <h3>${s.name}</h3>
+                <p>${s.description || 'Professional home service'}</p>
+                <div class="price" style="display:flex;align-items:center;justify-content:space-between;">
+                  <span>From &#8377;${s.base_price}</span>
+                  <span style="font-size:13px;color:var(--secondary);font-weight:700;">View Details →</span>
+                </div>
+              </div>
+            </a>`;
+        });
+        return;
       }
+
+      // ── Category accordion: each service name is a link
+      const categories = data.categories || [];
+      if (categories.length === 0) {
+        grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);grid-column:1/-1">No services available right now.</p>';
+        return;
+      }
+
+      categories.forEach((cat, index) => {
+        const listItems = cat.services.map(s => {
+          const slug = toSlug(s.name);
+          return `
+            <a class="catalog-service-link" href="/service-detail?service=${slug}">
+              <span class="csl-name">${s.name}</span>
+              <span class="csl-right">
+                <span class="csl-price">&#8377;${s.base_price}</span>
+                <span class="csl-arrow">→</span>
+              </span>
+            </a>`;
+        }).join('');
+
+        grid.innerHTML += `
+          <div class="catalog-category" style="grid-column:1/-1;">
+            <button class="catalog-cat-header" onclick="toggleCategory('${index}')" aria-expanded="false">
+              <span class="cch-name">${cat.name}</span>
+              <span class="cch-meta">
+                <span class="cch-count">${cat.services.length} services</span>
+                <span class="cch-chevron" id="cat-btn-${index}">▼ Expand</span>
+              </span>
+            </button>
+            <div class="catalog-service-list" id="cat-${index}" style="display:none;">
+              ${listItems}
+            </div>
+          </div>`;
+      });
+
     } catch(e) {
-      console.log('Error loading services:', e);
-      document.getElementById('services-grid').innerHTML = '<p style="text-align: center; color: var(--text-muted); grid-column: 1 / -1;">We are performing maintenance. Please call us to book.</p>';
+      console.error('loadServices error:', e);
+      grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);grid-column:1/-1;">We are performing maintenance. Please <a href="tel:8747858018" style="color:var(--secondary);">call us</a> to book.</p>';
     }
   }
   loadServices();
 
-  // Search Debounce
+  // Search debounce
   let searchTimeout;
   document.getElementById('service-search').addEventListener('input', function(e) {
     clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-      loadServices(e.target.value);
-    }, 300);
+    searchTimeout = setTimeout(() => loadServices(e.target.value.trim()), 300);
   });
 
-  // 9. Theme Toggle
+  // ─── 5. Theme Toggle ──────────────────────────────────────────
   const themeToggle = document.getElementById('theme-toggle');
-  const body = document.body;
-  
   if (localStorage.getItem('theme') === 'light') {
-    body.classList.add('light-theme');
+    document.body.classList.add('light-theme');
     themeToggle.textContent = '☀️';
   }
-
   themeToggle.addEventListener('click', () => {
-    body.classList.toggle('light-theme');
-    const isLight = body.classList.contains('light-theme');
+    document.body.classList.toggle('light-theme');
+    const isLight = document.body.classList.contains('light-theme');
     themeToggle.textContent = isLight ? '☀️' : '🌙';
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
-  });
-
-  // 10. Real-time Form Validation
-  document.querySelectorAll('#main-form input, #main-form textarea').forEach(input => {
-    input.addEventListener('input', function() {
-      if(this.type === 'email' || this.id.toLowerCase().includes('email')) {
-        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value);
-        this.style.borderColor = isValid ? 'var(--primary)' : '#ef4444';
-      } else if (this.value.trim().length > 2) {
-        this.style.borderColor = 'var(--primary)';
-      } else {
-        this.style.borderColor = 'rgba(255,255,255,0.1)';
-      }
-    });
-  });
-</script>
-
-
-<script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const p = window.location.pathname.substring(1);
-    if (p && document.getElementById(p)) {
-      setTimeout(() => document.getElementById(p).scrollIntoView(), 100);
-    }
-  });
-  document.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', function(e) {
-      let href = this.getAttribute('href');
-      let id = null;
-      if (href && (href.startsWith('#') || href.startsWith('/#'))) {
-        id = href.replace('/#', '').replace('#', '');
-      } else if (href && href.startsWith('/') && href.length > 1) {
-        id = href.substring(1);
-      }
-      
-      if (id) {
-        let el = document.getElementById(id);
-        if (el) {
-          e.preventDefault();
-          el.scrollIntoView({ behavior: 'smooth' });
-          history.pushState(null, null, '/' + id);
-        }
-      }
-    });
   });
 </script>
 </body>

@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Details – Snappito</title>
+  <meta name="description" content="View exactly what's included and excluded in your chosen Snappito home service before you book.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="toast.css">
+
+  <style>
+    /* ─── Design Tokens ──────────────────────────────────────────── */
+    :root {
+      --primary:        #10b981;
+      --primary-hover:  #059669;
+      --secondary:      #f59e0b;
+      --danger:         #ef4444;
+      --text-main:      #111827;
+      --text-muted:     #4b5563;
+      --bg-color:       #F9FAFB;
+      --card-bg:        #ffffff;
+      --border-color:   #e5e7eb;
+      --shadow-sm:      0 1px 2px 0 rgba(0,0,0,0.05);
+      --shadow-md:      0 4px 6px -1px rgba(0,0,0,0.1);
+      --shadow-lg:      0 10px 15px -3px rgba(0,0,0,0.1);
+      --radius-lg:      12px;
+      --radius-xl:      20px;
+      --content-max:    1100px;
+    }
+
+    /* ─── Reset ──────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+      background: var(--bg-color);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    h1,h2,h3,h4,h5,h6 { font-family: 'Outfit', sans-serif; color: #064e3b; }
+
+    /* ─── Nav ────────────────────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; width: 100%; z-index: 100;
+      padding: 16px 24px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--primary);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .nav-container {
+      width: 100%; max-width: var(--content-max);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px; font-weight: 800;
+      text-decoration: none; color: white;
+    }
+    .nav-logo span { color: var(--secondary); }
+
+    .nav-home-link {
+        color: white; text-decoration: none; font-weight: 600; font-size: 15px;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .nav-home-link:hover { opacity: 0.8; }
+
+    /* ─── Page Shell ─────────────────────────────────────────────── */
+    .page {
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: 32px 16px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    @media (min-width: 1024px) {
+      .page {
+        grid-template-columns: 1fr 380px;
+        align-items: start;
+      }
+    }
+
+    /* ─── Service Hero (Product View) ───────────────────────────── */
+    .hero-view {
+      grid-column: 1 / -1;
+      margin-bottom: 8px;
+    }
+
+    .hero-title-area { margin-bottom: 24px; }
+    .hero-title { font-size: clamp(32px, 5vw, 48px); font-weight: 800; line-height: 1.1; margin-bottom: 12px; }
+
+    .hero-img-container {
+      width: 100%; height: clamp(300px, 50vh, 500px);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      background: #eee;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
+    }
+    .hero-img-container img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ─── Floating Action Card ───────────────────────────────────── */
+    .action-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 100px;
+      z-index: 10;
+    }
+
+    .ac-price-row {
+      display: flex; align-items: baseline; gap: 8px;
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .ac-price { font-size: 32px; font-weight: 800; color: #111827; }
+    .ac-label { font-size: 14px; color: var(--text-muted); }
+
+    .ac-feature {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 16px;
+      color: #374151; font-weight: 500;
+    }
+    .ac-feature svg { color: var(--primary); }
+
+    /* ─── Content Blocks ────────────────────────────────────────── */
+    .details-area { display: flex; flex-direction: column; gap: 32px; }
+
+    .content-card {
+      background: #ffffff;
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .cc-title {
+      font-size: 20px; font-weight: 700;
+      margin-bottom: 24px;
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .list-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      margin-bottom: 16px;
+      font-size: 16px; line-height: 1.6;
+      color: #4b5563;
+    }
+    .list-item:last-child { margin-bottom: 0; }
+    .list-item .icon { flex-shrink: 0; margin-top: 2px; }
+
+    /* ─── Desktop Logic Overrides ───────────────────────────────── */
+    .sticky-cta { display: none !important; } /* Replaced by action card */
+
+    /* ─── Section Blocks ─────────────────────────────────────────── */
+    .section-block {
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 22px 20px;
+      box-shadow: var(--glass-shadow);
+      margin-bottom: 14px;
+      animation: slideUp 0.45s ease both;
+    }
+    .section-block:nth-child(2) { animation-delay: 0.07s; }
+    .section-block:nth-child(3) { animation-delay: 0.14s; }
+    .section-block:nth-child(4) { animation-delay: 0.21s; }
+
+    .section-label {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 1.2px; text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-label::after {
+      content: ''; flex: 1;
+      height: 1px; background: var(--glass-border);
+    }
+
+    /* ─── Includes List ──────────────────────────────────────────── */
+    .includes-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+    .includes-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 14.5px; line-height: 1.5;
+      color: var(--text-main);
+      padding: 10px 14px;
+      background: var(--primary-dim);
+      border: 1px solid rgba(16,185,129,0.2);
+      border-radius: 12px;
+      transition: background 0.2s;
+    }
+    .includes-list li:hover { background: rgba(16,185,129,0.22); }
+
+    .check-icon {
+      flex-shrink: 0;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 1px;
+    }
+    .check-icon svg { width: 11px; height: 11px; }
+
+    /* ─── Excludes Accordion ─────────────────────────────────────── */
+    .accordion-toggle {
+      width: 100%; background: none; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      color: var(--text-main); font-family: 'Inter', sans-serif;
+      padding: 0; gap: 10px;
+    }
+
+    .accordion-label-group { display: flex; align-items: center; gap: 8px; }
+
+    .accordion-label-group .badge-count {
+      background: var(--danger-dim);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: var(--danger);
+      font-size: 11px; font-weight: 700;
+      padding: 2px 7px; border-radius: 50px;
+    }
+
+    .accordion-header-text {
+      font-size: 14px; font-weight: 600;
+      color: var(--danger);
+    }
+
+    .chevron {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.3s, background 0.2s;
+      flex-shrink: 0;
+    }
+    .chevron svg { width: 14px; height: 14px; transition: transform 0.3s; }
+
+    .accordion-toggle[aria-expanded="true"] .chevron { background: rgba(239,68,68,0.15); }
+    .accordion-toggle[aria-expanded="true"] .chevron svg { transform: rotate(180deg); }
+
+    .accordion-body {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease;
+      opacity: 0;
+    }
+    .accordion-body.open { max-height: 2000px; opacity: 1; }
+
+    .excludes-list { list-style: none; display: flex; flex-direction: column; gap: 9px; padding-top: 16px; }
+
+    .excludes-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 14px; line-height: 1.5;
+      color: var(--text-muted);
+      padding: 10px 14px;
+      background: var(--danger-dim);
+      border: 1px solid rgba(239,68,68,0.15);
+      border-radius: 12px;
+    }
+
+    .cross-icon {
+      flex-shrink: 0;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--danger);
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 1px;
+    }
+    .cross-icon svg { width: 10px; height: 10px; }
+
+    /* ─── Equipment Warning ──────────────────────────────────────── */
+    .equipment-alert {
+      display: flex; gap: 14px; align-items: flex-start;
+      background: rgba(245,158,11,0.12);
+      border: 1px solid rgba(245,158,11,0.35);
+      border-radius: var(--radius-lg);
+      padding: 18px 18px;
+      margin-bottom: 14px;
+      animation: slideUp 0.45s ease 0.28s both;
+    }
+
+    .equipment-alert .alert-icon {
+      font-size: 22px; flex-shrink: 0; line-height: 1;
+      margin-top: 1px;
+    }
+
+    .equipment-alert .alert-body strong {
+      display: block;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px; font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 4px;
+    }
+
+    .equipment-alert .alert-body p {
+      font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.5;
+    }
+
+    /* ─── Confirmation Checkbox ──────────────────────────────────── */
+    .confirm-block {
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      box-shadow: var(--glass-shadow);
+      margin-bottom: 14px;
+      animation: slideUp 0.45s ease 0.35s both;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .confirm-block.checked {
+      border-color: rgba(16,185,129,0.5);
+      background: var(--primary-dim);
+    }
+
+    .confirm-label {
+      display: flex; align-items: flex-start; gap: 14px; cursor: pointer;
+    }
+
+    .custom-checkbox {
+      --size: 22px;
+      width: var(--size); height: var(--size);
+      border-radius: 7px;
+      border: 2px solid var(--glass-border);
+      background: rgba(255,255,255,0.05);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+      margin-top: 1px;
+    }
+    .custom-checkbox svg {
+      width: 13px; height: 13px; opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.2s;
+    }
+
+    .confirm-label input[type="checkbox"] { display: none; }
+    .confirm-label input:checked ~ .custom-checkbox {
+      background: var(--primary);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(16,185,129,0.2);
+    }
+    .confirm-label input:checked ~ .custom-checkbox svg {
+      opacity: 1; transform: scale(1);
+    }
+
+    .confirm-text {
+      font-size: 14px; line-height: 1.55; color: var(--text-main);
+      flex: 1;
+    }
+    .confirm-text strong { font-weight: 600; }
+
+    /* ─── Sticky CTA Bar (mobile only) ──────────────────────────── */
+    .sticky-cta {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      z-index: 200;
+      background: rgba(2,20,13,0.94);
+      backdrop-filter: blur(18px);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 14px 20px;
+      display: flex; align-items: center; gap: 14px;
+    }
+
+    .sticky-price {
+      display: flex; flex-direction: column;
+    }
+    .sticky-price .label { font-size: 11px; color: var(--text-muted); }
+    .sticky-price .amount {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px; font-weight: 800;
+      color: var(--secondary);
+    }
+
+    .book-btn {
+      flex: 1;
+      padding: 15px 20px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 17px; font-weight: 800;
+      border: none; border-radius: 50px; cursor: pointer;
+      background: var(--secondary);
+      color: #111827;
+      box-shadow: 0 4px 20px rgba(245,158,11,0.35);
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      position: relative; overflow: hidden;
+    }
+    .book-btn::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,0.15);
+      opacity: 0; transition: opacity 0.25s;
+    }
+    .book-btn:hover:not(:disabled)::before { opacity: 1; }
+    .book-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(245,158,11,0.45);
+    }
+    .book-btn:disabled {
+      background: #4b5563;
+      color: #9ca3af;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+    .book-btn .btn-icon { font-size: 18px; }
+
+    /* ─── Service Selector Chips ─────────────────────────────────── */
+    .selector-bar {
+      display: flex; align-items: center; gap: 8px;
+      overflow-x: auto; padding-bottom: 6px;
+      scrollbar-width: none; margin-bottom: 16px;
+      animation: slideUp 0.4s ease both;
+      /* mobile: horizontal scroll; desktop: wraps via media query */
+    }
+    .selector-bar::-webkit-scrollbar { display: none; }
+
+    .sel-chip {
+      white-space: nowrap;
+      padding: 8px 16px;
+      border-radius: 50px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      color: var(--text-muted);
+      font-size: 13px; font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .sel-chip:hover { background: rgba(255,255,255,0.14); color: white; }
+    .sel-chip.active {
+      background: var(--secondary);
+      border-color: var(--secondary);
+      color: #111827; font-weight: 700;
+    }
+
+    /* ─── Utility ────────────────────────────────────────────────── */
+    .hidden { display: none !important; }
+
+    /* ─── Tablet Tweaks ──────────────────────────────────────────── */
+    @media (min-width: 600px) {
+      .page { padding-top: 96px; }
+      .service-hero { padding: 34px 30px 28px; }
+      .section-block { padding: 26px 24px; }
+      .sticky-cta { padding: 16px 28px; }
+    }
+
+    /* ─── Desktop Layout (≥768px) ────────────────────────────────── */
+    @media (min-width: 768px) {
+      /* Remove bottom padding — no more sticky bar */
+      body { padding-bottom: 24px; }
+
+      /* Hide the mobile sticky bar entirely */
+      .sticky-cta { display: none !important; }
+
+      /* Show the inline desktop Book Now row inside hero */
+      .hero-book-row { display: flex; }
+
+      /* Chips wrap on desktop instead of scrolling sideways */
+      .selector-bar {
+        flex-wrap: wrap;
+        overflow-x: visible;
+        gap: 8px 8px;
+        padding-bottom: 0;
+      }
+      .sel-chip { flex-shrink: 1; }
+
+      /* Nav inner content also constrained */
+      nav { padding: 18px 32px; }
+    }
+
+    /* ─── Specialized Badges ──────────────────────────────────────── */
+    .time-limit-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 14px;
+      background: var(--danger-dim);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 50px;
+      font-size: 13px; font-weight: 700;
+      color: var(--danger);
+      margin-left: 8px;
+    }
+
+    .coming-soon-overlay {
+      position: fixed; inset: 0;
+      background: rgba(1, 28, 18, 0.85);
+      backdrop-filter: blur(12px);
+      z-index: 500;
+      display: flex; align-items: center; justify-content: center;
+      padding: 30px;
+      text-align: center;
+    }
+    .coming-soon-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      padding: 40px; border-radius: var(--radius-xl);
+      max-width: 450px;
+    }
+    .coming-soon-card h2 { font-size: 32px; margin-bottom: 12px; }
+    .coming-soon-card p { color: var(--text-muted); margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+
+<!-- ─── Nav ──────────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-container">
+    <a href="/" class="nav-logo">Snappito<span>⚡</span></a>
+    <a href="/" class="nav-home-link">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </a>
+  </div>
+</nav>
+
+<!-- ─── Main Page ─────────────────────────────────────────────────── -->
+<main class="page">
+
+  <!-- Service Title & Hero Image -->
+  <div class="hero-view">
+    <div class="hero-title-area">
+      <h1 class="hero-title" id="hero-title">Service Name</h1>
+      <div id="hero-badge" style="display:none"></div>
+    </div>
+    
+    <div class="hero-img-container" id="hero-img">
+      <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=1200" alt="Service Image">
+    </div>
+  </div>
+
+  <!-- Left: Content Details -->
+  <div class="details-area">
+    
+    <!-- Includes -->
+    <div class="content-card">
+      <div class="cc-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        What's Included
+      </div>
+      <div id="includes-list"></div>
+    </div>
+
+    <!-- Excludes -->
+    <div class="content-card">
+      <div class="cc-title" style="color:var(--danger)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="var(--danger)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        What's NOT Included
+        <span class="badge-count" id="excludes-count" style="margin-left:auto">0</span>
+      </div>
+      <div id="excludes-list"></div>
+    </div>
+
+    <!-- Equipment Alert -->
+    <div class="equipment-alert hidden" id="equipment-alert">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-body">
+        <strong id="equipment-title">Customer Equipment Required</strong>
+        <p id="equipment-desc">Please ensure you have the required equipment ready before the professional arrives.</p>
+      </div>
+    </div>
+
+    <!-- Confirmation Checkbox -->
+    <div class="confirm-block hidden" id="confirm-block">
+      <label class="confirm-label" for="equipment-confirm">
+        <input type="checkbox" id="equipment-confirm">
+        <div class="custom-checkbox" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <span class="confirm-text" id="confirm-text">
+          I confirm I have a safe ladder available at home.
+        </span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Right: Floating Action Card -->
+  <aside class="action-card">
+    <div class="ac-price-row">
+      <span class="ac-price" id="hero-price">₹250</span>
+      <span class="ac-label">Total Price</span>
+    </div>
+
+    <div class="ac-feature">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span id="hero-duration">~30 mins</span>
+    </div>
+
+    <div class="ac-feature">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      Verified Professional
+    </div>
+
+    <button class="hero-book-btn" id="hero-book-btn" onclick="handleBook()" style="margin-top:16px; width:100%">
+      Book Now
+    </button>
+  </aside>
+
+</main>
+
+<script>
+  // ─── Service Data ──────────────────────────────────────────────
+  // ─── Service Data ──────────────────────────────────────────────
+  const SERVICES = [
+    {
+      id: "bathroom-cleaning",
+      title: "Bathroom Cleaning",
+      price: 199,
+      duration: "~45 mins",
+      includes: [
+        "Cleaning of toilet bowl (inside and rim)",
+        "Cleaning of washbasin and faucet",
+        "Wiping bathroom tiles and visible surfaces",
+        "Cleaning taps and fixtures",
+        "Sweeping and mopping bathroom floor",
+        "Final wipe-down and deodorising"
+      ],
+      excludes: [
+        "Deep cleaning (e.g., tile grout scrubbing)",
+        "Removal of heavy mold or hard water stains",
+        "Use of acid-based or strong descaling chemicals",
+        "Cleaning mirrors or storage interiors",
+        "Cleaning shower curtains or drains",
+        "Shifting or relocating heavy items"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
+    {
+      id: "fridge-cleaning",
+      title: "Fridge Cleaning",
+      price: 349,
+      duration: "45–90 mins",
+      hasVariance: true,
+      includes: [
+        "Service includes cleaning of one refrigerator unit only",
+        "Estimated cleaning time depends on fridge size (Single: 45m, Double: 60m, Large: 90m)",
+        "Switching off the fridge before cleaning",
+        "Removing food items and placing them safely aside",
+        "Discarding expired or spoiled items (as instructed)",
+        "Cleaning shelves, trays, drawers, and compartments",
+        "Wiping interior surfaces (walls, door panel, rubber lining)",
+        "Basic deodorising of fridge interior",
+        "Cleaning fridge exterior (front and sides only)",
+        "Drying surfaces before placing items back",
+        "Replacing food items neatly into the fridge"
+      ],
+      excludes: [
+        "Moving or lifting the refrigerator",
+        "Cleaning the back panel or condenser coils",
+        "Repair or servicing of the fridge",
+        "Handling frozen items requiring defrosting beyond service time",
+        "Cleaning deep stains caused by long-term neglect",
+        "Use of special chemicals or deodorising products",
+        "Organizing food by diet, expiry system, or labelling",
+        "Disposal of garbage outside the home",
+        "Deep freezer cleaning is not included",
+        "Meat will not be handled by our professional due to hygiene conditions"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
+    {
+      id: "packing-unpacking",
+      title: "Packing & Unpacking",
+      price: 1299,
+      duration: "2-4 hrs",
+      includes: [
+        "Packing or unpacking clothes, shoes, books, toys, and linens",
+        "Packing or unpacking kitchen items and dry groceries",
+        "Folding and organising items before packing",
+        "Placing items into boxes, suitcases, or cupboards",
+        "Labelling boxes (room-wise / item-wise)",
+        "Light dusting or surface wipe before placing items",
+        "Basic organisation using existing storage"
+      ],
+      excludes: [
+        "Heavy lifting or moving furniture",
+        "Carrying boxes up or down stairs",
+        "Handling jewellery, cash, documents, or valuables",
+        "Packing fragile antiques or artwork",
+        "Furniture dismantling or assembly",
+        "Tools, packing materials, boxes, or tapes",
+        "Decluttering advice or space planning",
+        "Electrical, plumbing, or carpentry work",
+        "Transporting items outside your home"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
+    {
+      id: "utensils",
+      title: "Utensils",
+      price: 149,
+      duration: "~45 mins",
+      includes: [
+        "Washing utensils with customer-provided supplies",
+        "Drying and placing utensils in rack",
+        "Cleaning the sink and surrounding area after completion"
+      ],
+      excludes: [
+        "Cleaning other kitchen areas (slabs, tiles, etc.)",
+        "Taking out kitchen garbage or waste disposal",
+        "Deep cleaning of burnt or heavily stained utensils"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
+    {
+      id: "kitchen-preparation",
+      title: "Kitchen Preparation",
+      price: 199,
+      duration: "~60 mins",
+      includes: [
+        "Washing and peeling vegetables",
+        "Chopping vegetables as per customer instruction",
+        "Kneading dough using customer-provided flour and water",
+        "Sorting prepared items into bowls/containers",
+        "Basic cleaning of the cutting area after preparation"
+      ],
+      excludes: [
+        "Cooking or full meal preparation",
+        "Washing large quantities of utensils or full kitchen cleaning",
+        "Grinding or food processing using appliances",
+        "Cutting meat or frozen items",
+        "Preparing decorative/restaurant-style cuts",
+        "Arranging food inside refrigerator or kitchen storage"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
+    {
+      id: "dusting-wiping",
+      title: "Dusting & Wiping",
+      price: 149,
+      duration: "~45 mins",
+      includes: [
+        "Dry dusting of furniture surfaces and shelves",
+        "Dusting of corners and reachable surfaces",
+        "Dusting of light fixtures (bulbs and tube lights – exterior only)",
+        "Dusting of electrical switches and plug points",
+        "Minor bed adjustment to dust underneath (if easily movable)"
+      ],
+      excludes: [
+        "Dusting of ceiling fans",
+        "Cleaning of windows or window sills",
+        "Dusting in balcony or terrace areas",
+        "Wet cleaning of furniture or electrical items",
+        "Moving heavy furniture or appliances"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
+    {
+      id: "sweeping-mopping",
+      title: "Sweeping & Mopping",
+      price: 149,
+      duration: "~30 mins",
+      includes: [
+        "Sweeping and mopping floors in selected rooms",
+        "Removing dust and loose dirt",
+        "Moving light items (like chairs) for cleaning access"
+      ],
+      excludes: [
+        "Balcony or outdoor cleaning",
+        "Deep cleaning / stain removal / polishing",
+        "Moving heavy furniture (beds, cupboards)",
+        "Carpet or rug vacuum cleaning"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
+    {
+      id: "pre-party-express-clean",
+      title: "Pre-party Express Clean",
+      price: 499,
+      duration: "90 mins",
+      timeLimitTag: "90 mins strict",
+      includes: [
+        "Living room & dining cleaning",
+        "Kitchen surface cleaning",
+        "Bathroom cleaning",
+        "Full house sweeping & mopping",
+        "Trash removal",
+        "Basic utensil cleaning"
+      ],
+      excludes: [
+        "Upholstery / appliance interiors / chimneys / balcony exteriors",
+        "Heavy grease or deep stain cleaning",
+        "Construction debris or bulk waste removal",
+        "Extra work beyond 90 minutes"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
+    {
+      id: "complete-wardrobe",
+      title: "Complete Wardrobe",
+      price: 399,
+      duration: "~90 mins",
+      includes: [
+        "Interior wardrobe cleaning",
+        "Emptying and rearranging clothes",
+        "Cleaning handles & edges",
+        "Dry dusting of shelves and surfaces"
+      ],
+      excludes: [
+        "Washing or cleaning clothes",
+        "Ironing",
+        "Polishing wardrobe surface",
+        "Moving heavy furniture/appliances"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
+    {
+      id: "after-party-clean",
+      title: "After-party Express Clean",
+      price: 599,
+      duration: "90 mins",
+      timeLimitTag: "90 mins strict",
+      includes: [
+        "Floor & spill cleanup",
+        "Trash + bottle disposal",
+        "Kitchen reset (counter, sink, stove top, utensils)",
+        "Bathroom clean",
+        "Living room tidy",
+        "Full house floor sweeping & mopping"
+      ],
+      excludes: [
+        "Vomit cleaning, upholstery/appliance interiors, chimneys, or balcony exteriors",
+        "Heavy grease or stains cleaning, removal of construction debris, and bulk waste",
+        "Tasks outside the defined package scope and work beyond 90 minutes"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
+    {
+      id: "ironing-folding",
+      title: "Ironing & Folding",
+      price: 149,
+      duration: "~60 mins",
+      includes: [
+        "Ironing of daily wear clothes (shirts/t-shirts/trousers)",
+        "Neat folding of ironed clothes after completion"
+      ],
+      excludes: [
+        "Steam Ironing",
+        "Blazers, coats, or sarees",
+        "Party wear or delicate designer garments",
+        "Bedsheets or curtains",
+        "Hand-washing or Drying clothes",
+        "Arranging clothes inside wardrobes",
+        "Dirty clothes will not be pressed"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
+    {
+      id: "windows-cleaning",
+      title: "Windows Cleaning",
+      price: 249,
+      duration: "~45 mins",
+      includes: [
+        "Surface dust removal from window mesh/screens",
+        "Wiping window sills if accessible from inside",
+        "Light cleaning of interior window tracks/channels"
+      ],
+      excludes: [
+        "Exterior window glass cleaning",
+        "Cleaning of any other surfaces",
+        "Balcony/outside window access",
+        "Removal of old stains/paint marks",
+        "Deep scrubbing of tracks"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
+    {
+      id: "laundry",
+      title: "Laundry",
+      price: 199,
+      duration: "~45 mins",
+      includes: [
+        "Washing clothes using customer’s machine",
+        "Adding detergent in correct compartment",
+        "Selecting fabric wash mode",
+        "Hanging washed clothes for drying"
+      ],
+      excludes: [
+        "Hand-washing of delicate garments",
+        "Ironing or folding clothes",
+        "Arranging clothes inside wardrobes",
+        "Stain treatment",
+        "Washing machine cleaning or repair"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
+    {
+      id: "kitchen-cleaning",
+      title: "Kitchen Cleaning",
+      price: 299,
+      duration: "~60 mins",
+      includes: [
+        "Wiping and cleaning kitchen countertops/slabs",
+        "Cleaning exterior of cabinets (top & bottom)",
+        "Cleaning stove exterior (burners/knobs)",
+        "Wiping visible kitchen wall tiles",
+        "Cleaning exterior of the sink"
+      ],
+      excludes: [
+        "Washing or soaking utensils and dishes",
+        "Rearranging utensils inside cabinets",
+        "Taking out garbage",
+        "Cleaning interiors of appliances (chimneys/ovens/etc.)"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
+    {
+      id: "balcony",
+      title: "Balcony Cleaning",
+      price: 199,
+      duration: "~30 mins",
+      includes: [
+        "Sweeping and mopping balcony floor",
+        "Cleaning railings and grills",
+        "Cleaning parapet wall",
+        "Dusting of accessible surfaces (tables/chairs)"
+      ],
+      excludes: [
+        "Cleaning walls or ceiling",
+        "Watering plants / gardening",
+        "Cleaning terrace or exterior walls",
+        "Moving heavy plant pots"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
+    {
+      id: "fan-cleaning",
+      title: "Fan Cleaning",
+      price: 250,
+      duration: "~30 mins",
+      includes: [
+        "Dust removal from fan blades and motor body",
+        "Wiping blades and accessible parts",
+        "Cleaning of fallen dust from floor"
+      ],
+      excludes: [
+        "Cleaning other room surfaces",
+        "Professional will not be carrying a ladder",
+        "Unsafe access or unstable setup",
+        "Moving heavy furniture"
+      ],
+      requiresCustomerEquipment: true,
+      equipmentTitle: "Ladder Required",
+      equipmentDesc: "Our professional does not carry a ladder. Please ensure a safe, stable ladder is available at home before the appointment.",
+      confirmText: "I confirm I have a safe and stable ladder available at home for the professional to use.",
+      isActive: true
+    },
+    {
+      id: "kitchen-cabinet",
+      title: "Kitchen Cabinet",
+      price: 499,
+      duration: "180 mins",
+      includes: [
+        "180 mins service duration",
+        "Interior cabinet cleaning",
+        "Dry and wet wipe",
+        "Emptying & rearranging contents",
+        "Exterior cleaning"
+      ],
+      excludes: [
+        "Deep oil or grease removal",
+        "Washing utensils",
+        "Cabinet repair",
+        "Rust or hard water stains"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
+    { id: "bathroom-move-in-cleaning", title: "Bathroom Move-in Cleaning", price: 0, duration: "N/A", includes: [], excludes: [], isActive: false },
+    { id: "complete-kitchen-cleaning", title: "Complete Kitchen Cleaning", price: 0, duration: "N/A", includes: [], excludes: [], isActive: false },
+    { id: "chimney-cleaning", title: "Chimney Cleaning", price: 0, duration: "N/A", includes: [], excludes: [], isActive: false }
+  ];
+
+  // ─── State ─────────────────────────────────────────────────────
+  let currentService = null;
+  let equipmentConfirmed = false;
+
+  // ─── DOM Refs ──────────────────────────────────────────────────
+  const heroTitle      = document.getElementById('hero-title');
+  const heroImg        = document.getElementById('hero-img').querySelector('img');
+  const heroPrice      = document.getElementById('hero-price');
+  const heroDuration   = document.getElementById('hero-duration');
+  const includesList   = document.getElementById('includes-list');
+  const excludesList   = document.getElementById('excludes-list');
+  const excludesCount  = document.getElementById('excludes-count');
+  
+  const equipmentAlert = document.getElementById('equipment-alert');
+  const equipmentTitle = document.getElementById('equipment-title');
+  const equipmentDesc  = document.getElementById('equipment-desc');
+  const confirmBlock   = document.getElementById('confirm-block');
+  const confirmText    = document.getElementById('confirm-text');
+  const confirmCheck   = document.getElementById('equipment-confirm');
+  
+  const heroBookBtn    = document.getElementById('hero-book-btn');
+
+  // ─── Image Mapping ──────────────
+  const SERVICE_IMAGES = {
+    "bathroom-cleaning": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=1200",
+    "fridge-cleaning": "https://images.unsplash.com/photo-1584622781564-1d9876a13d00?auto=format&fit=crop&q=80&w=1200",
+    "kitchen-cleaning": "https://images.unsplash.com/photo-1556911220-e150213ff167?auto=format&fit=crop&q=80&w=1200",
+    "fan-cleaning": "https://images.unsplash.com/photo-1590756254933-2873d72a83b6?auto=format&fit=crop&q=80&w=1200",
+    "sofa-cleaning": "https://images.unsplash.com/photo-1556911220-e150213ff167?auto=format&fit=crop&q=80&w=1200",
+    "default": "https://images.unsplash.com/photo-1581578731548-c64695cc6954?auto=format&fit=crop&q=80&w=1200"
+  };
+
+
+
+  // ─── Confirm Checkbox ──────────────────────────────────────────
+  confirmCheck.addEventListener('change', () => {
+    equipmentConfirmed = confirmCheck.checked;
+    confirmBlock.classList.toggle('checked', equipmentConfirmed);
+    updateBookBtn();
+  });
+
+  function updateBookBtn() {
+    if (!currentService) { heroBookBtn.disabled = true; return; }
+    const needsConfirm = currentService.requiresCustomerEquipment;
+    const isDisabled   = needsConfirm && !equipmentConfirmed;
+    heroBookBtn.disabled = isDisabled;
+  }
+
+  // ─── Render Service ────────────────────────────────────────────
+  function renderService(service) {
+    currentService = service;
+
+    // Reset checkbox
+    equipmentConfirmed = false;
+    confirmCheck.checked = false;
+    confirmBlock.classList.remove('checked');
+
+    // Hero
+    heroTitle.textContent = service.title;
+    heroImg.src = SERVICE_IMAGES[service.id] || SERVICE_IMAGES.default;
+    
+    heroPrice.innerHTML = `₹${service.price.toLocaleString('en-IN')}`;
+    heroDuration.textContent = service.duration;
+
+    // Coming Soon Handler
+    if (service.isActive === false) {
+      const overlay = document.createElement('div');
+      overlay.className = 'coming-soon-overlay';
+      overlay.innerHTML = `
+        <div class="coming-soon-card">
+          <h2>Coming Soon! 🚀</h2>
+          <p>We are currently defining the scope and pricing for <strong>${service.title}</strong>. Stay tuned!</p>
+          <a href="/" class="hero-book-btn" style="text-decoration:none">Back to Directory</a>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      heroBookBtn.disabled = true;
+    } else {
+      const existing = document.querySelector('.coming-soon-overlay');
+      if (existing) existing.remove();
+    }
+
+    // Includes
+    includesList.innerHTML = service.includes.map(item => `
+      <div class="list-item">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>${escHtml(item)}</span>
+      </div>
+    `).join('');
+
+    // Excludes
+    excludesList.innerHTML = service.excludes.map(item => `
+      <div class="list-item">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="var(--danger)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <span>${escHtml(item)}</span>
+      </div>
+    `).join('');
+    excludesCount.textContent = service.excludes.length;
+
+    // Equipment
+    const hasEquip = service.requiresCustomerEquipment;
+    equipmentAlert.classList.toggle('hidden', !hasEquip);
+    confirmBlock.classList.toggle('hidden', !hasEquip);
+    
+    if (hasEquip) {
+      equipmentTitle.textContent = service.equipmentTitle || "Customer Equipment Required";
+      equipmentDesc.textContent  = service.equipmentDesc  || "Please ensure the required equipment is available at home.";
+      confirmText.textContent    = service.confirmText    || "I confirm I have the required equipment available at home.";
+    }
+
+    updateBookBtn();
+
+    // Scroll to top of page
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  // ─── Booking ───────────────────────────────────────────────────
+
+
+  // ─── Book Action ───────────────────────────────────────────────
+  function handleBook() {
+    if (!currentService) return;
+    if (heroBookBtn.disabled) return;
+    const params = new URLSearchParams({
+      service_id: currentService.id,
+      service:    currentService.title,
+      price:      currentService.price
+    });
+    window.location.href = `/booking?${params.toString()}`;
+  }
+
+  // ─── Utility ───────────────────────────────────────────────────
+  function escHtml(str) {
+    const d = document.createElement('div');
+    d.appendChild(document.createTextNode(str));
+    return d.innerHTML;
+  }
+
+  // ─── URL Param Init ────────────────────────────────────────────
+  function initFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('service');
+    if (id) {
+      const found = SERVICES.find(s => s.id === id);
+      if (found) { renderService(found); return; }
+    }
+    renderService(SERVICES[0]); // default: Fan Cleaning
+  }
+
+  initFromUrl();
+</script>
+</body>
+</html>

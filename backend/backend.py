@@ -770,7 +770,7 @@ def get_user_info():
 
         return jsonify({
             'id': user.id,
-            'phone_number': user.phone,
+            'phone': user.phone,
             'email': user.email,
             'full_name': user.full_name,
             'created_at': user.created_at.isoformat()
@@ -798,7 +798,7 @@ def get_user_profiles():
             "id": user.id,
             "full_name": user.full_name,
             "email": user.email,
-            "phone_number": user.phone,  # adjust if your column is phone
+            "phone": user.phone,
             "gender": user.gender if hasattr(user, "gender") else None,
             "dob": user.dob.isoformat() if getattr(user, "dob", None) else None,
             "profile_image": user.profile_image if hasattr(user, "profile_image") else None,

@@ -17,3 +17,7 @@ venv.bak
 # Others
 .DS_Store
 *.swp
+
+# Local Dev Scripts
+frontend/start_server.py
+frontend/start_frontend.py
