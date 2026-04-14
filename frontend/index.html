@@ -525,6 +525,24 @@
       transform: translateX(3px) scale(1.1);
     }
 
+    /* Trending / Popular Badges */
+    .ps-badge {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      padding: 6px 14px;
+      background: var(--secondary);
+      color: #000;
+      font-size: 11px;
+      font-weight: 800;
+      border-radius: 50px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 5;
+    }
+    .ps-badge.trending { background: #10b981; color: white; }
+
     @media (max-width: 1024px) {
       .ps-cards-row {
         grid-template-columns: repeat(6, 200px);
@@ -814,12 +832,14 @@
 <body id="top">
 
 <nav id="navbar">
-  <a href="/" class="logo">Snappito<span>⚡</span></a>
-  <div class="nav-links">
-    <a href="#about" class="nav-link">About Us</a>
-    <a href="#how-it-works" class="nav-link">How it Works</a>
-    <a href="#services" class="nav-link">Services</a>
-    <button id="theme-toggle" class="btn" style="background: rgba(255,255,255,0.1); padding: 8px 12px; font-size: 18px;">🌙</button>
+  <div class="nav-container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+    <a href="/" class="logo">Snappito<span>⚡</span></a>
+    <div class="nav-links">
+      <a href="#services" class="nav-link">Services</a>
+      <a href="#how-it-works" class="nav-link">How it Works</a>
+      <a href="#about" class="nav-link">About</a>
+      <button id="theme-toggle" class="btn" style="background: rgba(255,255,255,0.1); padding: 8px 12px; font-size: 18px;">🌙</button>
+    </div>
   </div>
 </nav>
 
@@ -831,36 +851,8 @@
 
 <main class="container">
 
-  <!-- About Us Section -->
-  <section id="about" class="info-section scroll-anim">
-    <h3>Who we are</h3>
-    <p>At <strong>Snappito</strong>, we understand that finding reliable, high-quality home services can be a challenge. That's why we've built a curated network of elite professionals dedicated to transforming your living spaces. Whether you need a quick dust-down before guests arrive or a meticulous post-construction deep clean, our team uses industry-leading equipment and sustainable cleaning solutions to deliver spotless results, every single time.</p>
-  </section>
-  
-  <!-- How it works Section -->
-  <section id="how-it-works" class="info-section scroll-anim">
-    <h3 style="text-align: center;">How it works</h3>
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="icon">🖱️</div>
-        <h4>1. Select Service</h4>
-        <p style="font-size: 14px; color: var(--text-muted); margin-top: 10px;">Browse our catalog and pick exactly what you need.</p>
-      </div>
-      <div class="step-card">
-        <div class="icon">📅</div>
-        <h4>2. Review &amp; Book</h4>
-        <p style="font-size: 14px; color: var(--text-muted); margin-top: 10px;">See exactly what's included, then book in seconds.</p>
-      </div>
-      <div class="step-card">
-        <div class="icon">✨</div>
-        <h4>3. Enjoy the Magic</h4>
-        <p style="font-size: 14px; color: var(--text-muted); margin-top: 10px;">Our professionals arrive and leave your place spotless.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Premium Services Section -->
-  <section id="services" class="premium-services" style="background-image: url('assets/premium/hero_bg.png');">
+  <!-- Premium Services Section (Primary discovery) -->
+  <section id="services" class="premium-services" style="background-image: url('assets/premium/hero_bg.png'); scroll-margin-top: 100px;">
     <div class="ps-header">
       <div class="ps-titles">
         <h4>Services</h4>
@@ -873,15 +865,17 @@
     </div>
 
     <div class="ps-cards-row">
-      <!-- Dishwashing -->
-      <a class="ps-card" href="/service-detail?service=utensils" style="background-image: url('assets/premium/dishwashing.png'); text-decoration:none;">
+      <!-- Bathroom Cleaning -->
+      <a class="ps-card" href="/service-detail?service=bathroom-cleaning" style="background-image: url('assets/premium/bathroom.png'); text-decoration:none;">
+        <div class="ps-badge">Most Popular</div>
         <div class="ps-card-content">
-          <h3>Dishwashing</h3>
+          <h3>Bathroom Cleaning</h3>
           <div class="arrow-btn">➔</div>
         </div>
       </a>
       <!-- Kitchen Cleaning -->
       <a class="ps-card" href="/service-detail?service=kitchen-cleaning" style="background-image: url('assets/premium/kitchen.png'); text-decoration:none;">
+        <div class="ps-badge trending">Trending</div>
         <div class="ps-card-content">
           <h3>Kitchen Cleaning</h3>
           <div class="arrow-btn">➔</div>
@@ -908,17 +902,39 @@
           <div class="arrow-btn">➔</div>
         </div>
       </a>
-      <!-- Bathroom Cleaning -->
-      <a class="ps-card" href="/service-detail?service=bathroom-cleaning" style="background-image: url('assets/premium/bathroom.png'); text-decoration:none;">
+      <!-- Dishwashing -->
+      <a class="ps-card" href="/service-detail?service=utensils" style="background-image: url('assets/premium/dishwashing.png'); text-decoration:none;">
         <div class="ps-card-content">
-          <h3>Bathroom Cleaning</h3>
+          <h3>Dishwashing</h3>
           <div class="arrow-btn">➔</div>
         </div>
       </a>
     </div>
   </section>
 
-  <!-- Full Services Catalog (Hidden by default or accessible via View All) -->
+  <!-- How it works Section -->
+  <section id="how-it-works" class="info-section scroll-anim">
+    <h3 style="text-align: center; margin-bottom: 30px;">How it works</h3>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="icon">🖱️</div>
+        <h4>1. Select Service</h4>
+        <p style="font-size: 14px; color: var(--text-muted); margin-top: 10px;">Browse our catalog and pick exactly what you need.</p>
+      </div>
+      <div class="step-card">
+        <div class="icon">📅</div>
+        <h4>2. Review &amp; Book</h4>
+        <p style="font-size: 14px; color: var(--text-muted); margin-top: 10px;">See exactly what's included, then book in seconds.</p>
+      </div>
+      <div class="step-card">
+        <div class="icon">✨</div>
+        <h4>3. Enjoy the Magic</h4>
+        <p style="font-size: 14px; color: var(--text-muted); margin-top: 10px;">Our professionals arrive and leave your place spotless.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Full Services Catalog -->
   <section id="full-services" style="padding: 80px 20px; scroll-margin-top: 90px;">
     <div style="text-align: center; margin-bottom: 20px;">
       <h2 style="font-family: 'Outfit'; font-size: 36px;">Our <span style="color: var(--secondary)">Catalog</span></h2>
@@ -931,10 +947,9 @@
     </div>
     <div class="grid" id="services-grid">
       <p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center;">Loading all services...</p>
-    </div>
   </section>
 
-</main>
+
 
 <!-- ─── Can't find what you're looking for? CTA ──────────────── -->
 <section id="help-cta" class="scroll-anim" style="padding: 80px 20px;">
@@ -980,6 +995,14 @@
 <!-- Booking form removed. All booking flows go through /service-detail → /booking -->
 
 <!-- (orphaned form HTML removed) -->
+
+  <!-- About Us Section (Moved bottom for CRO) -->
+  <section id="about" class="info-section scroll-anim" style="margin-top: 60px;">
+    <h3>Who we are</h3>
+    <p>At <strong>Snappito</strong>, we understand that finding reliable, high-quality home services can be a challenge. That's why we've built a curated network of elite professionals dedicated to transforming your living spaces. Whether you need a quick dust-down before guests arrive or a meticulous post-construction deep clean, our team uses industry-leading equipment and sustainable cleaning solutions to deliver spotless results, every single time.</p>
+  </section>
+
+</main>
 
 <footer id="contact">
   <div class="contact-bubble" onclick="window.location.href='tel:8747858018'">
