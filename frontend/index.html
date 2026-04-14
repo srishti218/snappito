@@ -16,22 +16,24 @@
     :root {
       --primary: #10b981;
       --secondary: #f59e0b;
-      --text-main: #111827;
+      --text-main: #062f21;
       --text-muted: #4b5563;
       --glass-bg: #ffffff;
       --glass-border: #e5e7eb;
-      --bg-color: #F9FAFB;
+      --bg-color: #ffffff;
+      --card-bg: #f9fafb;
       --glass-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
       --radius-lg: 16px;
     }
 
-    /* Keep dark theme as optional class */
-    body.dark-theme {
+    /* Dark Mode variables */
+    body.dark-mode {
       --text-main: #ffffff;
       --text-muted: rgba(255, 255, 255, 0.8);
       --glass-bg: rgba(255, 255, 255, 0.1);
       --glass-border: rgba(255, 255, 255, 0.2);
-      --bg-color: #022c22;
+      --bg-color: #062f21;
+      --card-bg: #0a3d2c;
     }
 
     * {
@@ -98,7 +100,7 @@
     .nav-link {
       color: white;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 700;
       font-size: 16px;
       transition: color 0.3s ease;
     }
@@ -133,7 +135,7 @@
     /* Hero Section */
     header.hero {
       text-align: center;
-      padding: 160px 20px 80px;
+      padding: 180px 20px 120px;
       max-width: 900px;
       margin: 0 auto;
     }
@@ -168,7 +170,7 @@
 
     /* Info Sections (About & How it works) */
     .info-section {
-      background: var(--glass-bg);
+      background: var(--card-bg);
       backdrop-filter: blur(16px);
       border: 1px solid var(--glass-border);
       border-radius: 20px;
@@ -178,6 +180,7 @@
       box-shadow: var(--glass-shadow);
       line-height: 1.7;
       scroll-margin-top: 90px;
+      transition: background 0.3s, border-color 0.3s;
     }
     
     .info-section h3 {
@@ -196,10 +199,11 @@
     .step-card {
       text-align: center;
       padding: 30px 20px;
-      background: #ffffff;
+      background: var(--bg-color);
       border-radius: var(--radius-lg);
       border: 1px solid var(--glass-border);
       box-shadow: var(--glass-shadow);
+      transition: background 0.3s;
     }
     
     .step-card .icon {
@@ -815,10 +819,8 @@
     <a href="#about" class="nav-link">About Us</a>
     <a href="#how-it-works" class="nav-link">How it Works</a>
     <a href="#services" class="nav-link">Services</a>
-    <a href="/login" class="nav-link" id="nav-login" style="color: var(--secondary);">Login / Sign Up</a>
-    <button id="theme-toggle" class="btn" style="background: var(--glass-bg); padding: 8px 12px; font-size: 18px;">🌙</button>
+    <button id="theme-toggle" class="btn" style="background: rgba(255,255,255,0.1); padding: 8px 12px; font-size: 18px;">🌙</button>
   </div>
-  <a href="#full-services" class="btn" id="nav-action-btn">View Services</a>
 </nav>
 
 <header class="hero">
@@ -1145,15 +1147,22 @@
 
   // ─── 5. Theme Toggle ──────────────────────────────────────────
   const themeToggle = document.getElementById('theme-toggle');
-  if (localStorage.getItem('theme') === 'light') {
-    document.body.classList.add('light-theme');
+  
+  // Apply saved theme on load
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-mode');
     themeToggle.textContent = '☀️';
+  } else {
+    // Light is default
+    document.body.classList.remove('dark-mode');
+    themeToggle.textContent = '🌙';
   }
+
   themeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('light-theme');
-    const isLight = document.body.classList.contains('light-theme');
-    themeToggle.textContent = isLight ? '☀️' : '🌙';
-    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    themeToggle.textContent = isDark ? '☀️' : '🌙';
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
   });
 </script>
 </body>
