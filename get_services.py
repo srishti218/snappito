@@ -3,7 +3,7 @@ import json
 import requests
 
 try:
-    res = requests.get('http://localhost:5000/api/services')
+    res = requests.get('http://localhost:5001/api/services')
     data = res.json()
     for cat in data['categories']:
         for s in cat['services']:

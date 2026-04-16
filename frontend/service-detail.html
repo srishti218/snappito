@@ -29,54 +29,6 @@
     }
 
     /* ─── Dark Mode ──────────────────────────────────────────────── */
-    body.dark-mode {
-      --text-main:    #ffffff;
-      --text-muted:   rgba(255,255,255,0.7);
-      --bg-color:     #062f21;
-      --card-bg:      #0a3d2c;
-      --border-color: rgba(255,255,255,0.15);
-    }
-    body.dark-mode h1, body.dark-mode h2, body.dark-mode h3,
-    body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 {
-      color: #ffffff;
-    }
-    body.dark-mode .content-card,
-    body.dark-mode .action-card {
-      background: var(--card-bg);
-      border-color: var(--border-color);
-    }
-    /* Card text & list items: full white */
-    body.dark-mode .cc-title { color: #ffffff; }
-    body.dark-mode .list-item span { color: #ffffff; }
-    body.dark-mode .ac-price { color: #ffffff; }
-    body.dark-mode .ac-label,
-    body.dark-mode .ac-feature { color: rgba(255,255,255,0.85); }
-    body.dark-mode .confirm-text { color: #ffffff; }
-    /* Equipment warning: legible in dark mode */
-    body.dark-mode .equipment-alert {
-      background: rgba(245,158,11,0.25);
-      border-color: rgba(245,158,11,0.5);
-    }
-    body.dark-mode .equipment-alert .alert-body strong { color: #ffb74d; }
-    body.dark-mode .equipment-alert .alert-body p { color: #ffffff; }
-    /* Confirm block */
-    body.dark-mode .confirm-block {
-      background: rgba(255,255,255,0.06);
-      border-color: rgba(255,255,255,0.15);
-    }
-    body.dark-mode .hero-img-container { background: #0a3d2c; }
-    /* Footer text visible */
-    body.dark-mode .footer-section { background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.05); }
-    body.dark-mode .footer-section p { color: rgba(255,255,255,0.6); }
-    body.dark-mode .footer-section a {
-        background: rgba(255,255,255,0.1) !important;
-        border-color: rgba(255,255,255,0.2) !important;
-        color: #ffffff !important;
-    }
-    body.dark-mode .footer-section a:hover {
-        background: rgba(255,255,255,0.18) !important;
-    }
-
     /* ─── Reset ──────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -84,7 +36,7 @@
     body {
       font-family: 'Inter', sans-serif;
       color: var(--text-main);
-      background: var(--bg-color);
+      background: linear-gradient(135deg, #e6fdf2 0%, #ffffff 40%, #ffffff 100%);
       min-height: 100vh;
       overflow-x: hidden;
       transition: background 0.3s, color 0.3s;
@@ -154,7 +106,7 @@
     #hero-badge { justify-content: center; }
 
     .hero-img-container {
-      width: 100%; height: clamp(300px, 50vh, 500px);
+      width: 100%; height: 300px;
       border-radius: var(--radius-xl);
       overflow: hidden;
       background: #eee;
@@ -188,12 +140,35 @@
     .ac-price { font-size: 32px; font-weight: 800; color: #111827; }
     .ac-label { font-size: 14px; color: var(--text-muted); }
 
-    .ac-feature {
-      display: flex; align-items: center; gap: 12px;
-      margin-bottom: 16px;
-      color: #374151; font-weight: 500;
-    }
     .ac-feature svg { color: var(--primary); }
+
+    /* ─── Tier Selector ──────────────────────────────────────────── */
+    .tier-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .tier-btn {
+      padding: 12px 10px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .tier-btn .t-name {
+      display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 2px;
+    }
+    .tier-btn .t-desc {
+      display: block; font-size: 11px; color: var(--text-muted);
+    }
+    .tier-btn.active {
+      border-color: #064e3b;
+      background: #e6fdf2;
+    }
+    .tier-btn.active .t-name { color: #064e3b; }
 
     /* ─── Content Blocks ────────────────────────────────────────── */
     .details-area { 
@@ -626,7 +601,6 @@
       <div class="cc-title" style="color:var(--danger)">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="var(--danger)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
         What's NOT Included
-        <span class="badge-count" id="excludes-count" style="margin-left:auto">0</span>
       </div>
       <div id="excludes-list"></div>
     </div>
@@ -654,13 +628,17 @@
   <!-- Right: Floating Action Card -->
   <aside class="action-card">
     <div class="ac-price-row">
-      <span class="ac-price" id="hero-price">₹250</span>
+      <span class="ac-price" id="hero-price">₹--</span>
       <span class="ac-label">Total Price</span>
+    </div>
+
+    <div id="tier-selector-container" class="tier-selector">
+      <!-- Dynamic Tiers -->
     </div>
 
     <div class="ac-feature">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      <span id="hero-duration">~30 mins</span>
+      <span id="hero-duration">--</span>
     </div>
 
     <div class="ac-feature">
@@ -676,17 +654,17 @@
 </main>
 
 <!-- ─── Footer ──────────────────────────────────────────────────── -->
-<footer class="footer-section" style="text-align:center; padding:80px 20px 40px; margin-top:40px; background:#FFFFFF; border-top:1px solid #E5E7EB;">
-  <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:20px;">
-    <a href="tel:8747858018" style="display:inline-flex; align-items:center; gap:10px; padding:14px 28px; background:#FFFFFF; border:1px solid #D1D5DB; border-radius:50px; font-size:16px; font-weight:700; text-decoration:none; color:#1F2937; transition:all 0.3s ease; box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);">
+<footer id="contact" style="background-color: #064e3b; color: white; padding: 80px 20px 40px; text-align: center; margin-top: 40px;">
+  <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
+    <a href="tel:8747858018" style="text-decoration:none; display: inline-flex; align-items: center; gap: 8px; background: #ffffff; color: #064e3b; padding: 12px 24px; border-radius: 50px; font-weight: 700;">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-      📞 Call: 87478 58018
+      Call: 87478 58018
     </a>
-    <a href="https://wa.me/918747858018" target="_blank" style="display:inline-flex; align-items:center; gap:10px; padding:14px 28px; background:#FFFFFF; border:1px solid #D1D5DB; border-radius:50px; font-size:16px; font-weight:700; text-decoration:none; color:#1F2937; transition:all 0.3s ease; box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);">
+    <a href="https://wa.me/918747858018" target="_blank" style="text-decoration:none; display: inline-flex; align-items: center; gap: 8px; background: #ffffff; color: #064e3b; padding: 12px 24px; border-radius: 50px; font-weight: 700;">
       💬 WhatsApp
     </a>
   </div>
-  <p style="margin-top: 40px; padding-top: 24px; border-top: 1px solid #E5E7EB; color:var(--text-muted); font-size:14px;">© 2026 Snappito. All rights reserved.</p>
+  <p style="margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); font-size: 14px;">© 2026 Snappito. All rights reserved.</p>
 </footer>
 
 <script>
@@ -694,430 +672,498 @@
   // ─── Service Data ──────────────────────────────────────────────
   const SERVICES = [
     {
-      id: "bathroom-cleaning",
-      title: "Bathroom Cleaning",
-      price: 199,
-      duration: "~45 mins",
-      includes: [
-        "Cleaning of toilet bowl (inside and rim)",
-        "Cleaning of washbasin and faucet",
-        "Wiping bathroom tiles and visible surfaces",
-        "Cleaning taps and fixtures",
-        "Sweeping and mopping bathroom floor",
-        "Final wipe-down and deodorising"
-      ],
-      excludes: [
-        "Deep cleaning (e.g., tile grout scrubbing)",
-        "Removal of heavy mold or hard water stains",
-        "Use of acid-based or strong descaling chemicals",
-        "Cleaning mirrors or storage interiors",
-        "Cleaning shower curtains or drains",
-        "Shifting or relocating heavy items"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
+        "id": "bathroom-cleaning",
+        "title": "Bathroom Cleaning",
+        "tiers": [
+            {
+                "name": "Express",
+                "duration": "30 mins",
+                "price": 150
+            },
+            {
+                "name": "Standard",
+                "duration": "1 hr",
+                "price": 300
+            }
+        ],
+        "includes": [
+            "Cleaning of toilet bowl",
+            "Cleaning of washbasin and faucet",
+            "Wiping bathroom tiles",
+            "Cleaning taps and fixtures",
+            "Sweeping and mopping floor",
+            "Final wipe-down and deodorising"
+        ],
+        "excludes": [
+            "Deep cleaning (grout scrubbing)",
+            "Removal of heavy mold",
+            "Use of acid chemicals",
+            "Cleaning mirrors/storage",
+            "Cleaning shower curtains",
+            "Shifting heavy items"
+        ]
     },
     {
-      id: "fridge-cleaning",
-      title: "Fridge Cleaning",
-      price: 349,
-      duration: "45–90 mins",
-      hasVariance: true,
-      includes: [
-        "Service includes cleaning of one refrigerator unit only",
-        "Estimated cleaning time depends on fridge size (Single: 45m, Double: 60m, Large: 90m)",
-        "Switching off the fridge before cleaning",
-        "Removing food items and placing them safely aside",
-        "Discarding expired or spoiled items (as instructed)",
-        "Cleaning shelves, trays, drawers, and compartments",
-        "Wiping interior surfaces (walls, door panel, rubber lining)",
-        "Basic deodorising of fridge interior",
-        "Cleaning fridge exterior (front and sides only)",
-        "Drying surfaces before placing items back",
-        "Replacing food items neatly into the fridge"
-      ],
-      excludes: [
-        "Moving or lifting the refrigerator",
-        "Cleaning the back panel or condenser coils",
-        "Repair or servicing of the fridge",
-        "Handling frozen items requiring defrosting beyond service time",
-        "Cleaning deep stains caused by long-term neglect",
-        "Use of special chemicals or deodorising products",
-        "Organizing food by diet, expiry system, or labelling",
-        "Disposal of garbage outside the home",
-        "Deep freezer cleaning is not included",
-        "Meat will not be handled by our professional due to hygiene conditions"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
+        "id": "fridge-cleaning",
+        "title": "Fridge Cleaning",
+        "tiers": [
+            {
+                "name": "Express",
+                "duration": "45 mins",
+                "price": 150
+            },
+            {
+                "name": "Standard",
+                "duration": "1 hr",
+                "price": 250
+            }
+        ],
+        "includes": [
+            "Clean one refrigerator unit",
+            "Remove food items safely",
+            "Discard expired items",
+            "Clean shelves and trays",
+            "Wipe interior surfaces",
+            "Basic deodorising",
+            "Clean exterior",
+            "Drying surfaces"
+        ],
+        "excludes": [
+            "Moving refrigerator",
+            "Cleaning back panel/coils",
+            "Repair or servicing",
+            "Handling frozen items",
+            "Deep stain cleaning",
+            "Special chemicals",
+            "Organizing by diet",
+            "Deep freezer cleaning"
+        ]
     },
     {
-      id: "packing-unpacking",
-      title: "Packing & Unpacking",
-      price: 1299,
-      duration: "2-4 hrs",
-      includes: [
-        "Packing or unpacking clothes, shoes, books, toys, and linens",
-        "Packing or unpacking kitchen items and dry groceries",
-        "Folding and organising items before packing",
-        "Placing items into boxes, suitcases, or cupboards",
-        "Labelling boxes (room-wise / item-wise)",
-        "Light dusting or surface wipe before placing items",
-        "Basic organisation using existing storage"
-      ],
-      excludes: [
-        "Heavy lifting or moving furniture",
-        "Carrying boxes up or down stairs",
-        "Handling jewellery, cash, documents, or valuables",
-        "Packing fragile antiques or artwork",
-        "Furniture dismantling or assembly",
-        "Tools, packing materials, boxes, or tapes",
-        "Decluttering advice or space planning",
-        "Electrical, plumbing, or carpentry work",
-        "Transporting items outside your home"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
+        "id": "packing-and-unpacking",
+        "title": "Packing And Unpacking",
+        "tiers": [
+            {
+                "name": "Express",
+                "duration": "30 mins",
+                "price": 125
+            },
+            {
+                "name": "Standard",
+                "duration": "1 hr",
+                "price": 250
+            }
+        ],
+        "includes": [
+            "Packing clothes/books/toys",
+            "Packing kitchen items",
+            "Folding and organising",
+            "Placing into boxes",
+            "Labelling boxes",
+            "Light dusting",
+            "Basic organisation"
+        ],
+        "excludes": [
+            "Heavy lifting",
+            "Carrying boxes up stairs",
+            "Handling valuables",
+            "Packing fragile antiques",
+            "Furniture dismantling",
+            "Providing packing materials",
+            "Electrical/plumbing work"
+        ]
     },
     {
-      id: "utensils",
-      title: "Utensils",
-      price: 149,
-      duration: "~45 mins",
-      includes: [
-        "Washing utensils with customer-provided supplies",
-        "Drying and placing utensils in rack",
-        "Cleaning the sink and surrounding area after completion"
-      ],
-      excludes: [
-        "Cleaning other kitchen areas (slabs, tiles, etc.)",
-        "Taking out kitchen garbage or waste disposal",
-        "Deep cleaning of burnt or heavily stained utensils"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
+        "id": "utensils",
+        "title": "Utensils",
+        "tiers": [
+            {
+                "name": "Express",
+                "duration": "30 mins",
+                "price": 125
+            },
+            {
+                "name": "Standard",
+                "duration": "1 hr",
+                "price": 250
+            }
+        ],
+        "includes": [
+            "Washing utensils",
+            "Drying and placing in rack",
+            "Cleaning sink area"
+        ],
+        "excludes": [
+            "Cleaning other kitchen areas",
+            "Taking out garbage",
+            "Deep cleaning burnt utensils"
+        ]
     },
     {
-      id: "kitchen-preparation",
-      title: "Kitchen Preparation",
-      price: 199,
-      duration: "~60 mins",
-      includes: [
-        "Washing and peeling vegetables",
-        "Chopping vegetables as per customer instruction",
-        "Kneading dough using customer-provided flour and water",
-        "Sorting prepared items into bowls/containers",
-        "Basic cleaning of the cutting area after preparation"
-      ],
-      excludes: [
-        "Cooking or full meal preparation",
-        "Washing large quantities of utensils or full kitchen cleaning",
-        "Grinding or food processing using appliances",
-        "Cutting meat or frozen items",
-        "Preparing decorative/restaurant-style cuts",
-        "Arranging food inside refrigerator or kitchen storage"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
+        "id": "kitchen-preparation",
+        "title": "Kitchen Preparation",
+        "tiers": [
+            {
+                "name": "Express",
+                "duration": "30 mins",
+                "price": 125
+            },
+            {
+                "name": "Standard",
+                "duration": "1 hr",
+                "price": 250
+            }
+        ],
+        "includes": [
+            "Washing/peeling vegetables",
+            "Chopping vegetables",
+            "Kneading dough",
+            "Sorting into containers",
+            "Basic cleaning of area"
+        ],
+        "excludes": [
+            "Cooking or full meal prep",
+            "Washing large quantities",
+            "Food processing",
+            "Cutting meat",
+            "Preparing decorative cuts"
+        ]
     },
     {
-      id: "dusting-wiping",
-      title: "Dusting & Wiping",
-      price: 149,
-      duration: "~45 mins",
-      includes: [
-        "Dry dusting of furniture surfaces and shelves",
-        "Dusting of corners and reachable surfaces",
-        "Dusting of light fixtures (bulbs and tube lights – exterior only)",
-        "Dusting of electrical switches and plug points",
-        "Minor bed adjustment to dust underneath (if easily movable)"
-      ],
-      excludes: [
-        "Dusting of ceiling fans",
-        "Cleaning of windows or window sills",
-        "Dusting in balcony or terrace areas",
-        "Wet cleaning of furniture or electrical items",
-        "Moving heavy furniture or appliances"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
+        "id": "dusting-and-wiping",
+        "title": "Dusting And Wiping",
+        "tiers": [
+            {
+                "name": "Express",
+                "duration": "30 mins",
+                "price": 125
+            },
+            {
+                "name": "Standard",
+                "duration": "1 hr",
+                "price": 250
+            }
+        ],
+        "includes": [
+            "Dry dusting furniture",
+            "Dusting corners",
+            "Dusting light fixtures",
+            "Dusting electrical switches",
+            "Minor bed adjustment"
+        ],
+        "excludes": [
+            "Dusting ceiling fans",
+            "Cleaning windows",
+            "Balcony dusting",
+            "Wet cleaning",
+            "Moving heavy furniture"
+        ]
     },
     {
-      id: "sweeping-mopping",
-      title: "Sweeping & Mopping",
-      price: 149,
-      duration: "~30 mins",
-      includes: [
-        "Sweeping and mopping floors in selected rooms",
-        "Removing dust and loose dirt",
-        "Moving light items (like chairs) for cleaning access"
-      ],
-      excludes: [
-        "Balcony or outdoor cleaning",
-        "Deep cleaning / stain removal / polishing",
-        "Moving heavy furniture (beds, cupboards)",
-        "Carpet or rug vacuum cleaning"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
+        "id": "sweeping-and-mopping",
+        "title": "Sweeping And Mopping",
+        "tiers": [
+            {
+                "name": "Express",
+                "duration": "30 mins",
+                "price": 125
+            },
+            {
+                "name": "Standard",
+                "duration": "1 hr",
+                "price": 250
+            }
+        ],
+        "includes": [
+            "Sweeping and mopping floors",
+            "Removing dust/dirt",
+            "Moving light items"
+        ],
+        "excludes": [
+            "Balcony/outdoor cleaning",
+            "Deep cleaning/polishing",
+            "Moving heavy furniture",
+            "Carpet vacuuming"
+        ]
     },
     {
-      id: "pre-party-express-clean",
-      title: "Pre-party Express Clean",
-      price: 499,
-      duration: "90 mins",
-      timeLimitTag: "90 mins strict",
-      includes: [
-        "Living room & dining cleaning",
-        "Kitchen surface cleaning",
-        "Bathroom cleaning",
-        "Full house sweeping & mopping",
-        "Trash removal",
-        "Basic utensil cleaning"
-      ],
-      excludes: [
-        "Upholstery / appliance interiors / chimneys / balcony exteriors",
-        "Heavy grease or deep stain cleaning",
-        "Construction debris or bulk waste removal",
-        "Extra work beyond 90 minutes"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
+        "id": "pre-party-express-clean",
+        "title": "Pre-party Express Clean",
+        "tiers": [
+            {
+                "name": "Basic",
+                "duration": "90 mins",
+                "price": 375
+            }
+        ],
+        "includes": [
+            "Living room & dining",
+            "Kitchen surfaces",
+            "Bathroom cleaning",
+            "Full house sweep/mop",
+            "Trash removal",
+            "Basic utensils"
+        ],
+        "excludes": [
+            "Upholstery/interior appliances",
+            "Heavy grease",
+            "Construction debris",
+            "Extra work beyond 90m"
+        ]
     },
     {
-      id: "complete-wardrobe",
-      title: "Complete Wardrobe",
-      price: 399,
-      duration: "~90 mins",
-      includes: [
-        "Interior wardrobe cleaning",
-        "Emptying and rearranging clothes",
-        "Cleaning handles & edges",
-        "Dry dusting of shelves and surfaces"
-      ],
-      excludes: [
-        "Washing or cleaning clothes",
-        "Ironing",
-        "Polishing wardrobe surface",
-        "Moving heavy furniture/appliances"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
+        "id": "complete-wardrobe",
+        "title": "Complete Wardrobe",
+        "tiers": [
+            {
+                "name": "Standard",
+                "duration": "180 mins",
+                "price": 750
+            }
+        ],
+        "includes": [
+            "Interior wardrobe cleaning",
+            "Emptying and rearranging",
+            "Cleaning handles & edges",
+            "Dry dusting shelves"
+        ],
+        "excludes": [
+            "Washing clothes",
+            "Ironing",
+            "Polishing surface",
+            "Moving heavy furniture"
+        ]
     },
     {
-      id: "after-party-clean",
-      title: "After-party Express Clean",
-      price: 599,
-      duration: "90 mins",
-      timeLimitTag: "90 mins strict",
-      includes: [
-        "Floor & spill cleanup",
-        "Trash + bottle disposal",
-        "Kitchen reset (counter, sink, stove top, utensils)",
-        "Bathroom clean",
-        "Living room tidy",
-        "Full house floor sweeping & mopping"
-      ],
-      excludes: [
-        "Vomit cleaning, upholstery/appliance interiors, chimneys, or balcony exteriors",
-        "Heavy grease or stains cleaning, removal of construction debris, and bulk waste",
-        "Tasks outside the defined package scope and work beyond 90 minutes"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
+        "id": "after-party-express-clean",
+        "title": "After-party Express Clean",
+        "tiers": [
+            {
+                "name": "Basic",
+                "duration": "90 mins",
+                "price": 375
+            }
+        ],
+        "includes": [
+            "Floor & spill cleanup",
+            "Trash + bottle disposal",
+            "Kitchen reset",
+            "Bathroom clean",
+            "Living room tidy",
+            "Full house sweep/mop"
+        ],
+        "excludes": [
+            "Vomit cleaning",
+            "Heavy grease",
+            "Tasks outside scope"
+        ]
     },
     {
-      id: "ironing-folding",
-      title: "Ironing & Folding",
-      price: 149,
-      duration: "~60 mins",
-      includes: [
-        "Ironing of daily wear clothes (shirts/t-shirts/trousers)",
-        "Neat folding of ironed clothes after completion"
-      ],
-      excludes: [
-        "Steam Ironing",
-        "Blazers, coats, or sarees",
-        "Party wear or delicate designer garments",
-        "Bedsheets or curtains",
-        "Hand-washing or Drying clothes",
-        "Arranging clothes inside wardrobes",
-        "Dirty clothes will not be pressed"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
+        "id": "ironing-and-folding",
+        "title": "Ironing And Folding",
+        "tiers": [
+            {
+                "name": "Express",
+                "duration": "30 mins",
+                "price": 125
+            },
+            {
+                "name": "Standard",
+                "duration": "1 hr",
+                "price": 250
+            }
+        ],
+        "includes": [
+            "Ironing daily wear",
+            "Neat folding"
+        ],
+        "excludes": [
+            "Steam Ironing",
+            "Blazers/coats",
+            "Party wear",
+            "Hand-washing",
+            "Arranging inside wardrobe"
+        ]
     },
     {
-      id: "windows-cleaning",
-      title: "Windows Cleaning",
-      price: 249,
-      duration: "~45 mins",
-      includes: [
-        "Surface dust removal from window mesh/screens",
-        "Wiping window sills if accessible from inside",
-        "Light cleaning of interior window tracks/channels"
-      ],
-      excludes: [
-        "Exterior window glass cleaning",
-        "Cleaning of any other surfaces",
-        "Balcony/outside window access",
-        "Removal of old stains/paint marks",
-        "Deep scrubbing of tracks"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
+        "id": "windows-cleaning",
+        "title": "Windows Cleaning",
+        "tiers": [
+            {
+                "name": "Express",
+                "duration": "30 mins",
+                "price": 125
+            },
+            {
+                "name": "Standard",
+                "duration": "1 hr",
+                "price": 250
+            }
+        ],
+        "includes": [
+            "Dust from mesh",
+            "Wiping window sills",
+            "Cleaning interior tracks"
+        ],
+        "excludes": [
+            "Exterior glass cleaning",
+            "Balcony access",
+            "Removal of old stains",
+            "Deep scrubbing"
+        ]
     },
     {
-      id: "laundry",
-      title: "Laundry",
-      price: 199,
-      duration: "~45 mins",
-      includes: [
-        "Washing clothes using customer’s machine",
-        "Adding detergent in correct compartment",
-        "Selecting fabric wash mode",
-        "Hanging washed clothes for drying"
-      ],
-      excludes: [
-        "Hand-washing of delicate garments",
-        "Ironing or folding clothes",
-        "Arranging clothes inside wardrobes",
-        "Stain treatment",
-        "Washing machine cleaning or repair"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
+        "id": "laundry",
+        "title": "Laundry",
+        "tiers": [
+            {
+                "name": "Express",
+                "duration": "30 mins",
+                "price": 125
+            },
+            {
+                "name": "Standard",
+                "duration": "1 hr",
+                "price": 250
+            }
+        ],
+        "includes": [
+            "Washing using machine",
+            "Adding detergent",
+            "Selecting wash mode",
+            "Hanging for drying"
+        ],
+        "excludes": [
+            "Hand-washing",
+            "Ironing or folding",
+            "Stain treatment",
+            "Machine cleaning/repair"
+        ]
     },
     {
-      id: "kitchen-cleaning",
-      title: "Kitchen Cleaning",
-      price: 299,
-      duration: "~60 mins",
-      includes: [
-        "Wiping and cleaning kitchen countertops/slabs",
-        "Cleaning exterior of cabinets (top & bottom)",
-        "Cleaning stove exterior (burners/knobs)",
-        "Wiping visible kitchen wall tiles",
-        "Cleaning exterior of the sink"
-      ],
-      excludes: [
-        "Washing or soaking utensils and dishes",
-        "Rearranging utensils inside cabinets",
-        "Taking out garbage",
-        "Cleaning interiors of appliances (chimneys/ovens/etc.)"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
+        "id": "kitchen-cleaning",
+        "title": "Kitchen Cleaning",
+        "tiers": [
+            {
+                "name": "Express",
+                "duration": "30 mins",
+                "price": 150
+            },
+            {
+                "name": "Standard",
+                "duration": "1 hr",
+                "price": 300
+            }
+        ],
+        "includes": [
+            "Countertops/slabs",
+            "Cabinet exteriors",
+            "Stove exterior",
+            "Wall tiles",
+            "Exterior of sink"
+        ],
+        "excludes": [
+            "Washing utensils",
+            "Rearranging contents",
+            "Taking out garbage",
+            "Appliance interiors"
+        ]
     },
     {
-      id: "balcony",
-      title: "Balcony Cleaning",
-      price: 199,
-      duration: "~30 mins",
-      includes: [
-        "Sweeping and mopping balcony floor",
-        "Cleaning railings and grills",
-        "Cleaning parapet wall",
-        "Dusting of accessible surfaces (tables/chairs)"
-      ],
-      excludes: [
-        "Cleaning walls or ceiling",
-        "Watering plants / gardening",
-        "Cleaning terrace or exterior walls",
-        "Moving heavy plant pots"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
+        "id": "balcony",
+        "title": "Balcony",
+        "tiers": [
+            {
+                "name": "Express",
+                "duration": "30 mins",
+                "price": 125
+            },
+            {
+                "name": "Standard",
+                "duration": "1 hr",
+                "price": 250
+            }
+        ],
+        "includes": [
+            "Sweep and mop floor",
+            "Railings and grills",
+            "Parapet wall",
+            "Dusting light furniture"
+        ],
+        "excludes": [
+            "Cleaning walls/ceiling",
+            "Watering plants",
+            "Terrace areas",
+            "Moving heavy pots"
+        ]
     },
     {
-      id: "fan-cleaning",
-      title: "Fan Cleaning",
-      price: 250,
-      duration: "~30 mins",
-      includes: [
-        "Dust removal from fan blades and motor body",
-        "Wiping blades and accessible parts",
-        "Cleaning of fallen dust from floor"
-      ],
-      excludes: [
-        "Cleaning other room surfaces",
-        "Professional will not be carrying a ladder",
-        "Unsafe access or unstable setup",
-        "Moving heavy furniture"
-      ],
-      requiresCustomerEquipment: true,
-      equipmentTitle: "Ladder Required",
-      equipmentDesc: "Our professional does not carry a ladder. Please ensure a safe, stable ladder is available at home before the appointment.",
-      confirmText: "I confirm I have a safe and stable ladder available at home for the professional to use.",
-      isActive: true
+        "id": "fan-cleaning",
+        "title": "Fan Cleaning",
+        "tiers": [
+            {
+                "name": "Express",
+                "duration": "30 mins",
+                "price": 125
+            },
+            {
+                "name": "Standard",
+                "duration": "1 hr",
+                "price": 250
+            }
+        ],
+        "includes": [
+            "Dust from blades/motor",
+            "Wiping blades",
+            "Cleaning floor area"
+        ],
+        "excludes": [
+            "Other room surfaces",
+            "Ladder not provided",
+            "Internal parts",
+            "Moving furniture"
+        ],
+        "requiresCustomerEquipment": true,
+        "equipmentTitle": "Ladder Required",
+        "equipmentDesc": "Please provide a safe ladder.",
+        "confirmText": "I have a ladder."
     },
     {
-      id: "kitchen-cabinet",
-      title: "Kitchen Cabinet",
-      price: 499,
-      duration: "180 mins",
-      includes: [
-        "180 mins service duration",
-        "Interior cabinet cleaning",
-        "Dry and wet wipe",
-        "Emptying & rearranging contents",
-        "Exterior cleaning"
-      ],
-      excludes: [
-        "Deep oil or grease removal",
-        "Washing utensils",
-        "Cabinet repair",
-        "Rust or hard water stains"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
-    },
-    {
-      id: "kitchen-deep-cleaning",
-      title: "Kitchen Deep Cleaning",
-      price: 999,
-      duration: "3-4 hrs",
-      includes: [
-        "Deep degreasing of stove and chimney exterior",
-        "Thorough cleaning of countertops and slabs",
-        "Exterior and interior cleaning of cabinets",
-        "Scrubbing of wall tiles and sink",
-        "Floor degreasing and mopping",
-        "Wiping of all kitchen appliances (exterior)"
-      ],
-      excludes: [
-        "Chimney filter deep cleaning (internal)",
-        "Cleaning inside the oven or microwave (unless specified)",
-        "Dishwashing",
-        "Internal cleaning of filled cabinets"
-      ],
-      requiresCustomerEquipment: false,
-      isActive: true
-    },
-    { id: "bathroom-move-in-cleaning", title: "Bathroom Move-in Cleaning", price: 0, duration: "N/A", includes: [], excludes: [], isActive: false },
-    { id: "complete-kitchen-cleaning", title: "Complete Kitchen Cleaning", price: 0, duration: "N/A", includes: [], excludes: [], isActive: false },
-    { id: "chimney-cleaning", title: "Chimney Cleaning", price: 0, duration: "N/A", includes: [], excludes: [], isActive: false }
-  ];
-
-  // ─── Theme Persistence (Anti-Flicker) ───────────────────────
-  (function() {
-    if (localStorage.getItem('theme') === 'dark') {
-      document.body.classList.add('dark-mode');
+        "id": "kitchen-cabinet",
+        "title": "Kitchen Cabinet",
+        "tiers": [
+            {
+                "name": "Standard",
+                "duration": "180 mins",
+                "price": 750
+            }
+        ],
+        "includes": [
+            "Interior cleaning",
+            "Dry/wet wipe",
+            "Emptying/rearranging",
+            "Exterior cleaning"
+        ],
+        "excludes": [
+            "Deep oil/grease",
+            "Washing utensils",
+            "Repair/repainting",
+            "Hard stains"
+        ]
     }
-  })();
+];
 
-  // ─── State ─────────────────────────────────────────────────────
   let currentService = null;
+  let currentTier = null;
   let equipmentConfirmed = false;
 
-  // ─── DOM Refs ──────────────────────────────────────────────────
   const heroTitle      = document.getElementById('hero-title');
   const heroImg        = document.getElementById('hero-img').querySelector('img');
   const heroPrice      = document.getElementById('hero-price');
   const heroDuration   = document.getElementById('hero-duration');
   const includesList   = document.getElementById('includes-list');
   const excludesList   = document.getElementById('excludes-list');
-  const excludesCount  = document.getElementById('excludes-count');
+  const tierContainer  = document.getElementById('tier-selector-container');
   
   const equipmentAlert = document.getElementById('equipment-alert');
   const equipmentTitle = document.getElementById('equipment-title');
@@ -1127,21 +1173,18 @@
   const heroBookBtn    = document.getElementById('hero-book-btn');
   const ladderConfirm  = document.getElementById('ladder-confirm');
 
-  // ─── Image Mapping ──────────────
   const SERVICE_IMAGES = {
     "bathroom-cleaning": "assets/premium/bathroom.png",
     "fridge-cleaning": "https://images.unsplash.com/photo-1584622781564-1d9876a13d00?auto=format&fit=crop&q=80&w=1200",
     "kitchen-cleaning": "assets/premium/kitchen.png",
-    "kitchen-deep-cleaning": "assets/premium/kitchen.png",
     "fan-cleaning": "assets/premium/fan.png",
     "windows-cleaning": "assets/premium/window.png",
     "laundry": "assets/premium/laundry.png",
     "utensils": "assets/premium/dishwashing.png",
-    "sweeping-mopping": "assets/premium/sweeping-mopping.png",
+    "sweeping-and-mopping": "assets/premium/sweeping-mopping.png",
     "default": "https://images.unsplash.com/photo-1581578731548-c64695cc6954?auto=format&fit=crop&q=80&w=1200"
   };
 
-  // ─── Confirm Checkbox ──────────────────────────────────────────
   ladderConfirm.addEventListener('change', () => {
     equipmentConfirmed = ladderConfirm.checked;
     confirmBlock.classList.toggle('checked', equipmentConfirmed);
@@ -1149,10 +1192,9 @@
   });
 
   function updateBookBtn() {
-    if (!currentService) { heroBookBtn.disabled = true; return; }
+    if (!currentService || !currentTier) { heroBookBtn.disabled = true; return; }
     const needsConfirm = currentService.requiresCustomerEquipment;
     const isDisabled   = needsConfirm && !equipmentConfirmed;
-    
     heroBookBtn.disabled = isDisabled;
     if (isDisabled) {
       heroBookBtn.classList.remove('active');
@@ -1163,81 +1205,77 @@
     }
   }
 
-  // ─── Render Service ────────────────────────────────────────────
+  function selectTier(index) {
+    currentTier = currentService.tiers[index];
+    document.querySelectorAll('.tier-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+    });
+    heroPrice.innerHTML = `₹${currentTier.price.toLocaleString('en-IN')}`;
+    heroDuration.textContent = currentTier.duration;
+    updateBookBtn();
+  }
+
   function renderService(service) {
     currentService = service;
-
-    // Reset checkbox
     equipmentConfirmed = false;
     ladderConfirm.checked = false;
 
-    // Hero
     heroTitle.textContent = service.title;
     const targetImg = SERVICE_IMAGES[service.id] || SERVICE_IMAGES.default;
     heroImg.src = targetImg;
-    // Set fallback if the specific mapped image fails
-    heroImg.onerror = () => {
-      heroImg.onerror = null;
-      heroImg.src = SERVICE_IMAGES.default;
-    };
     
-    heroPrice.innerHTML = `₹${service.price.toLocaleString('en-IN')}`;
-    heroDuration.textContent = service.duration;
+    // Tiers
+    tierContainer.innerHTML = service.tiers.map((t, index) => `
+        <button class="tier-btn" onclick="selectTier(${index})">
+            <span class="t-name">${t.name}</span>
+            <span class="t-desc">${t.duration}</span>
+        </button>
+    `).join('');
+    
+    // Auto select standard (index 1) if available, otherwise 0
+    const startIdx = service.tiers.length > 1 ? 1 : 0;
+    selectTier(startIdx);
 
-    // Coming Soon Handler
-    if (service.isActive === false) {
-      const overlay = document.createElement('div');
-      overlay.className = 'coming-soon-overlay';
-      overlay.innerHTML = `
-        <div class="coming-soon-card">
-          <h2>Coming Soon! 🚀</h2>
-          <p>We are currently defining the scope and pricing for <strong>${service.title}</strong>. Stay tuned!</p>
-          <a href="index.html" class="hero-book-btn" style="text-decoration:none">Back to Directory</a>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-      heroBookBtn.disabled = true;
-    } else {
-      const existing = document.querySelector('.coming-soon-overlay');
-      if (existing) existing.remove();
-    }
-
-    // Includes
+    // Includes (Green Check)
     includesList.innerHTML = service.includes.map(item => `
       <div class="list-item">
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        <span style="color: #064e3b; font-weight: bold; margin-right: 8px;">✔</span>
         <span>${escHtml(item)}</span>
       </div>
     `).join('');
 
-    // Excludes
+    // Excludes (Red/Gray Cross)
     excludesList.innerHTML = service.excludes.map(item => `
       <div class="list-item">
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="var(--danger)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        <span>${escHtml(item)}</span>
+        <span style="color: #ef4444; font-weight: bold; margin-right: 8px; font-size: 14px;">✘</span>
+        <span style="color: #6b7280;">${escHtml(item)}</span>
       </div>
     `).join('');
-    excludesCount.textContent = service.excludes.length;
 
-    // Equipment
     const hasEquip = service.requiresCustomerEquipment;
     equipmentAlert.classList.toggle('hidden', !hasEquip);
     confirmBlock.classList.toggle('hidden', !hasEquip);
     
     if (hasEquip) {
-      equipmentTitle.textContent = service.equipmentTitle || "Customer Equipment Required";
-      equipmentDesc.textContent  = service.equipmentDesc  || "Please ensure the required equipment is available at home.";
-      confirmText.textContent    = service.confirmText    || "I confirm I have the required equipment available at home.";
-      ladderConfirm.checked      = false;
+      equipmentTitle.textContent = service.equipmentTitle || "Ladder Required";
+      equipmentDesc.textContent  = service.equipmentDesc  || "Professional doesn't carry a ladder.";
+      confirmText.textContent    = service.confirmText    || "I have a ladder.";
     }
-
-    updateBookBtn();
-
-    // Scroll to top of page
     window.scrollTo({ top: 0, behavior: 'auto' });
   }
 
-  // ─── Booking ───────────────────────────────────────────────────
+  function handleBook() {
+    if (!currentService || !currentTier) return;
+    const params = new URLSearchParams({
+      service_id: currentService.id,
+      service:    currentService.title,
+      tier:       currentTier.name,
+      price:      currentTier.price,
+      duration:   currentTier.duration
+    });
+    window.location.href = `/booking?${params.toString()}`;
+  }
+    // ─── Booking ───────────────────────────────────────────────────
 
 
   // ─── Book Action ───────────────────────────────────────────────

@@ -1244,7 +1244,7 @@ def generate_uuid():
 @app.route('/api/seed/services', methods=['POST'])
 def seed_services():
     try:
-        # 1️⃣ Clear existing data (optional)
+        # 1️⃣ Clear existing data
         Service.query.delete()
         ServiceCategory.query.delete()
         db.session.commit()
@@ -1252,40 +1252,16 @@ def seed_services():
         # 2️⃣ Service Categories
         categories_data = [
             {
-                "name": "Home Cleaning",
-                "description": "Professional deep cleaning, regular maintenance, and specialized cleaning services",
-                "image_url": "https://example.com/home_cleaning.jpg",
-                "starting_price": 50
+                "name": "Cleaning Services",
+                "description": "Premium home, room, and appliance cleaning packages.",
+                "image_url": "assets/premium/sweeping-mopping.png",
+                "starting_price": 125
             },
             {
-                "name": "Home Repairs",
-                "description": "Expert technicians for plumbing, electrical, carpentry, and general repairs",
-                "image_url": "https://example.com/home_repairs.jpg",
-                "starting_price": 75
-            },
-            {
-                "name": "Beauty & Wellness",
-                "description": "Professional beauty services in the comfort of your home",
-                "image_url": "https://example.com/beauty_wellness.jpg",
-                "starting_price": 40
-            },
-            {
-                "name": "Appliance Repair",
-                "description": "Quick and reliable repair services for all your home appliances",
-                "image_url": "https://example.com/appliance_repair.jpg",
-                "starting_price": 60
-            },
-            {
-                "name": "Painting",
-                "description": "Professional painting services for interior and exterior spaces",
-                "image_url": "https://example.com/painting.jpg",
-                "starting_price": 100
-            },
-            {
-                "name": "Pest Control",
-                "description": "Safe and effective pest control solutions for your home",
-                "image_url": "https://example.com/pest_control.jpg",
-                "starting_price": 80
+                "name": "Organization & Prep",
+                "description": "Professional garment care, organization, and kitchen prep.",
+                "image_url": "assets/premium/laundry.png",
+                "starting_price": 125
             }
         ]
 
@@ -1301,40 +1277,30 @@ def seed_services():
             )
             db.session.add(cat)
             categories.append(cat)
-
         db.session.commit()
 
         # 3️⃣ Services per Category
         services_data = {
-            "Home Cleaning": [
-                {"name": "Deep Cleaning", "description": "Thorough cleaning for entire home", "base_price": 50, "image_url": "https://example.com/deep_cleaning.jpg"},
-                {"name": "Regular Cleaning", "description": "Daily/weekly scheduled cleaning", "base_price": 50, "image_url": "https://example.com/regular_cleaning.jpg"},
-                {"name": "Move-in/out Cleaning", "description": "Cleaning service for moving homes", "base_price": 60, "image_url": "https://example.com/move_cleaning.jpg"}
+            "Cleaning Services": [
+                {"name": "Bathroom Cleaning", "description": "Inside and rim, washbasin, visible tiles, floor sweeping and mopping.", "base_price": 150},
+                {"name": "Fridge Cleaning", "description": "Interior surfaces, shelves, basic deodorising, wiping exterior.", "base_price": 150},
+                {"name": "Dusting And Wiping", "description": "Dusting of furniture, shelves, corners, and light fixtures.", "base_price": 125},
+                {"name": "Sweeping And Mopping", "description": "Sweeping and mopping floors, removing loose dirt.", "base_price": 125},
+                {"name": "Pre-party Express Clean", "description": "90 mins living room, kitchen, bathroom, floor mop.", "base_price": 375},
+                {"name": "After-party Express Clean", "description": "Spill cleanup, trash disposal, kitchen reset, mopping.", "base_price": 375},
+                {"name": "Windows Cleaning", "description": "Dust removal from window mesh, wiping accessible sills.", "base_price": 125},
+                {"name": "Kitchen Cleaning", "description": "Countertops, cabinet exteriors, stove top, sink.", "base_price": 150},
+                {"name": "Balcony", "description": "Sweeping and mopping, wiping railings and parapet.", "base_price": 125},
+                {"name": "Fan Cleaning", "description": "Dust removal from blades and motor body (Ladder required).", "base_price": 125},
+                {"name": "Kitchen Cabinet", "description": "Interior and exterior wipe, reorganizing contents.", "base_price": 750}
             ],
-            "Home Repairs": [
-                {"name": "Plumbing", "description": "All plumbing services", "base_price": 75, "image_url": "https://example.com/plumbing.jpg"},
-                {"name": "Electrical", "description": "Electrical repair services", "base_price": 75, "image_url": "https://example.com/electrical.jpg"},
-                {"name": "Carpentry", "description": "Woodwork and furniture repairs", "base_price": 75, "image_url": "https://example.com/carpentry.jpg"}
-            ],
-            "Beauty & Wellness": [
-                {"name": "Hair Styling", "description": "Professional hair styling at home", "base_price": 40, "image_url": "https://example.com/hair_styling.jpg"},
-                {"name": "Massage", "description": "Relaxing massage therapy", "base_price": 40, "image_url": "https://example.com/massage.jpg"},
-                {"name": "Skincare", "description": "Facials and skincare treatments", "base_price": 40, "image_url": "https://example.com/skincare.jpg"}
-            ],
-            "Appliance Repair": [
-                {"name": "AC Service", "description": "AC installation and repair", "base_price": 60, "image_url": "https://example.com/ac_service.jpg"},
-                {"name": "Washing Machine", "description": "Washing machine repair", "base_price": 60, "image_url": "https://example.com/washing_machine.jpg"},
-                {"name": "Refrigerator", "description": "Refrigerator repair", "base_price": 60, "image_url": "https://example.com/refrigerator.jpg"}
-            ],
-            "Painting": [
-                {"name": "Interior Painting", "description": "Paint walls and ceilings inside your home", "base_price": 100, "image_url": "https://example.com/interior_painting.jpg"},
-                {"name": "Exterior Painting", "description": "Paint outer walls and facades", "base_price": 100, "image_url": "https://example.com/exterior_painting.jpg"},
-                {"name": "Touch-ups", "description": "Small touch-up painting jobs", "base_price": 100, "image_url": "https://example.com/touchups.jpg"}
-            ],
-            "Pest Control": [
-                {"name": "Termite Control", "description": "Protect your home from termites", "base_price": 80, "image_url": "https://example.com/termite.jpg"},
-                {"name": "Cockroach Control", "description": "Eliminate cockroach infestations", "base_price": 80, "image_url": "https://example.com/cockroach.jpg"},
-                {"name": "General Pest", "description": "Control all common household pests", "base_price": 80, "image_url": "https://example.com/general_pest.jpg"}
+            "Organization & Prep": [
+                {"name": "Packing And Unpacking", "description": "Clothes, toys, kitchen items, labelling boxes.", "base_price": 125},
+                {"name": "Utensils", "description": "Washing, drying, and placing utensils in rack.", "base_price": 125},
+                {"name": "Kitchen Preparation", "description": "Chopping veggies, kneading dough, sorting ingredients.", "base_price": 125},
+                {"name": "Complete Wardrobe", "description": "Emptying, interior cleaning, folding and rearranging clothes.", "base_price": 750},
+                {"name": "Ironing And Folding", "description": "Neat pressing and folding for daily wear garments.", "base_price": 125},
+                {"name": "Laundry", "description": "Machine wash, detergent loading, hanging to dry.", "base_price": 125}
             ]
         }
 
@@ -1346,13 +1312,13 @@ def seed_services():
                     name=svc["name"],
                     description=svc["description"],
                     base_price=svc["base_price"],
-                    image_url=svc["image_url"],
+                    image_url="assets/premium/default.png",
                     is_active=True
                 )
                 db.session.add(service)
 
         db.session.commit()
-        return jsonify({"message": "UrbanEase categories and services seeded successfully!"}), 201
+        return jsonify({"message": "Custom 17 Snappito services seeded successfully!"}), 201
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
