@@ -56,11 +56,10 @@
     body {
       font-family: 'Inter', sans-serif;
       color: var(--text-main);
-      background-color: var(--bg-color);
+      background: linear-gradient(135deg, #e6fdf2 0%, #ffffff 40%, #ffffff 100%);
       min-height: 100vh;
       overflow-x: hidden;
       margin: 0;
-      transition: background 0.3s, color 0.3s;
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -152,25 +151,88 @@
 
     /* Hero Section */
     header.hero {
-      text-align: center;
-      padding: 180px 20px 120px;
-      max-width: 900px;
+      padding: 160px 40px 80px;
+      max-width: 1200px;
       margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 60px;
+    }
+
+    .hero-content {
+      flex: 1;
+      text-align: left;
     }
 
     .hero h1 {
-      font-size: clamp(40px, 8vw, 64px);
+      font-size: clamp(44px, 6vw, 70px);
       line-height: 1.1;
       margin-bottom: 24px;
       color: #064e3b;
       font-weight: 800;
+      letter-spacing: -1px;
     }
 
     .hero p {
-      font-size: clamp(18px, 3vw, 22px);
+      font-size: clamp(18px, 2vw, 22px);
       color: #374151;
-      margin-bottom: 40px;
+      margin-bottom: 35px;
       font-weight: 400;
+      max-width: 90%;
+      line-height: 1.6;
+    }
+
+    .hero-features {
+      display: flex;
+      gap: 12px;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+
+    .hero-feature {
+      padding: 8px 18px;
+      border: 1px solid #10b981;
+      border-radius: 50px;
+      color: #064e3b;
+      font-size: 15px;
+      font-weight: 600;
+      background: rgba(255,255,255,0.5);
+    }
+
+    .hero-image-container {
+      flex: 1;
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .hero-image {
+      width: 100%;
+      max-width: 520px;
+      border-radius: 24px;
+      box-shadow: 0 25px 50px rgba(16, 185, 129, 0.15);
+      object-fit: cover;
+      aspect-ratio: 4/5;
+    }
+
+    .hero-floating-card {
+      position: absolute;
+      bottom: -15px;
+      right: 20px;
+      background: white;
+      padding: 14px 22px;
+      border-radius: 16px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #1F2937;
+    }
+    .hero-floating-card .amber-icon {
+      color: #f59e0b;
+      font-size: 22px;
     }
 
     .container {
@@ -873,19 +935,33 @@
 
 <nav id="navbar">
   <div class="nav-container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-    <a href="/" class="logo">Snappito<span>⚡</span></a>
+    <a href="index.html" class="logo">Snappito<span>⚡</span></a>
     <div class="nav-links">
       <a href="#services" class="nav-link">Services</a>
       <a href="#how-it-works" class="nav-link">How it Works</a>
-      <button id="theme-toggle" class="btn" style="background: rgba(255,255,255,0.1); padding: 8px 12px; font-size: 18px;">🌙</button>
+      <a href="#about" class="nav-link" style="margin-right: 20px;">About Us</a>
+      <a href="login.html" class="btn" style="padding: 10px 24px; font-size: 15px;">Login / Sign Up</a>
     </div>
   </div>
 </nav>
 
 <header class="hero">
-  <h1>Quick Services.<br>Instant Solutions.</h1>
-  <p>Your one-stop destination for premium cleaning and household services. Experience hassle-free booking and immaculate results.</p>
-  <a href="#services" class="btn" style="padding: 18px 36px; font-size: 18px;">Explore Services</a>
+  <div class="hero-content">
+    <h1>Quick Services.<br>Instant Solutions.</h1>
+    <p>Premium cleaning and reliable household services, delivered by trained professionals straight to your door.</p>
+    <a href="#services" class="btn" style="padding: 18px 36px; font-size: 18px; background: linear-gradient(90deg, #f59e0b, #ea580c); color: white; border-radius: 50px;">Explore Services</a>
+    <div class="hero-features">
+      <div class="hero-feature">Verified Experts</div>
+      <div class="hero-feature">Background Checked</div>
+      <div class="hero-feature">2-Day Training</div>
+    </div>
+  </div>
+  <div class="hero-image-container">
+    <img src="assets/hero_expert.png" alt="Snappito Professional" class="hero-image">
+    <div class="hero-floating-card">
+      <span class="amber-icon">⚡</span> Expert nearby: 10 mins away
+    </div>
+  </div>
 </header>
 
 <main class="container">

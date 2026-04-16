@@ -368,8 +368,8 @@
 
 <nav>
   <div style="display:flex; align-items:center; gap:30px;">
-    <a href="/" class="logo">Snappito<span>⚡</span></a>
-    <a href="/#services" style="color: var(--nav-text); text-decoration: none; font-size: 14px; font-weight: 500; opacity: 0.8; transition: opacity 0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.8">
+    <a href="index.html" class="logo">Snappito<span>⚡</span></a>
+    <a href="index.html#services" style="color: var(--nav-text); text-decoration: none; font-size: 14px; font-weight: 500; opacity: 0.8; transition: opacity 0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.8">
       <i class="fas fa-search" style="margin-right: 5px;"></i> Explore Services
     </a>
   </div>
@@ -928,7 +928,7 @@
       if(response.ok) {
         const bookings = await response.json();
         if(bookings.length === 0) {
-          list.innerHTML = `<p style="color: var(--text-muted);">You have no bookings yet. <a href="/" style="color:var(--secondary)">Book one now!</a></p>`;
+          list.innerHTML = `<p style="color: var(--text-muted);">You have no bookings yet. <a href="index.html" style="color:var(--secondary)">Book one now!</a></p>`;
           return;
         }
         

@@ -50,7 +50,7 @@ def generate_uuid():
 
 class User(db.Model):
     __tablename__ = "user"
-    __table_args__ = {'schema': 'public'} 
+     
     id = db.Column(db.String, primary_key=True)
     full_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
@@ -77,10 +77,10 @@ tokens = {}
 
 class UserAddress(db.Model):
     __tablename__ = 'user_addresses'
-    __table_args__ = {'schema': 'public'}  # <- specify schema here
+      # <- specify schema here
 
     id = db.Column(db.String, primary_key=True, default=generate_uuid)
-    user_id = db.Column(db.String, db.ForeignKey('public.user.id'), nullable=False)
+    user_id = db.Column(db.String, db.ForeignKey('user.id'), nullable=False)
     
     line1 = db.Column(db.String(255), nullable=False)
     line2 = db.Column(db.String(255), nullable=True)
@@ -98,10 +98,10 @@ class UserAddress(db.Model):
     
 class UserSettings(db.Model):
     __tablename__ = 'user_settings'
-    __table_args__ = {'schema': 'public'}  # schema
+      # schema
 
     id = db.Column(db.String, primary_key=True, default=generate_uuid)
-    user_id = db.Column(db.String, db.ForeignKey('public.user.id'), nullable=False, unique=True)
+    user_id = db.Column(db.String, db.ForeignKey('user.id'), nullable=False, unique=True)
     
     language = db.Column(db.String(20), default='en')
     notifications_enabled = db.Column(db.Boolean, default=True)
@@ -116,9 +116,9 @@ class UserSettings(db.Model):
 
 
 class UserProfile(db.Model):
-    __table_args__ = {'schema': 'public'}  # <- specify schema here
+      # <- specify schema here
 
-    user_id = db.Column(db.String, db.ForeignKey('public.user.id'), primary_key=True)
+    user_id = db.Column(db.String, db.ForeignKey('user.id'), primary_key=True)
     gender = db.Column(db.String(10))
     dob = db.Column(db.Date)
     address = db.Column(db.Text)
@@ -130,7 +130,7 @@ class UserProfile(db.Model):
 
 class ServiceCategory(db.Model):
     __tablename__ = 'service_category'
-    __table_args__ = {'schema': 'public'}
+    
 
     id = db.Column(db.String, primary_key=True, default=generate_uuid)
     name = db.Column(db.String(100), nullable=False, unique=True)
@@ -158,10 +158,10 @@ class ServiceCategory(db.Model):
 
 class Service(db.Model):
     __tablename__ = 'service'
-    __table_args__ = {'schema': 'public'}
+    
 
     id = db.Column(db.String, primary_key=True, default=generate_uuid)
-    category_id = db.Column(db.String, db.ForeignKey('public.service_category.id'), nullable=False)
+    category_id = db.Column(db.String, db.ForeignKey('service_category.id'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     base_price = db.Column(db.Float)
@@ -182,11 +182,11 @@ class Service(db.Model):
 
 class Feedback(db.Model):
     __tablename__ = 'feedback'
-    __table_args__ = {'schema': 'public'}  # specify schema
+      # specify schema
 
     id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = db.Column(db.String, db.ForeignKey('public.user.id'), nullable=False)
-    service_id = db.Column(db.String, db.ForeignKey('public.service.id'), nullable=True)
+    user_id = db.Column(db.String, db.ForeignKey('user.id'), nullable=False)
+    service_id = db.Column(db.String, db.ForeignKey('service.id'), nullable=True)
     rating = db.Column(db.Integer, nullable=False)  # e.g., 1-5
     comment = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
@@ -202,12 +202,12 @@ class Feedback(db.Model):
         }
     
 class Booking(db.Model):
-    __table_args__ = {'schema': 'public'}  # <- specify schema here
+      # <- specify schema here
 
     id = db.Column(db.String, primary_key=True)
-    user_id = db.Column(db.String, db.ForeignKey('public.user.id'))
-    service_id = db.Column(db.String, db.ForeignKey('public.service.id'))
-    professional_id = db.Column(db.String, db.ForeignKey('public.user.id'),nullable=True)
+    user_id = db.Column(db.String, db.ForeignKey('user.id'))
+    service_id = db.Column(db.String, db.ForeignKey('service.id'))
+    professional_id = db.Column(db.String, db.ForeignKey('user.id'),nullable=True)
     scheduled_time = db.Column(db.DateTime)
     status = db.Column(db.String(20))  # pending, confirmed, completed, canceled
     address = db.Column(db.Text)
@@ -227,10 +227,10 @@ class Booking(db.Model):
             "created_at": self.created_at.isoformat() if self.created_at else None
         }
 class BookingPayment(db.Model):
-    __table_args__ = {'schema': 'public'}  # <- specify schema here
+      # <- specify schema here
 
     id = db.Column(db.String, primary_key=True)
-    booking_id = db.Column(db.String, db.ForeignKey('public.booking.id'))
+    booking_id = db.Column(db.String, db.ForeignKey('booking.id'))
     amount = db.Column(db.Float)
     method = db.Column(db.String(50))
     status = db.Column(db.String(20))  # paid, failed, pending
@@ -238,51 +238,51 @@ class BookingPayment(db.Model):
     paid_at = db.Column(db.DateTime)
 
 class Review(db.Model):
-    __table_args__ = {'schema': 'public'}  # <- specify schema here
+      # <- specify schema here
 
     id = db.Column(db.String, primary_key=True)
-    booking_id = db.Column(db.String, db.ForeignKey('public.booking.id'))
+    booking_id = db.Column(db.String, db.ForeignKey('booking.id'))
     rating = db.Column(db.Integer)
     comment = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class ProfessionalProfile(db.Model):
-    __table_args__ = {'schema': 'public'}  # <- specify schema here
+      # <- specify schema here
 
-    user_id = db.Column(db.String, db.ForeignKey('public.user.id'), primary_key=True)
+    user_id = db.Column(db.String, db.ForeignKey('user.id'), primary_key=True)
     experience = db.Column(db.Integer)
     skills = db.Column(db.Text)
     documents = db.Column(db.Text)
     certification = db.Column(db.Text)
 
 class AvailabilitySlot(db.Model):
-    __table_args__ = {'schema': 'public'}  # <- specify schema here
+      # <- specify schema here
 
     id = db.Column(db.String, primary_key=True)
-    professional_id = db.Column(db.String, db.ForeignKey('public.user.id'))
+    professional_id = db.Column(db.String, db.ForeignKey('user.id'))
     day_of_week = db.Column(db.Integer)  # 0=Mon ... 6=Sun
     start_time = db.Column(db.Time)
     end_time = db.Column(db.Time)
 
 class Wallet(db.Model):
     __tablename__ = 'wallet'
-    __table_args__ = {'schema': 'public'}  # <- specify schema here
+      # <- specify schema here
     id = db.Column(UUID(as_uuid=True), primary_key=True,default=uuid.uuid4,nullable=False)
-    user_id = db.Column(db.String, db.ForeignKey('public.user.id'),unique=True)
+    user_id = db.Column(db.String, db.ForeignKey('user.id'),unique=True)
     balance = db.Column(db.Float, default=0.0)
     transactions = db.relationship('Transaction', backref='wallet', lazy=True)
 
 class Transaction(db.Model):
     __tablename__ = 'transaction'
-    __table_args__ = {'schema': 'public'}
+    
 
     id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = db.Column(db.String, db.ForeignKey('public.user.id'))
+    user_id = db.Column(db.String, db.ForeignKey('user.id'))
     type = db.Column(db.String(20))  # 'credit' or 'debit'
     amount = db.Column(db.Float)
     description = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
-    wallet_id = db.Column(UUID(as_uuid=True), db.ForeignKey('public.wallet.id'))  # <--- foreign key
+    wallet_id = db.Column(UUID(as_uuid=True), db.ForeignKey('wallet.id'))  # <--- foreign key
     def to_dict(self):
         return {
             "transaction_id": self.id,
@@ -295,11 +295,11 @@ class Transaction(db.Model):
 
 class Payment(db.Model):
     __tablename__ = 'payment'
-    __table_args__ = {'schema': 'public'}
+    
 
     id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = db.Column(db.String, db.ForeignKey('public.user.id'))
-    booking_id = db.Column(db.String, db.ForeignKey('public.booking.id'))
+    user_id = db.Column(db.String, db.ForeignKey('user.id'))
+    booking_id = db.Column(db.String, db.ForeignKey('booking.id'))
     amount = db.Column(db.Float)
     method = db.Column(db.String(50))  # wallet, card, upi, etc.
     status = db.Column(db.String(20))  # paid, failed, pending, refund_requested
@@ -322,7 +322,7 @@ class Payment(db.Model):
 
 class Subscription(db.Model):
     __tablename__ = 'subscription'
-    __table_args__ = {'schema': 'public'}
+    
 
     id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()))
     name = db.Column(db.String(100), nullable=False)
@@ -332,11 +332,11 @@ class Subscription(db.Model):
 
 class ProfessionalRating(db.Model):
     __tablename__ = 'professional_rating'
-    __table_args__ = {'schema': 'public'}
+    
 
     id = db.Column(db.String, primary_key=True)
-    professional_id = db.Column(db.String, db.ForeignKey('public.user.id'))
-    user_id = db.Column(db.String, db.ForeignKey('public.user.id'))
+    professional_id = db.Column(db.String, db.ForeignKey('user.id'))
+    user_id = db.Column(db.String, db.ForeignKey('user.id'))
     rating = db.Column(db.Integer)  # 1-5 stars
     review = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
@@ -354,17 +354,17 @@ class ProfessionalRating(db.Model):
 
 class ProfessionalAvailability(db.Model):
     __tablename__ = 'professional_availability'
-    __table_args__ = {'schema': 'public'}
+    
 
     id = db.Column(db.String, primary_key=True)
-    professional_id = db.Column(db.String, db.ForeignKey('public.user.id'))
+    professional_id = db.Column(db.String, db.ForeignKey('user.id'))
     available_from = db.Column(db.DateTime)
     available_to = db.Column(db.DateTime)
     status = db.Column(db.String(20))  # available, busy, on_leave
 
 class Promo(db.Model):
     __tablename__ = "promo"
-    __table_args__ = {"schema": "public"}  # specify schema
+      # specify schema
 
     id = db.Column(db.String, primary_key=True, default=generate_uuid)
     title = db.Column(db.String(100), nullable=False)
@@ -389,10 +389,10 @@ class Promo(db.Model):
 
 class Referral(db.Model):
     __tablename__ = "referral"
-    __table_args__ = {"schema": "public"}  # schema
+      # schema
 
     id = db.Column(db.String, primary_key=True, default=generate_uuid)
-    user_id = db.Column(db.String, db.ForeignKey("public.user.id"), nullable=False)  # who referred
+    user_id = db.Column(db.String, db.ForeignKey("user.id"), nullable=False)  # who referred
     friend_email = db.Column(db.String(120), nullable=False)
     referral_code = db.Column(db.String(50), nullable=False)
     status = db.Column(db.String(20), default="pending")  # pending, accepted, rewarded
@@ -410,7 +410,7 @@ class Referral(db.Model):
 
 class FAQ(db.Model):
     __tablename__ = "faq"
-    __table_args__ = {"schema": "public"}
+    
 
     id = db.Column(db.String, primary_key=True, default=generate_uuid)
     question = db.Column(db.Text, nullable=False)
@@ -419,10 +419,10 @@ class FAQ(db.Model):
 
 class SupportTicket(db.Model):
     __tablename__ = "support_ticket"
-    __table_args__ = {"schema": "public"}
+    
 
     id = db.Column(db.String, primary_key=True, default=generate_uuid)
-    user_id = db.Column(db.String, db.ForeignKey("public.user.id"), nullable=False)
+    user_id = db.Column(db.String, db.ForeignKey("user.id"), nullable=False)
     subject = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=False)
     status = db.Column(db.String(20), default="open")  # open, in-progress, closed
@@ -431,32 +431,32 @@ class SupportTicket(db.Model):
 
 class SupportChat(db.Model):
     __tablename__ = "support_chat"
-    __table_args__ = {"schema": "public"}
+    
 
     id = db.Column(db.String, primary_key=True, default=generate_uuid)
-    ticket_id = db.Column(db.String, db.ForeignKey("public.support_ticket.id"), nullable=False)
-    user_id = db.Column(db.String, db.ForeignKey("public.user.id"), nullable=False)
+    ticket_id = db.Column(db.String, db.ForeignKey("support_ticket.id"), nullable=False)
+    user_id = db.Column(db.String, db.ForeignKey("user.id"), nullable=False)
     message = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class IssueReport(db.Model):
     __tablename__ = "issue_report"
-    __table_args__ = {"schema": "public"}
+    
 
     id = db.Column(db.String, primary_key=True, default=generate_uuid)
-    user_id = db.Column(db.String, db.ForeignKey("public.user.id"), nullable=False)
-    service_id = db.Column(db.String, db.ForeignKey("public.service.id"), nullable=False)
+    user_id = db.Column(db.String, db.ForeignKey("user.id"), nullable=False)
+    service_id = db.Column(db.String, db.ForeignKey("service.id"), nullable=False)
     issue_type = db.Column(db.String(100), nullable=False)  # e.g., delay, quality, payment
     description = db.Column(db.Text, nullable=False)
     status = db.Column(db.String(20), default="reported")  # reported, in-progress, resolved
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 class AppFeedback(db.Model):
-    __table_args__ = {'schema': 'public'}
+    
 
     id = db.Column(db.String, primary_key=True)
-    user_id = db.Column(db.String, db.ForeignKey('public.user.id'))
+    user_id = db.Column(db.String, db.ForeignKey('user.id'))
     rating = db.Column(db.Integer)  # 1–5
     message = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
@@ -471,7 +471,7 @@ class AppFeedback(db.Model):
         }
 
 class RevokedToken(db.Model):
-    __table_args__ = {'schema': 'public'}
+    
 
     id = db.Column(db.String, primary_key=True)   # UUID
     jti = db.Column(db.String(255), unique=True) # JWT ID (from token)
@@ -480,19 +480,19 @@ class RevokedToken(db.Model):
 
 class UserSubscription(db.Model):
     __tablename__ = 'user_subscription'
-    __table_args__ = {'schema': 'public'}
+    
 
     id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = db.Column(db.String, db.ForeignKey('public.user.id'))
-    subscription_id = db.Column(db.String, db.ForeignKey('public.subscription.id'))
+    user_id = db.Column(db.String, db.ForeignKey('user.id'))
+    subscription_id = db.Column(db.String, db.ForeignKey('subscription.id'))
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
 
 class WalletTransaction(db.Model):
-    __table_args__ = {'schema': 'public'}  # <- specify schema here
+      # <- specify schema here
 
     id = db.Column(db.String, primary_key=True)
-    user_id = db.Column(db.String, db.ForeignKey('public.user.id'))
+    user_id = db.Column(db.String, db.ForeignKey('user.id'))
     amount = db.Column(db.Float)
     type = db.Column(db.String(10))  # credit / debit
     reason = db.Column(db.Text)
@@ -500,16 +500,16 @@ class WalletTransaction(db.Model):
 
 
 class Notification(db.Model):
-    __table_args__ = {'schema': 'public'}  # <- specify schema here
+      # <- specify schema here
 
     id = db.Column(db.String, primary_key=True)
-    user_id = db.Column(db.String, db.ForeignKey('public.user.id'))
+    user_id = db.Column(db.String, db.ForeignKey('user.id'))
     content = db.Column(db.Text)
     is_read = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class AdminUser(db.Model):
-    __table_args__ = {'schema': 'public'}  # <- specify schema here
+      # <- specify schema here
 
     id = db.Column(db.String, primary_key=True)
     email = db.Column(db.String(100), unique=True)
@@ -518,7 +518,7 @@ class AdminUser(db.Model):
     last_login = db.Column(db.DateTime)
 
 class OTP(db.Model):
-    __table_args__ = {'schema': 'public'}  # <- specify schema here
+      # <- specify schema here
 
     __tablename__ = 'otps'
 
@@ -1485,9 +1485,9 @@ def add_service_review(service_id):
 # -------------------- SEARCH & DISCOVERY --------------------
 @app.route('/api/search', methods=['GET'])
 def search_services():
-    query = request.args.get('query', '')
+    query = request.args.get('query') or request.args.get('q', '')
     if not query:
-        return jsonify({"error": "Query parameter is required"}), 400
+        return jsonify({"error": "Query parameter 'query' or 'q' is required"}), 400
 
     services = Service.query.filter(
         Service.is_active == True,
@@ -2516,4 +2516,4 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
 
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
