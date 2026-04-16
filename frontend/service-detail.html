@@ -15,13 +15,9 @@
   <style>
     /* ─── Design Tokens ──────────────────────────────────────────── */
     :root {
-      --primary:        #10b981;
-      --primary-hover:  #059669;
-      --secondary:      #f59e0b;
-      --danger:         #ef4444;
-      --text-main:      #111827;
+      --text-main:      #1F2937;
       --text-muted:     #4b5563;
-      --bg-color:       #F9FAFB;
+      --bg-color:       #ffffff;
       --card-bg:        #ffffff;
       --border-color:   #e5e7eb;
       --shadow-sm:      0 1px 2px 0 rgba(0,0,0,0.05);
@@ -30,6 +26,55 @@
       --radius-lg:      12px;
       --radius-xl:      20px;
       --content-max:    1100px;
+    }
+
+    /* ─── Dark Mode ──────────────────────────────────────────────── */
+    body.dark-mode {
+      --text-main:    #ffffff;
+      --text-muted:   rgba(255,255,255,0.7);
+      --bg-color:     #062f21;
+      --card-bg:      #0a3d2c;
+      --border-color: rgba(255,255,255,0.15);
+    }
+    body.dark-mode h1, body.dark-mode h2, body.dark-mode h3,
+    body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 {
+      color: #ffffff;
+    }
+    body.dark-mode .content-card,
+    body.dark-mode .action-card {
+      background: var(--card-bg);
+      border-color: var(--border-color);
+    }
+    /* Card text & list items: full white */
+    body.dark-mode .cc-title { color: #ffffff; }
+    body.dark-mode .list-item span { color: #ffffff; }
+    body.dark-mode .ac-price { color: #ffffff; }
+    body.dark-mode .ac-label,
+    body.dark-mode .ac-feature { color: rgba(255,255,255,0.85); }
+    body.dark-mode .confirm-text { color: #ffffff; }
+    /* Equipment warning: legible in dark mode */
+    body.dark-mode .equipment-alert {
+      background: rgba(245,158,11,0.25);
+      border-color: rgba(245,158,11,0.5);
+    }
+    body.dark-mode .equipment-alert .alert-body strong { color: #ffb74d; }
+    body.dark-mode .equipment-alert .alert-body p { color: #ffffff; }
+    /* Confirm block */
+    body.dark-mode .confirm-block {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.15);
+    }
+    body.dark-mode .hero-img-container { background: #0a3d2c; }
+    /* Footer text visible */
+    body.dark-mode .footer-section { background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.05); }
+    body.dark-mode .footer-section p { color: rgba(255,255,255,0.6); }
+    body.dark-mode .footer-section a {
+        background: rgba(255,255,255,0.1) !important;
+        border-color: rgba(255,255,255,0.2) !important;
+        color: #ffffff !important;
+    }
+    body.dark-mode .footer-section a:hover {
+        background: rgba(255,255,255,0.18) !important;
     }
 
     /* ─── Reset ──────────────────────────────────────────────────── */
@@ -42,18 +87,23 @@
       background: var(--bg-color);
       min-height: 100vh;
       overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
     }
 
     h1,h2,h3,h4,h5,h6 { font-family: 'Outfit', sans-serif; color: #064e3b; }
 
     /* ─── Nav ────────────────────────────────────────────────────── */
     nav {
-      position: sticky; top: 0; width: 100%; z-index: 100;
+      position: sticky; top: 0; width: 100%; z-index: 1000;
       padding: 16px 24px;
       display: flex; align-items: center; justify-content: center;
-      background: var(--primary);
+      background: #FFFFFF;
       border-bottom: 1px solid rgba(0,0,0,0.05);
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    body.dark-mode nav {
+        background: var(--primary);
     }
 
     .nav-container {
@@ -64,14 +114,16 @@
     .nav-logo {
       font-family: 'Outfit', sans-serif;
       font-size: 24px; font-weight: 800;
-      text-decoration: none; color: white;
+      text-decoration: none; color: #064e3b;
     }
+    body.dark-mode .nav-logo { color: white; }
     .nav-logo span { color: var(--secondary); }
 
     .nav-home-link {
-        color: white; text-decoration: none; font-weight: 600; font-size: 15px;
+        color: #064e3b; text-decoration: none; font-weight: 600; font-size: 15px;
         display: flex; align-items: center; gap: 6px;
     }
+    body.dark-mode .nav-home-link { color: white; }
     .nav-home-link:hover { opacity: 0.8; }
 
     /* ─── Page Shell ─────────────────────────────────────────────── */
@@ -97,8 +149,9 @@
       margin-bottom: 8px;
     }
 
-    .hero-title-area { margin-bottom: 24px; }
+    .hero-title-area { text-align: center; margin-bottom: 24px; }
     .hero-title { font-size: clamp(32px, 5vw, 48px); font-weight: 800; line-height: 1.1; margin-bottom: 12px; }
+    #hero-badge { justify-content: center; }
 
     .hero-img-container {
       width: 100%; height: clamp(300px, 50vh, 500px);
@@ -112,14 +165,18 @@
 
     /* ─── Floating Action Card ───────────────────────────────────── */
     .action-card {
-      background: #ffffff;
+      background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-xl);
       padding: 32px;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
       position: sticky;
       top: 100px;
       z-index: 10;
+    }
+
+    body.dark-mode .action-card {
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
     }
 
     .ac-price-row {
@@ -139,14 +196,17 @@
     .ac-feature svg { color: var(--primary); }
 
     /* ─── Content Blocks ────────────────────────────────────────── */
-    .details-area { display: flex; flex-direction: column; gap: 32px; }
+    .details-area { 
+      display: flex; flex-direction: column; gap: 32px; 
+      max-width: 800px;
+    }
 
     .content-card {
-      background: #ffffff;
+      background: var(--card-bg);
       border-radius: var(--radius-xl);
       padding: 32px;
       border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
+      box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
     }
 
     .cc-title {
@@ -165,7 +225,7 @@
     .list-item .icon { flex-shrink: 0; margin-top: 2px; }
 
     /* ─── Desktop Logic Overrides ───────────────────────────────── */
-    .sticky-cta { display: none !important; } /* Replaced by action card */
+    /* On mobile, sticky-cta is visible. On desktop (≥768px), it's hidden via media query below. */
 
     /* ─── Section Blocks ─────────────────────────────────────────── */
     .section-block {
@@ -288,8 +348,8 @@
     /* ─── Equipment Warning ──────────────────────────────────────── */
     .equipment-alert {
       display: flex; gap: 14px; align-items: flex-start;
-      background: rgba(245,158,11,0.12);
-      border: 1px solid rgba(245,158,11,0.35);
+      background: #fff3e0;
+      border: 1px solid #ffcc80;
       border-radius: var(--radius-lg);
       padding: 18px 18px;
       margin-bottom: 14px;
@@ -305,12 +365,12 @@
       display: block;
       font-family: 'Outfit', sans-serif;
       font-size: 15px; font-weight: 700;
-      color: var(--secondary);
+      color: #e65100;
       margin-bottom: 4px;
     }
 
     .equipment-alert .alert-body p {
-      font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.5;
+      font-size: 13px; color: #5d4037; line-height: 1.5;
     }
 
     /* ─── Confirmation Checkbox ──────────────────────────────────── */
@@ -351,19 +411,18 @@
       transition: all 0.2s;
     }
 
-    .confirm-label input[type="checkbox"] { display: none; }
-    .confirm-label input:checked ~ .custom-checkbox {
-      background: var(--primary);
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(16,185,129,0.2);
-    }
-    .confirm-label input:checked ~ .custom-checkbox svg {
-      opacity: 1; transform: scale(1);
+    .confirm-label input[type="checkbox"] {
+      width: 20px; height: 20px;
+      accent-color: var(--primary);
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: 2px;
     }
 
     .confirm-text {
       font-size: 14px; line-height: 1.55; color: var(--text-main);
       flex: 1;
+      margin-left: 4px;
     }
     .confirm-text strong { font-weight: 600; }
 
@@ -401,25 +460,31 @@
       display: flex; align-items: center; justify-content: center; gap: 8px;
       position: relative; overflow: hidden;
     }
-    .book-btn::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: rgba(255,255,255,0.15);
-      opacity: 0; transition: opacity 0.25s;
+    .hero-book-btn {
+      width: 100%;
+      padding: 16px 20px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px; font-weight: 800;
+      border: none; border-radius: 25px; cursor: pointer;
+      background: #ccc;
+      color: #000;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
-    .book-btn:hover:not(:disabled)::before { opacity: 1; }
-    .book-btn:hover:not(:disabled) {
+    .hero-book-btn.active {
+      background: #ffb74d;
+      box-shadow: 0 4px 15px rgba(255,183,77,0.4);
+    }
+    .hero-book-btn.active:hover {
+      background: #ffa726;
       transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(245,158,11,0.45);
+      box-shadow: 0 8px 25px rgba(255,167,38,0.45);
     }
-    .book-btn:disabled {
-      background: #4b5563;
-      color: #9ca3af;
+    .hero-book-btn:disabled {
+      opacity: 0.5;
       cursor: not-allowed;
-      box-shadow: none;
-      transform: none;
     }
-    .book-btn .btn-icon { font-size: 18px; }
 
     /* ─── Service Selector Chips ─────────────────────────────────── */
     .selector-bar {
@@ -540,7 +605,7 @@
     </div>
     
     <div class="hero-img-container" id="hero-img">
-      <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=1200" alt="Service Image">
+      <img src="assets/premium/hero_bg.png" alt="" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1581578731548-c64695cc6954?auto=format&fit=crop&q=80&w=1200';">
     </div>
   </div>
 
@@ -577,11 +642,8 @@
 
     <!-- Confirmation Checkbox -->
     <div class="confirm-block hidden" id="confirm-block">
-      <label class="confirm-label" for="equipment-confirm">
-        <input type="checkbox" id="equipment-confirm">
-        <div class="custom-checkbox" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
+      <label class="confirm-label" for="ladder-confirm">
+        <input type="checkbox" id="ladder-confirm">
         <span class="confirm-text" id="confirm-text">
           I confirm I have a safe ladder available at home.
         </span>
@@ -606,12 +668,26 @@
       Verified Professional
     </div>
 
-    <button class="hero-book-btn" id="hero-book-btn" onclick="handleBook()" style="margin-top:16px; width:100%">
+    <button class="hero-book-btn" id="hero-book-btn" disabled onclick="handleBook()" style="margin-top:16px; width:100%">
       Book Now
     </button>
   </aside>
 
 </main>
+
+<!-- ─── Footer ──────────────────────────────────────────────────── -->
+<footer class="footer-section" style="text-align:center; padding:80px 20px 40px; margin-top:40px; background:#FFFFFF; border-top:1px solid #E5E7EB;">
+  <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:20px;">
+    <a href="tel:8747858018" style="display:inline-flex; align-items:center; gap:10px; padding:14px 28px; background:#FFFFFF; border:1px solid #D1D5DB; border-radius:50px; font-size:16px; font-weight:700; text-decoration:none; color:#1F2937; transition:all 0.3s ease; box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+      📞 Call: 87478 58018
+    </a>
+    <a href="https://wa.me/918747858018" target="_blank" style="display:inline-flex; align-items:center; gap:10px; padding:14px 28px; background:#FFFFFF; border:1px solid #D1D5DB; border-radius:50px; font-size:16px; font-weight:700; text-decoration:none; color:#1F2937; transition:all 0.3s ease; box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);">
+      💬 WhatsApp
+    </a>
+  </div>
+  <p style="margin-top: 40px; padding-top: 24px; border-top: 1px solid #E5E7EB; color:var(--text-muted); font-size:14px;">© 2026 Snappito. All rights reserved.</p>
+</footer>
 
 <script>
   // ─── Service Data ──────────────────────────────────────────────
@@ -996,10 +1072,39 @@
       requiresCustomerEquipment: false,
       isActive: true
     },
+    {
+      id: "kitchen-deep-cleaning",
+      title: "Kitchen Deep Cleaning",
+      price: 999,
+      duration: "3-4 hrs",
+      includes: [
+        "Deep degreasing of stove and chimney exterior",
+        "Thorough cleaning of countertops and slabs",
+        "Exterior and interior cleaning of cabinets",
+        "Scrubbing of wall tiles and sink",
+        "Floor degreasing and mopping",
+        "Wiping of all kitchen appliances (exterior)"
+      ],
+      excludes: [
+        "Chimney filter deep cleaning (internal)",
+        "Cleaning inside the oven or microwave (unless specified)",
+        "Dishwashing",
+        "Internal cleaning of filled cabinets"
+      ],
+      requiresCustomerEquipment: false,
+      isActive: true
+    },
     { id: "bathroom-move-in-cleaning", title: "Bathroom Move-in Cleaning", price: 0, duration: "N/A", includes: [], excludes: [], isActive: false },
     { id: "complete-kitchen-cleaning", title: "Complete Kitchen Cleaning", price: 0, duration: "N/A", includes: [], excludes: [], isActive: false },
     { id: "chimney-cleaning", title: "Chimney Cleaning", price: 0, duration: "N/A", includes: [], excludes: [], isActive: false }
   ];
+
+  // ─── Theme Persistence (Anti-Flicker) ───────────────────────
+  (function() {
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+    }
+  })();
 
   // ─── State ─────────────────────────────────────────────────────
   let currentService = null;
@@ -1019,25 +1124,26 @@
   const equipmentDesc  = document.getElementById('equipment-desc');
   const confirmBlock   = document.getElementById('confirm-block');
   const confirmText    = document.getElementById('confirm-text');
-  const confirmCheck   = document.getElementById('equipment-confirm');
-  
   const heroBookBtn    = document.getElementById('hero-book-btn');
+  const ladderConfirm  = document.getElementById('ladder-confirm');
 
   // ─── Image Mapping ──────────────
   const SERVICE_IMAGES = {
-    "bathroom-cleaning": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=1200",
+    "bathroom-cleaning": "assets/premium/bathroom.png",
     "fridge-cleaning": "https://images.unsplash.com/photo-1584622781564-1d9876a13d00?auto=format&fit=crop&q=80&w=1200",
-    "kitchen-cleaning": "https://images.unsplash.com/photo-1556911220-e150213ff167?auto=format&fit=crop&q=80&w=1200",
-    "fan-cleaning": "https://images.unsplash.com/photo-1590756254933-2873d72a83b6?auto=format&fit=crop&q=80&w=1200",
-    "sofa-cleaning": "https://images.unsplash.com/photo-1556911220-e150213ff167?auto=format&fit=crop&q=80&w=1200",
+    "kitchen-cleaning": "assets/premium/kitchen.png",
+    "kitchen-deep-cleaning": "assets/premium/kitchen.png",
+    "fan-cleaning": "assets/premium/fan.png",
+    "windows-cleaning": "assets/premium/window.png",
+    "laundry": "assets/premium/laundry.png",
+    "utensils": "assets/premium/dishwashing.png",
+    "sweeping-mopping": "assets/premium/sweeping-mopping.png",
     "default": "https://images.unsplash.com/photo-1581578731548-c64695cc6954?auto=format&fit=crop&q=80&w=1200"
   };
 
-
-
   // ─── Confirm Checkbox ──────────────────────────────────────────
-  confirmCheck.addEventListener('change', () => {
-    equipmentConfirmed = confirmCheck.checked;
+  ladderConfirm.addEventListener('change', () => {
+    equipmentConfirmed = ladderConfirm.checked;
     confirmBlock.classList.toggle('checked', equipmentConfirmed);
     updateBookBtn();
   });
@@ -1046,7 +1152,15 @@
     if (!currentService) { heroBookBtn.disabled = true; return; }
     const needsConfirm = currentService.requiresCustomerEquipment;
     const isDisabled   = needsConfirm && !equipmentConfirmed;
+    
     heroBookBtn.disabled = isDisabled;
+    if (isDisabled) {
+      heroBookBtn.classList.remove('active');
+      heroBookBtn.style.background = '#ccc';
+    } else {
+      heroBookBtn.classList.add('active');
+      heroBookBtn.style.background = '#ffb74d';
+    }
   }
 
   // ─── Render Service ────────────────────────────────────────────
@@ -1055,12 +1169,17 @@
 
     // Reset checkbox
     equipmentConfirmed = false;
-    confirmCheck.checked = false;
-    confirmBlock.classList.remove('checked');
+    ladderConfirm.checked = false;
 
     // Hero
     heroTitle.textContent = service.title;
-    heroImg.src = SERVICE_IMAGES[service.id] || SERVICE_IMAGES.default;
+    const targetImg = SERVICE_IMAGES[service.id] || SERVICE_IMAGES.default;
+    heroImg.src = targetImg;
+    // Set fallback if the specific mapped image fails
+    heroImg.onerror = () => {
+      heroImg.onerror = null;
+      heroImg.src = SERVICE_IMAGES.default;
+    };
     
     heroPrice.innerHTML = `₹${service.price.toLocaleString('en-IN')}`;
     heroDuration.textContent = service.duration;
@@ -1109,6 +1228,7 @@
       equipmentTitle.textContent = service.equipmentTitle || "Customer Equipment Required";
       equipmentDesc.textContent  = service.equipmentDesc  || "Please ensure the required equipment is available at home.";
       confirmText.textContent    = service.confirmText    || "I confirm I have the required equipment available at home.";
+      ladderConfirm.checked      = false;
     }
 
     updateBookBtn();
@@ -1142,12 +1262,20 @@
   // ─── URL Param Init ────────────────────────────────────────────
   function initFromUrl() {
     const params = new URLSearchParams(window.location.search);
-    const id = params.get('service');
-    if (id) {
-      const found = SERVICES.find(s => s.id === id);
-      if (found) { renderService(found); return; }
+    const serviceId = params.get('service');
+    
+    if (!serviceId) {
+      window.location.href = 'index.html';
+      return;
     }
-    renderService(SERVICES[0]); // default: Fan Cleaning
+
+    const found = SERVICES.find(s => s.id === serviceId);
+    if (!found) {
+      window.location.href = 'index.html';
+      return;
+    }
+
+    renderService(found);
   }
 
   initFromUrl();
