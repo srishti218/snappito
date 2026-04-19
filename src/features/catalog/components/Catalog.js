@@ -52,7 +52,7 @@ function renderSearchResults(services, grid) {
   serviceList.forEach(s => {
     const slug = toSlug(s.name);
     grid.innerHTML += `
-      <a class="card" href="service-detail.html?service=${slug}&service_id=${s.id}" style="text-decoration:none;">
+      <a class="card" href="service-detail.html?service=${slug}&service_id=${s.service_id}" style="text-decoration:none;">
         <div class="card-img" style="background-image:url('${s.image_url || FALLBACK_IMG}')"></div>
         <div class="card-content">
           <h3>${s.name}</h3>

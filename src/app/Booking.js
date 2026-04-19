@@ -1,12 +1,33 @@
 import { getProfile, getAddresses, createBooking } from '../services/userService.js';
 import { createPaymentOrder } from '../services/walletService.js';
-import { RAZORPAY_KEY_ID } from '../services/apiClient.js';
+import { request } from '../services/apiClient.js';
 
 let allAddresses = [];
+let ACTIVE_RAZORPAY_KEY = null;
 
 export async function initBooking() {
   const token = localStorage.getItem('token');
   const params = new URLSearchParams(window.location.search);
+  
+  // 1. Fetch System Configuration & Key
+  try {
+    const config = await request('/api/public/config');
+    if (config.razorpay_key_id && config.razorpay_key_id !== "NOT_CONFIGURED") {
+        ACTIVE_RAZORPAY_KEY = config.razorpay_key_id;
+    } else {
+        throw new Error("Missing Key");
+    }
+  } catch (e) {
+    console.error("Payment system config failed:", e);
+    const submitBtn = document.getElementById('submit-btn');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Payment System Unavailable";
+        submitBtn.style.background = "#94a3b8";
+        submitBtn.style.cursor = "not-allowed";
+    }
+    if (window.showToast) window.showToast('Payment system is undergoing maintenance. Please try again later.', 'error');
+  }
   
   // 1. Hydrate Summary immediately from URL
   const serviceName = params.get('service') || 'Selected Service';
@@ -235,7 +256,7 @@ async function handleBookingSubmit(e) {
     
     // 3. Configure Razorpay Options
     const options = {
-      key: RAZORPAY_KEY_ID,
+      key: ACTIVE_RAZORPAY_KEY,
       amount: orderData.amount, // in paise
       currency: "INR",
       name: "Snappito",

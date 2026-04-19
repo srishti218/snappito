@@ -43,6 +43,15 @@ jwt = JWTManager(app)
 def check_if_token_revoked(jwt_header, jwt_payload):
     jti = jwt_payload['jti']
     return jti in blacklist
+
+# Public Configuration (Safe to expose)
+@app.route('/api/public/config', methods=['GET'])
+def get_public_config():
+    return jsonify({
+        "razorpay_key_id": RAZORPAY_KEY_ID or "NOT_CONFIGURED",
+        "currency": "INR",
+        "company_name": "Snappito"
+    }), 200
 db = SQLAlchemy(app)
 
 def generate_uuid():
@@ -1413,13 +1422,16 @@ def book_service():
 
         # Validate service exists (Harden to support slugs from hardcoded landing page links)
         from sqlalchemy import func
+        if not data.get('service_id'):
+            return jsonify({'error': 'service_id is required'}), 400
+
         service = Service.query.filter(
             (Service.id == data['service_id']) | 
             (func.lower(func.replace(Service.name, ' ', '-')) == data['service_id'].lower())
         ).filter(Service.is_active == True).first()
         
         if not service:
-            return jsonify({'error': 'Service not found'}), 404
+            return jsonify({'error': f"Service with ID '{data['service_id']}' not found or is currently inactive"}), 404
 
         # Optional professional assignment
         professional_id = data.get('professional_id')
