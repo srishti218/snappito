@@ -554,7 +554,7 @@ def signup():
 
     next_id = str(uuid.uuid4())
 
-    hashed_password = generate_password_hash(data['password'])
+    hashed_password = generate_password_hash(data['password'], method='pbkdf2:sha256')
 
     # Convert dob if provided
     dob_value = None
@@ -740,7 +740,7 @@ def reset_password_without_otp():
     if not check_password_hash(user.password_hash, old_password):
         return jsonify({'error': 'Old password is incorrect'}), 401
 
-    user.password_hash = generate_password_hash(new_password)
+    user.password_hash = generate_password_hash(new_password, method='pbkdf2:sha256')
     db.session.commit()
 
     return jsonify({'message': 'Password has been updated successfully'}), 200

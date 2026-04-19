@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Snappito</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/components/ui/Toast.css">
+  <style>
+    :root {
+      --primary: #10b981;
+      --secondary: #f59e0b;
+      --text-main: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.8);
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --bg-gradient: linear-gradient(-45deg, #022c22, #064e3b, #047857, #10b981);
+      --bg-fallback: #022c22;
+    }
+
+    body.light-theme {
+      --text-main: #1a2e22;
+      --text-muted: #4b6355;
+      --glass-bg: rgba(255, 255, 255, 0.6);
+      --glass-border: rgba(16, 185, 129, 0.2);
+      --bg-gradient: linear-gradient(-45deg, #ecfdf5, #d1fae5, #a7f3d0, #6ee7b7);
+      --bg-fallback: #ecfdf5;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+      background-color: #022c22;
+      background-image: var(--bg-gradient);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .auth-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    .input-group { text-align: left; margin-bottom: 20px; }
+    input {
+      width: 100%;
+      padding: 14px 20px;
+      background: rgba(0, 0, 0, 0.2);
+      color: white;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--secondary);
+      color: #111;
+      font-weight: 600;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div class="auth-card">
+  <h2>Welcome Back</h2>
+  <form id="loginForm">
+    <div class="input-group">
+      <label>Email Address</label>
+      <input type="email" id="email" required>
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="password" required>
+    </div>
+    <button type="submit" class="btn" id="submitBtn">Log In</button>
+  </form>
+  <div class="links" style="margin-top: 20px;">
+    Don't have an account? <a href="signup.html" style="color: var(--secondary); text-decoration: none;">Sign Up</a><br><br>
+    <a href="index.html" style="color: var(--text-muted); text-decoration: none;">← Back to Home</a>
+  </div>
+</div>
+<script src="src/components/ui/Toast.js"></script>
+<script type="module" src="src/app/Auth.js"></script>
+</body>
+</html>
