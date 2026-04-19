@@ -14,35 +14,22 @@ with app.app_context():
     db.session.commit()
 
     categories_data = [
-        {"name": "Cleaning Services", "description": "Professional household cleaning", "starting_price": 50},
-        {"name": "Home Items Cleaning", "description": "Cleaning for specific household items", "starting_price": 40},
-        {"name": "Moving Services", "description": "Help with packing, unpacking and moving", "starting_price": 100},
-        {"name": "Deep / Special Cleaning", "description": "Extensive cleaning for specific areas or whole home", "starting_price": 150},
-        {"name": "Occasion Cleaning", "description": "On-demand cleaning services for events", "starting_price": 80},
-        {"name": "Specialized Services", "description": "Expert specialized household tasks", "starting_price": 70},
-        {"name": "Extra / Add-ons", "description": "Add-on household services", "starting_price": 30}
+        {"name": "Cleaning Services", "description": "Professional household cleaning"},
+        {"name": "Kitchen Solutions", "description": "Specialized kitchen cleaning and preparation"},
+        {"name": "Home Maintenance", "description": "Dusting, wiping and balcony care"},
+        {"name": "Specialized Care", "description": "Laundry, ironing and fan cleaning"},
+        {"name": "Express Packages", "description": "One-time deep cleaning for events"}
     ]
 
     categories = {}
     
-    # We assign an image to categories from one of their services
-    cat_image_mapping = {
-        "Cleaning Services": "service_1.jpg",
-        "Home Items Cleaning": "service_9.jpg",
-        "Moving Services": "service_13.jpg",
-        "Deep / Special Cleaning": "service_16.jpg",
-        "Occasion Cleaning": "service_20.jpg",
-        "Specialized Services": "service_22.jpg",
-        "Extra / Add-ons": "service_24.jpg"
-    }
-
     for cat_data in categories_data:
         cat = ServiceCategory(
             id=generate_uuid(),
             name=cat_data["name"],
             description=cat_data["description"],
-            image_url=f"/assets/services/{cat_image_mapping[cat_data['name']]}",
-            starting_price=cat_data["starting_price"],
+            image_url=f"/assets/services/default.jpg",
+            starting_price=125,
             is_active=True
         )
         db.session.add(cat)
@@ -50,60 +37,39 @@ with app.app_context():
     
     db.session.commit()
 
-    services_data = {
-        "Cleaning Services": [
-            ("Sweeping & Mopping", "service_2.jpg"),
-            ("Dusting & Wiping", "service_3.jpg"),
-            ("Bathroom Cleaning", "service_4.jpg"),
-            ("Kitchen Cleaning", "service_5.jpg"),
-            ("Balcony Cleaning", "service_6.jpg"),
-            ("Window Cleaning", "service_7.jpg"),
-            ("Fan Cleaning", "service_8.jpg"),
-            ("Car Wash", "service_9.jpg")
-        ],
-        "Home Items Cleaning": [
-            ("Sofa Cleaning", "service_10.jpg"),
-            ("Carpet Cleaning", "service_11.jpg"),
-            ("Mattress Cleaning", "service_12.jpg"),
-            ("Curtain Cleaning", "service_13.jpg")
-        ],
-        "Moving Services": [
-            ("Packing", "service_14.jpg"),
-            ("Unpacking", "service_15.jpg"),
-            ("Move-in Cleaning", "service_16.jpg")
-        ],
-        "Deep / Special Cleaning": [
-            ("Full Home Deep Cleaning", "service_17.jpg"),
-            ("Kitchen Deep Cleaning", "service_18.jpg"),
-            ("Bathroom Deep Cleaning", "service_19.jpg"),
-            ("Post-Construction Cleaning", "service_20.jpg")
-        ],
-        "Occasion Cleaning": [
-            ("Pre-Party Express Clean", "service_21.jpg"),
-            ("After-Party Express Clean", "service_22.jpg")
-        ],
-        "Specialized Services": [
-            ("Water Tank Cleaning", "service_23.jpg"),
-            ("Toilet Stain Removal", "service_24.jpg")
-        ],
-        "Extra / Add-ons": [
-            ("Complete Wardrobe Cleaning", "service_25.jpg")
-        ]
-    }
+    # (Name, Category, Price, Description)
+    services_list = [
+        ("Bathroom Cleaning", "Cleaning Services", 150, "Cleaning of toilet, washbasin, tiles and floor."),
+        ("Fridge Cleaning", "Kitchen Solutions", 150, "Cleaning of shelves, trays, drawers and interior."),
+        ("Packing And Unpacking", "Cleaning Services", 125, "Professional folding and packing assistant."),
+        ("Utensils", "Kitchen Solutions", 125, "Washing, drying and sink area cleaning."),
+        ("Kitchen Preparation", "Kitchen Solutions", 125, "Vegetable chopping and dough kneading."),
+        ("Dusting And Wiping", "Home Maintenance", 125, "Dry dusting of surfaces and fixtures."),
+        ("Sweeping And Mopping", "Home Maintenance", 125, "Floor sweeping and mopping services."),
+        ("Pre-party Express Clean", "Express Packages", 375, "Full home refresh before your event."),
+        ("Complete Wardrobe", "Home Maintenance", 750, "Interior organization and shelf dusting."),
+        ("After-party Express Clean", "Express Packages", 375, "Home reset and spill cleanup after event."),
+        ("Ironing And Folding", "Specialized Care", 125, "Professional ironing of daily wear clothes."),
+        ("Windows Cleaning", "Home Maintenance", 125, "Interior window mesh and track cleaning."),
+        ("Laundry", "Specialized Care", 125, "Washing machine assistant and drying help."),
+        ("Kitchen Cleaning", "Kitchen Solutions", 150, "Countertops, cabinets and stove exterior."),
+        ("Balcony", "Home Maintenance", 125, "Sweeping and mopping of balcony area."),
+        ("Fan Cleaning", "Specialized Care", 125, "Dust removal from blades and motor body."),
+        ("Kitchen Cabinet", "Kitchen Solutions", 750, "Deep interior and exterior cabinet cleaning.")
+    ]
 
-    for cat_name, svcs in services_data.items():
+    for name, cat_name, price, desc in services_list:
         cat = categories[cat_name]
-        for name, img_file in svcs:
-            service = Service(
-                id=generate_uuid(),
-                category_id=cat.id,
-                name=name,
-                description=f"Professional {name.lower()} service",
-                base_price=cat.starting_price,
-                image_url=f"assets/services/{img_file}",
-                is_active=True
-            )
-            db.session.add(service)
+        service = Service(
+            id=generate_uuid(),
+            category_id=cat.id,
+            name=name,
+            description=desc,
+            base_price=float(price),
+            image_url=f"assets/services/service.jpg",
+            is_active=True
+        )
+        db.session.add(service)
 
     db.session.commit()
-    print("Snappito categories and services seeded successfully!")
+    print("Snappito categories and services updated successfully from Master Table.")

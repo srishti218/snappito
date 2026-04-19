@@ -76,8 +76,21 @@ export function renderService(service) {
         `).join('');
     }
 
-    // Default to Express
-    selectTier('Express');
+    // Dynamic Tier Selector
+    const tierContainer = document.querySelector('.tier-selector');
+    if (tierContainer && service.tiers) {
+        tierContainer.innerHTML = service.tiers.map(t => `
+            <div class="tier-option" data-tier="${t.name}" onclick="selectTier('${t.name}')">
+              <h4>${t.name}</h4>
+              <span>${t.duration}</span>
+            </div>
+        `).join('');
+    }
+
+    // Default to the first tier
+    if (service.tiers && service.tiers.length > 0) {
+        selectTier(service.tiers[0].name);
+    }
 }
 
 export function handleBook() {
