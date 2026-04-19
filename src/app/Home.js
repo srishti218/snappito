@@ -19,7 +19,7 @@ export function initHome() {
     });
   }, observerOptions);
 
-  document.querySelectorAll('.scroll-anim').forEach((el) => {
+  document.querySelectorAll('.scroll-anim, .step-card').forEach((el) => {
     observer.observe(el);
   });
 
@@ -37,18 +37,54 @@ export function initHome() {
   loadServices();
   checkAuthState();
   initTheme();
+  
+  // Robust Shield: Listen for dynamic catalog loads to hide buttons
+  document.addEventListener('catalog-rendered', applyAdminShield);
+}
+
+function applyAdminShield() {
+    const role = localStorage.getItem('user_role');
+    if (role === 'admin') {
+        const ctas = document.querySelectorAll('.hero-btn, .service-card-action, #services-section h2 button, .ps-view-all, .catalog-service-link, .card');
+        ctas.forEach(btn => btn.classList.add('admin-restricted'));
+    }
 }
 
 async function checkAuthState() {
   const token = localStorage.getItem('token');
+  const role = localStorage.getItem('user_role');
   const loginLink = document.getElementById('nav-login');
   const actionBtn  = document.getElementById('nav-action-btn');
+  
   if (token) {
     if (loginLink) loginLink.style.display = 'none';
     if (actionBtn) {
-      actionBtn.textContent = 'Go to Dashboard';
-      actionBtn.href = 'dashboard.html';
+      const is_admin = (role === 'admin');
+      actionBtn.textContent = is_admin ? 'Admin Center' : 'Go to Dashboard';
+      actionBtn.href = is_admin ? 'admin.html' : 'dashboard.html';
       actionBtn.classList.add('nav-dashboard-btn');
+    }
+
+    // Apply shield immediately for static elements
+    applyAdminShield();
+    
+    // Add a notice for admins on the homepage
+    if (role === 'admin') {
+        const hero = document.querySelector('.hero-content');
+        if (hero && !document.getElementById('admin-notice')) {
+            const notice = document.createElement('div');
+            notice.id = 'admin-notice';
+            notice.style.background = 'rgba(16, 185, 129, 0.1)';
+            notice.style.border = '1px solid var(--brand-green)';
+            notice.style.color = 'var(--brand-green)';
+            notice.style.padding = '10px 20px';
+            notice.style.borderRadius = '30px';
+            notice.style.fontSize = '12px';
+            notice.style.marginTop = '20px';
+            notice.style.fontWeight = '700';
+            notice.innerHTML = '<i class="fas fa-user-shield"></i> ADMINISTRATIVE VIEW ACTIVE';
+            hero.appendChild(notice);
+        }
     }
   }
 }

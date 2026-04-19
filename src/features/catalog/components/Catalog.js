@@ -32,6 +32,10 @@ export async function loadServices(query = '') {
     } else {
       renderCategoryList(data.categories || [], grid);
     }
+    
+    // Dispatch event for UI guards to re-apply restrictions
+    document.dispatchEvent(new CustomEvent('catalog-rendered'));
+    
   } catch (e) {
     console.error('loadServices error:', e);
     grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);grid-column:1/-1;">We are performing maintenance. Please <a href="tel:8747858018" style="color:var(--secondary);">call us</a> to book.</p>';
@@ -48,7 +52,7 @@ function renderSearchResults(services, grid) {
   serviceList.forEach(s => {
     const slug = toSlug(s.name);
     grid.innerHTML += `
-      <a class="card" href="service-detail.html?service=${slug}" style="text-decoration:none;">
+      <a class="card" href="service-detail.html?service=${slug}&service_id=${s.id}" style="text-decoration:none;">
         <div class="card-img" style="background-image:url('${s.image_url || FALLBACK_IMG}')"></div>
         <div class="card-content">
           <h3>${s.name}</h3>
@@ -68,11 +72,11 @@ function renderCategoryList(categories, grid) {
     return;
   }
 
-  categories.forEach((cat, index) => {
+    categories.forEach((cat, index) => {
     const listItems = cat.services.map(s => {
       const slug = toSlug(s.name);
       return `
-        <a class="catalog-service-link" href="service-detail.html?service=${slug}">
+        <a class="catalog-service-link" href="service-detail.html?service=${slug}&service_id=${s.id}">
           <span class="csl-name" style="display:flex; align-items:center; gap:10px;">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #064e3b;"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
             ${s.name}

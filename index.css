@@ -1,0 +1,93 @@
+:root {
+    --primary: #10b981;
+    --primary-dark: #064e3b;
+    --brand-green: #10b981;
+    --secondary: #f59e0b;
+    --secondary-dark: #d97706;
+    --bg-light: #f8fafc;
+    --bg-white: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border-light: #e2e8f0;
+    --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05);
+    --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.08);
+}
+
+/* Glowing Animations */
+@keyframes glow-red {
+    0% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.4); }
+    50% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.7); }
+    100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.4); }
+}
+
+@keyframes glow-amber {
+    0% { box-shadow: 0 0 5px rgba(245, 158, 11, 0.4); }
+    50% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.7); }
+    100% { box-shadow: 0 0 5px rgba(245, 158, 11, 0.4); }
+}
+
+@keyframes glow-green {
+    0% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.4); }
+    50% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.7); }
+    100% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.4); }
+}
+
+.glow-unassigned { animation: glow-red 2s ease-in-out infinite; background: #fee2e2; color: #b91c1c; }
+.glow-en-route { animation: glow-amber 2s ease-in-out infinite; background: #fef3c7; color: #92400e; }
+.glow-started { animation: glow-amber 2.5s ease-in-out infinite; background: #e0f2fe; color: #075985; }
+.glow-completed { background: #d1fae5; color: #065f46; border: 1px solid rgba(16, 185, 129, 0.2); }
+
+/* Charts Container */
+.chart-container {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 30px;
+    min-height: 300px;
+}
+
+.chart-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Metric Cards Refinement */
+.stat-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile Responsiveness Refinements */
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .admin-header {
+        padding: 15px 20px;
+    }
+    .admin-content {
+        padding: 20px;
+    }
+    .chart-container {
+        padding: 15px;
+    }
+}

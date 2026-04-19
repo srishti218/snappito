@@ -20,8 +20,20 @@ export function initAuth() {
           document.getElementById('password').value
         );
         localStorage.setItem('token', data.token);
+        localStorage.setItem('user_role', data.user.user_type); // Store role for UI guards
+        
         if (window.showToast) window.showToast('Login successful! Redirecting...', 'success');
-        setTimeout(() => window.location.href = 'dashboard.html', 1500);
+        
+        setTimeout(() => {
+            const role = data.user.user_type;
+            if (role === 'admin') {
+                window.location.href = 'admin.html';
+            } else if (role === 'professional') {
+                window.location.href = 'dashboard.html?view=pro';
+            } else {
+                window.location.href = 'index.html';
+            }
+        }, 1500);
       } catch (error) {
         if (window.showToast) window.showToast(error.message || 'Login failed.', 'error');
         btn.textContent = 'Log In';

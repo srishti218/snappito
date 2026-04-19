@@ -58,6 +58,9 @@
 
     /* Modal */
     .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+
+    /* Role Guards */
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
@@ -72,10 +75,11 @@
   <!-- Sidebar -->
   <aside class="sidebar">
     <h2 style="margin-bottom: 40px; cursor: pointer;" onclick="window.location.href='index.html'">Snappito</h2>
-    <nav>
+    <nav id="sidebar-nav">
       <div class="nav-item active" onclick="switchSection('overview', this)"><i class="fas fa-th-large"></i> Overview</div>
-      <div class="nav-item" onclick="switchSection('bookings', this)"><i class="fas fa-calendar-alt"></i> My Bookings</div>
-      <div class="nav-item" onclick="switchSection('addresses', this)"><i class="fas fa-map-marker-alt"></i> Addresses</div>
+      <div class="nav-item customer-only" onclick="switchSection('bookings', this)"><i class="fas fa-calendar-alt"></i> My Bookings</div>
+      <div class="nav-item pro-only pro-only-nav" style="display: none;" onclick="switchSection('pro-schedule', this)"><i class="fas fa-clipboard-check"></i> Pro Schedule</div>
+      <div class="nav-item customer-only" onclick="switchSection('addresses', this)"><i class="fas fa-map-marker-alt"></i> Addresses</div>
       <div class="nav-item" onclick="switchSection('wallet', this)"><i class="fas fa-wallet"></i> Wallet History</div>
       <div class="nav-item" onclick="switchSection('settings', this)"><i class="fas fa-cog"></i> Settings</div>
     </nav>
@@ -96,7 +100,8 @@
     </header>
 
     <div id="overview-section" class="dashboard-section">
-      <div class="stats-grid">
+      <!-- Customer Overview Stats -->
+      <div id="wallet-section" class="stats-grid customer-only">
         <div class="stat-card">
           <span class="stat-label">Wallet Balance</span>
           <div class="stat-value">₹<span id="wallet-balance">0.00</span></div>
@@ -104,7 +109,7 @@
         </div>
         <div class="stat-card">
           <span class="stat-label">Active Bookings</span>
-          <div class="stat-value" id="active-bookings-count">0</div>
+          <div class="stat-value" id="active-bookings-count-cust">0</div>
           <span style="font-size: 12px; color: var(--primary);">Showing next scheduled</span>
         </div>
         <div class="stat-card" style="background: var(--primary-dark); color: white;">
@@ -114,12 +119,43 @@
         </div>
       </div>
 
-      <div class="content-card">
+      <!-- Pro Overview Stats (New) -->
+      <div id="pro-stats-grid" class="stats-grid pro-only" style="display: none;">
+        <div class="stat-card">
+          <span class="stat-label">Jobs Assigned (Today)</span>
+          <div class="stat-value" id="active-bookings-count-pro">0</div>
+          <button class="stat-btn" onclick="switchSection('pro-schedule', document.querySelector('.pro-only-nav'))">View Full Schedule</button>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Professional Rating</span>
+          <div class="stat-value">4.9/5.0</div>
+          <span style="font-size: 12px; color: var(--secondary);">Top Rated Expert</span>
+        </div>
+        <div class="stat-card" style="background: var(--primary-dark); color: white;">
+          <span class="stat-label" style="color: rgba(255,255,255,0.7);">Earnings (This Month)</span>
+          <div class="stat-value" style="color: white;">₹12,450</div>
+          <span style="font-size: 12px; color: var(--primary);">Payout scheduled for 25th</span>
+        </div>
+      </div>
+
+      <div class="content-card customer-only">
         <div class="section-title">
           <span>Recent Bookings</span>
-          <button class="btn-secondary" style="font-size: 13px; padding: 8px 20px;" onclick="window.location.href='index.html#services'">New Booking</button>
+          <button id="new-booking-btn" class="btn-secondary" style="font-size: 13px; padding: 8px 20px;" onclick="window.location.href='index.html#services'">New Booking</button>
         </div>
         <div id="booking-list-small"></div>
+      </div>
+      
+      <!-- Pro Shortcut Card (New) -->
+      <div class="content-card pro-only" style="display: none;">
+        <div class="section-title">
+           <span>Job Overview</span>
+           <span style="font-size: 12px; font-weight: normal; color: var(--text-muted);">Real-time assignment feed</span>
+        </div>
+        <div id="pro-schedule-preview" style="display: grid; gap: 10px;">
+             <!-- Preview of next job will be injected here -->
+             <p style="color: var(--text-muted);">Please use the "Pro Schedule" tab for full job management.</p>
+        </div>
       </div>
     </div>
 
@@ -137,6 +173,17 @@
           <button class="stat-btn" onclick="openAddressModal()">+ Add New</button>
         </div>
         <div id="address-list-full" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"></div>
+      </div>
+    </div>
+
+    <!-- Pro Section -->
+    <div id="pro-schedule-section" class="dashboard-section" style="display: none;">
+      <div class="content-card">
+        <div class="section-title">
+          <span>Upcoming Assigned Jobs</span>
+          <span style="font-size: 13px; font-weight: normal; color: var(--text-muted);"><i class="fas fa-sync-alt" onclick="window.loadProSchedule && window.loadProSchedule()" style="cursor: pointer;"></i> Refresh</span>
+        </div>
+        <div id="pro-schedule-list" style="display: grid; gap: 15px;"></div>
       </div>
     </div>
     
@@ -162,12 +209,17 @@
         <h3>Add New Address</h3>
         <p style="margin-bottom: 20px; font-size: 14px; color: var(--text-muted);">Save your location for faster service bookings.</p>
         <div style="display: grid; gap: 12px;">
-            <input type="text" id="addr-label" placeholder="Label (e.g. Home, Office)" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-            <input type="text" id="addr-line" placeholder="Full Address" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+            <input type="text" id="addr-label" placeholder="Address Label (e.g. Home, Office, Parents)" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <input type="text" id="addr-hno" placeholder="House / Flat No." style="padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+                <input type="text" id="addr-landmark" placeholder="Landmark" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+            </div>
+            <input type="text" id="addr-area" placeholder="Area / Locality / Sector" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                 <input type="text" id="addr-city" placeholder="City" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-                <input type="text" id="addr-zip" placeholder="Zip Code" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+                <input type="text" id="addr-state" placeholder="State" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
             </div>
+            <input type="text" id="addr-zip" placeholder="Zip Code (6 Digits)" maxlength="6" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
             <div style="display: flex; align-items: center; gap: 10px; margin: 10px 0;">
                 <input type="checkbox" id="addr-default"> <span>Set as default address</span>
             </div>
@@ -188,7 +240,7 @@
         el.classList.add('active');
 
         // 2. Force hide all specific IDs
-        const sections = ['overview-section', 'bookings-section', 'addresses-section'];
+        const sections = ['overview-section', 'bookings-section', 'addresses-section', 'pro-schedule-section'];
         sections.forEach(id => {
             const s = document.getElementById(id);
             if (s) s.style.display = 'none';

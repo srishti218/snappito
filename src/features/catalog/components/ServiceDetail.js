@@ -96,7 +96,7 @@ export function renderService(service) {
 export function handleBook() {
     if (!currentService || !currentTier) return;
     const params = new URLSearchParams({
-        service_id: currentService.id,
+        service_id: currentService.db_id || currentService.id,
         service: currentService.title,
         tier: currentTier.name,
         price: currentTier.price
