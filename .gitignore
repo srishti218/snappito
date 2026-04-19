@@ -1,24 +1,32 @@
-# Python
+# Production Security & Credentials
+.env
+.env.local
+backend/.env
+dev_credentials.txt
+dev_credentials_pro.txt
+
+# Databases
+*.db
+*.sqlite3
+instance/
+backend/instance/
+
+# Python & System
 __pycache__/
 *.py[cod]
 *$py.class
+venv/
+.venv/
+env/
+.DS_Store
+
+# Logs
+*.log
 backend/backend.log
 frontend/frontend.log
-*.log
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak
-venv.bak
-
-# Others
-.DS_Store
-*.swp
-
-# Local Dev Scripts
+# IDE & Local
+.vscode/
+.idea/
+scratch/
 frontend/start_server.py
-frontend/start_frontend.py

@@ -16,8 +16,8 @@ load_dotenv()
 from flask_cors import CORS
 
 app = Flask(__name__)
-# Allow CORS for all origins in development, but allow restricting it via environment variable for production
-CORS(app, resources={r"/api/*": {"origins": os.environ.get('ALLOWED_ORIGINS', '*')}})
+# Enable CORS for all routes (Standard local development fix)
+CORS(app)
 
 # Configurations
 app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', 'default-dev-key')
@@ -31,8 +31,8 @@ app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
 
 # Razorpay Configuration
-RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', 'rzp_test_default')
-RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', 'default_secret')
+RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID')
+RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET')
 razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
 # In-memory blacklist for demo (use Redis or DB in production)
@@ -167,6 +167,9 @@ class Service(db.Model):
     base_price = db.Column(db.Float)
     image_url = db.Column(db.String(255))
     is_active = db.Column(db.Boolean, default=True)
+    includes = db.Column(db.Text, nullable=True) # JSON array or text
+    excludes = db.Column(db.Text, nullable=True) # JSON array or text
+    commission_rate = db.Column(db.Float, default=10.0) # Percentage
     bookings = db.relationship('Booking', backref='service', lazy=True)
     def to_dict(self):
         return {
@@ -176,6 +179,9 @@ class Service(db.Model):
             "base_price": self.base_price,
             "image_url": self.image_url,
             "is_active": self.is_active,
+            "includes": self.includes,
+            "excludes": self.excludes,
+            "commission_rate": self.commission_rate,
             "category_id": self.category_id,
             "category_name": self.category.name if self.category else None
         }
@@ -209,7 +215,7 @@ class Booking(db.Model):
     service_id = db.Column(db.String, db.ForeignKey('service.id'))
     professional_id = db.Column(db.String, db.ForeignKey('user.id'),nullable=True)
     scheduled_time = db.Column(db.DateTime)
-    status = db.Column(db.String(20))  # pending, confirmed, completed, canceled
+    status = db.Column(db.String(20))  # unassigned, assigned, en-route, started, completed, canceled
     address = db.Column(db.Text)
     instructions = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -250,6 +256,8 @@ class ProfessionalProfile(db.Model):
       # <- specify schema here
 
     user_id = db.Column(db.String, db.ForeignKey('user.id'), primary_key=True)
+    category_id = db.Column(db.String, db.ForeignKey('service_category.id'), nullable=True)
+    is_active = db.Column(db.Boolean, default=True)
     experience = db.Column(db.Integer)
     skills = db.Column(db.Text)
     documents = db.Column(db.Text)
@@ -280,6 +288,9 @@ class Transaction(db.Model):
     user_id = db.Column(db.String, db.ForeignKey('user.id'))
     type = db.Column(db.String(20))  # 'credit' or 'debit'
     amount = db.Column(db.Float)
+    snappito_revenue = db.Column(db.Float, default=0.0)
+    pro_payout = db.Column(db.Float, default=0.0)
+    transaction_type = db.Column(db.String(50), default='BOOKING_PAYMENT', index=True) # 'BOOKING_PAYMENT', 'WALLET_TOPUP', 'REFUND'
     description = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     wallet_id = db.Column(UUID(as_uuid=True), db.ForeignKey('wallet.id'))  # <--- foreign key
@@ -289,6 +300,9 @@ class Transaction(db.Model):
             "user_id": self.user_id,
             "type": self.type,
             "amount": self.amount,
+            "snappito_revenue": self.snappito_revenue,
+            "pro_payout": self.pro_payout,
+            "transaction_type": self.transaction_type,
             "description": self.description,
             "created_at": self.created_at.isoformat()
         }
@@ -631,7 +645,8 @@ def login():
             'id': user.id,
             'full_name': user.full_name,
             'email': user.email,
-            'phone': user.phone
+            'phone': user.phone,
+            'user_type': user.user_type
         }
     }), 200
 
@@ -854,16 +869,74 @@ def forgot_password():
     return jsonify({'message': 'Password reset instructions sent'}), 200
 
 def get_current_user():
-    auth_header = request.headers.get('Authorization')
-    if not auth_header or not auth_header.startswith("Bearer "):
-        return None
-    token = auth_header.split(" ")[1]
     try:
-        payload = decode_token(tokens, token)
-        print(payload)
-        return User.query.filter_by(id=payload.get('id')).first()
-    except:
+        from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
+        # Ensure JWT is verified in the current request context
+        verify_jwt_in_request(optional=True)
+        user_id = get_jwt_identity()
+        
+        if not user_id:
+            auth_header = request.headers.get('Authorization')
+            if auth_header and auth_header.startswith("Bearer "):
+                token = auth_header.split(" ")[1]
+                payload = decode_token(tokens, token)
+                user_id = payload.get('id')
+        
+        if not user_id:
+            print("[AUTH] No user_id found in token")
+            return None
+            
+        user = User.query.get(user_id)
+        if user:
+            print(f"[AUTH] Found user: {user.email} (Role: {user.user_type})")
+        else:
+            print(f"[AUTH] User ID {user_id} not found in DB")
+        return user
+    except Exception as e:
+        print(f"[AUTH] Critical error in get_current_user: {e}")
         return None
+
+from functools import wraps
+
+def admin_required():
+    def wrapper(fn):
+        @wraps(fn)
+        def decorator(*args, **kwargs):
+            try:
+                # Manual JWT verification to avoid auto-401 if missing (we handle with 403/401)
+                from flask_jwt_extended import verify_jwt_in_request
+                verify_jwt_in_request()
+            except Exception as e:
+                print(f"[ADMIN] JWT Verification failed: {e}")
+                return jsonify({'error': 'Login required'}), 401
+                
+            user = get_current_user()
+            if not user or user.user_type != 'admin':
+                role = user.user_type if user else 'None'
+                print(f"[ADMIN] Access Denied for {user.email if user else 'Unknown'} (Role: {role})")
+                return jsonify({'error': 'Admin access required'}), 403
+            # Double check identity to be absolutely sure
+            from flask_jwt_extended import get_jwt
+            claims = get_jwt()
+            if claims.get('user_type') and claims.get('user_type') != 'admin':
+                 print(f"[ADMIN] Token claims mismatch. Expected admin, got {claims.get('user_type')}")
+                 return jsonify({'error': 'Admin token required'}), 403
+                 
+            return fn(*args, **kwargs)
+        return decorator
+    return wrapper
+
+def professional_or_admin_required():
+    def wrapper(fn):
+        @wraps(fn)
+        @jwt_required()
+        def decorator(*args, **kwargs):
+            user = get_current_user()
+            if not user or user.user_type not in ['admin', 'professional']:
+                return jsonify({'error': 'Professional or Admin access required'}), 403
+            return fn(*args, **kwargs)
+        return decorator
+    return wrapper
 
 
 @app.route('/api/user/profile', methods=['PUT'])
@@ -1338,8 +1411,13 @@ def book_service():
         if missing:
             return jsonify({'error': f'Missing fields: {missing}'}), 400
 
-        # Validate service exists
-        service = Service.query.filter_by(id=data['service_id'], is_active=True).first()
+        # Validate service exists (Harden to support slugs from hardcoded landing page links)
+        from sqlalchemy import func
+        service = Service.query.filter(
+            (Service.id == data['service_id']) | 
+            (func.lower(func.replace(Service.name, ' ', '-')) == data['service_id'].lower())
+        ).filter(Service.is_active == True).first()
+        
         if not service:
             return jsonify({'error': 'Service not found'}), 404
 
@@ -1386,7 +1464,47 @@ def book_service():
             db.session.commit()
 
         # Optional: handle payment
-        if 'payment' in data:
+        payment_info = data.get('payment_info')
+        if payment_info:
+            try:
+                razorpay_client.utility.verify_payment_signature({
+                    'razorpay_order_id': payment_info.get('razorpay_order_id'),
+                    'razorpay_payment_id': payment_info.get('razorpay_payment_id'),
+                    'razorpay_signature': payment_info.get('razorpay_signature')
+                })
+                
+                amount = service.base_price
+                commission_rate = service.commission_rate if service.commission_rate else 10.0
+                snappito_revenue = amount * (commission_rate / 100)
+                pro_payout = amount - snappito_revenue
+                
+                txn = Transaction(
+                    user_id=user.id,
+                    type='debit',
+                    amount=amount,
+                    snappito_revenue=snappito_revenue,
+                    pro_payout=pro_payout,
+                    transaction_type='BOOKING_PAYMENT',
+                    description=f"Payment for Booking {booking.id}"
+                )
+                db.session.add(txn)
+                
+                payment = BookingPayment(
+                    id=generate_uuid(),
+                    booking_id=booking.id,
+                    amount=amount,
+                    method='razorpay',
+                    status='paid',
+                    transaction_id=payment_info.get('razorpay_payment_id'),
+                    paid_at=datetime.now(timezone.utc)
+                )
+                db.session.add(payment)
+                booking.status = 'unassigned'
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({'error': 'Payment verification failed: ' + str(e)}), 400
+        elif 'payment' in data:
             payment_data = data['payment']
             payment = BookingPayment(
                 id=generate_uuid(),
@@ -1398,6 +1516,10 @@ def book_service():
                 paid_at=datetime.now(timezone.utc) if payment_data.get('status') == 'paid' else None
             )
             db.session.add(payment)
+            booking.status = 'unassigned'
+            db.session.commit()
+        else:
+            booking.status = 'unassigned'
             db.session.commit()
 
         return jsonify({
@@ -1703,6 +1825,7 @@ def add_money():
         user_id=user.id,      # user UUID
         type='credit',
         amount=amount,
+        transaction_type='WALLET_TOPUP',
         description='Wallet top-up'
     )
     db.session.add(txn)
@@ -1728,7 +1851,9 @@ def create_razorpay_order():
         return jsonify({'error': 'Invalid amount'}), 400
 
     # Razorpay amount is in Paise (1 INR = 100 Paise)
-    razorpay_amount = int(amount * 100)
+    print(f"DEBUG: Input Amount = {amount}, Type = {type(amount)}")
+    razorpay_amount = int(float(amount) * 100)
+    print(f"DEBUG: Calculated Razorpay Amount = {razorpay_amount}")
     
     try:
         order = razorpay_client.order.create({
@@ -1739,7 +1864,7 @@ def create_razorpay_order():
         })
         return jsonify({
             'order_id': order['id'],
-            'amount': amount,
+            'amount': razorpay_amount,
             'key_id': RAZORPAY_KEY_ID
         }), 200
     except Exception as e:
@@ -1780,6 +1905,7 @@ def verify_razorpay_payment():
             user_id=user.id,
             type='credit',
             amount=amount,
+            transaction_type='WALLET_TOPUP',
             description=f'Top-up via Razorpay ({razorpay_payment_id})'
         )
         db.session.add(txn)
@@ -2478,8 +2604,170 @@ def logouts():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# -------------------- ADMIN & PRO OPERATIONS --------------------
+import json
+
+@app.route('/api/admin/bookings', methods=['GET'])
+@admin_required()
+def admin_get_bookings():
+    bookings = Booking.query.order_by(Booking.created_at.desc()).all()
+    # Serialize with nested user/service parsing for frontend simplicity
+    res = []
+    for b in bookings:
+        b_dict = b.to_dict()
+        cust = User.query.get(b.user_id)
+        if cust:
+            b_dict['customer_name'] = cust.full_name
+            b_dict['customer_phone'] = cust.phone
+        svc = Service.query.get(b.service_id)
+        if svc:
+            b_dict['service_name'] = svc.name
+        pro = User.query.get(b.professional_id) if b.professional_id else None
+        b_dict['professional_name'] = pro.full_name if pro else None
+        res.append(b_dict)
+    return jsonify(res), 200
+
+@app.route('/api/admin/professionals/search', methods=['GET'])
+@admin_required()
+def admin_search_professionals():
+    category_id = request.args.get('category_id')
+    query = db.session.query(ProfessionalProfile, User, UserProfile).join(
+        User, ProfessionalProfile.user_id == User.id
+    ).outerjoin(
+        UserProfile, UserProfile.user_id == User.id
+    ).filter(ProfessionalProfile.is_active == True)
+    
+    if category_id:
+        query = query.filter(ProfessionalProfile.category_id == category_id)
+
+    results = query.all()
+    pros = []
+    for prof, user, profile in results:
+        pros.append({
+            "user_id": user.id,
+            "full_name": user.full_name,
+            "category_id": prof.category_id,
+            "pincode": profile.pincode if profile else user.zip_code,
+            "experience": prof.experience
+        })
+    return jsonify(pros), 200
+
+@app.route('/api/admin/bookings/<booking_id>/assign', methods=['PUT'])
+@admin_required()
+def admin_assign_booking(booking_id):
+    data = request.get_json()
+    professional_id = data.get('professional_id')
+    booking = Booking.query.get(booking_id)
+    if not booking:
+        return jsonify({'error': 'Booking not found'}), 404
+    booking.professional_id = professional_id
+    booking.status = 'assigned'
+    db.session.commit()
+    return jsonify({'message': 'Assigned successfully', 'status': booking.status}), 200
+
+@app.route('/api/admin/services/<service_id>', methods=['PUT'])
+@admin_required()
+def admin_update_service(service_id):
+    data = request.get_json()
+    service = Service.query.get(service_id)
+    if not service:
+        return jsonify({'error': 'Service not found'}), 404
+    
+    if 'base_price' in data: service.base_price = data['base_price']
+    if 'is_active' in data: service.is_active = data['is_active']
+    if 'includes' in data: service.includes = json.dumps(data['includes'])
+    if 'excludes' in data: service.excludes = json.dumps(data['excludes'])
+    if 'commission_rate' in data: service.commission_rate = data['commission_rate']
+    
+    db.session.commit()
+    return jsonify({'message': 'Service updated', 'service': service.to_dict()}), 200
+
+@app.route('/api/admin/revenue', methods=['GET'])
+@admin_required()
+def admin_get_revenue():
+    txns = Transaction.query.filter(Transaction.snappito_revenue > 0).all()
+    total = sum(t.snappito_revenue for t in txns)
+    return jsonify({'total_snappito_revenue': total, 'transactions': [t.to_dict() for t in txns]}), 200
+
+@app.route('/api/pro/schedule', methods=['GET'])
+@professional_or_admin_required()
+def pro_get_schedule():
+    user = get_current_user()
+    bookings = Booking.query.filter_by(professional_id=user.id).order_by(Booking.scheduled_time.asc()).all()
+    res = []
+    for b in bookings:
+        b_dict = b.to_dict()
+        cust = User.query.get(b.user_id)
+        if cust:
+            b_dict['customer_name'] = cust.full_name
+            b_dict['customer_phone'] = cust.phone
+        svc = Service.query.get(b.service_id)
+        if svc:
+            b_dict['service_name'] = svc.name
+        res.append(b_dict)
+    return jsonify(res), 200
+
+@app.route('/api/pro/bookings/<booking_id>/status', methods=['PUT'])
+@professional_or_admin_required()
+def pro_update_status(booking_id):
+    user = get_current_user()
+    booking = Booking.query.get(booking_id)
+    if not booking or (booking.professional_id != user.id and user.user_type != 'admin'):
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    data = request.get_json()
+    new_status = data.get('status')
+    if new_status in ['assigned', 'en-route', 'started', 'completed']:
+        booking.status = new_status
+        db.session.commit()
+        return jsonify({'message': 'Status updated', 'status': booking.status}), 200
+    return jsonify({'error': 'Invalid status'}), 400
+
+@app.route('/api/admin/professionals', methods=['POST'])
+@admin_required()
+def admin_create_professional():
+    data = request.get_json()
+    
+    # 1. Database Integrity: Check if Email already exists
+    existing_user = User.query.filter_by(email=data['email']).first()
+    if existing_user:
+        return jsonify({'error': 'A user with this email already exists.'}), 400
+        
+    existing_phone = User.query.filter_by(phone=data['phone']).first()
+    if existing_phone:
+        return jsonify({'error': 'A user with this phone number already exists.'}), 400
+
+    new_user = User(
+        id=generate_uuid(),
+        full_name=data['full_name'],
+        email=data['email'],
+        phone=data['phone'],
+        password_hash=generate_password_hash(data['password']),
+        user_type='professional'
+    )
+    db.session.add(new_user)
+    db.session.flush()
+
+    prof = ProfessionalProfile(
+        user_id=new_user.id,
+        category_id=data.get('category_id'),
+        is_active=True,
+        experience=data.get('experience', 0)
+    )
+    db.session.add(prof)
+    
+    prof_profile = UserProfile(
+        user_id=new_user.id,
+        city=data.get('city'),
+        pincode=data.get('pincode')
+    )
+    db.session.add(prof_profile)
+    db.session.commit()
+    return jsonify({'message': 'Professional created', 'user_id': new_user.id}), 201
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
 
     app.run(host='0.0.0.0', port=5001, debug=True)
+
