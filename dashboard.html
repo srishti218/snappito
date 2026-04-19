@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Snappito</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="src/components/ui/Toast.css">
+  <style>
+    :root {
+      --primary:      #10b981;
+      --primary-dark: #064e3b;
+      --secondary:    #f59e0b;
+      --bg-slate:     #f8fafc;
+      --card-bg:      #ffffff;
+      --text-main:    #1e293b;
+      --text-muted:   #64748b;
+      --border:       #e2e8f0;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg-slate); color: var(--text-main); line-height: 1.5; }
+    h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; }
+    
+    .dashboard-layout { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+    
+    /* Sidebar */
+    .sidebar { background: var(--primary-dark); color: white; padding: 40px 20px; display: flex; flex-direction: column; }
+    .nav-item { padding: 16px 20px; border-radius: 12px; margin-bottom: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; color: rgba(255,255,255,0.7); font-weight: 500; }
+    .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); color: white; }
+    .logout-btn { margin-top: auto; color: #f87171; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+
+    /* Main Content */
+    .main-content { padding: 40px 60px; overflow-y: auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+    .user-pill { display: flex; align-items: center; gap: 12px; background: white; padding: 10px 20px; border-radius: 50px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+
+    /* Stats Grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px; }
+    .stat-card { background: white; padding: 30px; border-radius: 24px; border: 1px solid var(--border); }
+    .stat-label { font-size: 14px; color: var(--text-muted); margin-bottom: 8px; display: block; }
+    .stat-value { font-size: 32px; font-weight: 800; color: var(--primary-dark); }
+    .stat-btn { margin-top: 16px; padding: 10px 20px; border-radius: 50px; border: none; background: #ecfdf5; color: var(--primary); font-weight: 600; cursor: pointer; font-size: 13px; }
+
+    /* Tables & Cards */
+    .content-card { background: white; padding: 40px; border-radius: 32px; border: 1px solid var(--border); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+    .section-title { font-size: 20px; font-weight: 800; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+    
+    .booking-item { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 16px; background: #fff; transition: 0.2s; }
+    .booking-item:hover { border-color: var(--primary); transform: translateX(5px); }
+    .status-badge { padding: 6px 12px; border-radius: 50px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+    .status-pending { background: #fffbeb; color: #d97706; }
+    .status-confirmed { background: #ecfdf5; color: #059669; }
+
+    .loader-container { position: fixed; inset: 0; background: white; z-index: 100; display: flex; align-items: center; justify-content: center; }
+    .btn-secondary { background: var(--secondary); color: white; padding: 12px 24px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; }
+
+    /* Modal */
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+  </style>
+</head>
+<body>
+
+<div id="loader" class="loader-container">
+    <div style="text-align: center;">
+        <h2 style="font-family: 'Outfit'; color: var(--primary-dark);">Loading Dashboard...</h2>
+    </div>
+</div>
+
+<div class="dashboard-layout" id="content" style="display: none;">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2 style="margin-bottom: 40px; cursor: pointer;" onclick="window.location.href='index.html'">Snappito</h2>
+    <nav>
+      <div class="nav-item active" onclick="switchSection('overview', this)"><i class="fas fa-th-large"></i> Overview</div>
+      <div class="nav-item" onclick="switchSection('bookings', this)"><i class="fas fa-calendar-alt"></i> My Bookings</div>
+      <div class="nav-item" onclick="switchSection('addresses', this)"><i class="fas fa-map-marker-alt"></i> Addresses</div>
+      <div class="nav-item" onclick="switchSection('wallet', this)"><i class="fas fa-wallet"></i> Wallet History</div>
+      <div class="nav-item" onclick="switchSection('settings', this)"><i class="fas fa-cog"></i> Settings</div>
+    </nav>
+    <div class="nav-item logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="header">
+      <div>
+        <h1 id="welcome-text">Hi, User!</h1>
+        <p style="color: var(--text-muted);">Manage your services and bookings in one place.</p>
+      </div>
+      <div class="user-pill">
+        <span id="header-email" style="font-size: 14px; font-weight: 500;"></span>
+        <img id="header-avatar" src="" alt="Avatar" class="avatar">
+      </div>
+    </header>
+
+    <div id="overview-section" class="dashboard-section">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Wallet Balance</span>
+          <div class="stat-value">₹<span id="wallet-balance">0.00</span></div>
+          <button class="stat-btn" onclick="openWalletModal()">+ Top Up Wallet</button>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Active Bookings</span>
+          <div class="stat-value" id="active-bookings-count">0</div>
+          <span style="font-size: 12px; color: var(--primary);">Showing next scheduled</span>
+        </div>
+        <div class="stat-card" style="background: var(--primary-dark); color: white;">
+          <span class="stat-label" style="color: rgba(255,255,255,0.7);">Rewards Earned</span>
+          <div class="stat-value" style="color: white;">₹450</div>
+          <span style="font-size: 12px; color: var(--primary);">Gold Member</span>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="section-title">
+          <span>Recent Bookings</span>
+          <button class="btn-secondary" style="font-size: 13px; padding: 8px 20px;" onclick="window.location.href='index.html#services'">New Booking</button>
+        </div>
+        <div id="booking-list-small"></div>
+      </div>
+    </div>
+
+    <div id="bookings-section" class="dashboard-section" style="display: none;">
+      <div class="content-card">
+        <div class="section-title"><span>Full Booking History</span></div>
+        <div id="booking-list-full"></div>
+      </div>
+    </div>
+
+    <div id="addresses-section" class="dashboard-section" style="display: none;">
+      <div class="content-card">
+        <div class="section-title">
+          <span>My Saved Addresses</span>
+          <button class="stat-btn" onclick="openAddressModal()">+ Add New</button>
+        </div>
+        <div id="address-list-full" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"></div>
+      </div>
+    </div>
+    
+    <div style="text-align: center; padding: 20px; opacity: 0.3; font-size: 10px; font-weight: 800;">DASHBOARD v3.0 ACTIVE</div>
+  </main>
+</div>
+
+<!-- Modals -->
+<div id="wallet-modal" class="modal">
+    <div class="content-card" style="width: 400px;">
+        <h3>Top Up Wallet</h3>
+        <p style="margin-bottom: 20px; font-size: 14px; color: var(--text-muted);">Funds are added instantly to your Snappito wallet.</p>
+        <input type="number" id="topup-amount" placeholder="Enter amount (Min ₹100)" style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px;">
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-secondary" style="flex: 1;" onclick="handleTopup()">Proceed</button>
+            <button class="stat-btn" style="flex: 1;" onclick="closeModal('wallet-modal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="address-modal" class="modal">
+    <div class="content-card" style="width: 500px;">
+        <h3>Add New Address</h3>
+        <p style="margin-bottom: 20px; font-size: 14px; color: var(--text-muted);">Save your location for faster service bookings.</p>
+        <div style="display: grid; gap: 12px;">
+            <input type="text" id="addr-label" placeholder="Label (e.g. Home, Office)" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+            <input type="text" id="addr-line" placeholder="Full Address" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <input type="text" id="addr-city" placeholder="City" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+                <input type="text" id="addr-zip" placeholder="Zip Code" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; margin: 10px 0;">
+                <input type="checkbox" id="addr-default"> <span>Set as default address</span>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn-secondary" style="flex: 1;" onclick="submitAddress()">Save Address</button>
+            <button class="stat-btn" style="flex: 1;" onclick="closeModal('address-modal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script src="src/components/ui/Toast.js"></script>
+<script>
+    window.switchSection = (section, el) => {
+        // 1. Force active state
+        const items = document.getElementsByClassName('nav-item');
+        for (let i = 0; i < items.length; i++) { items[i].classList.remove('active'); }
+        el.classList.add('active');
+
+        // 2. Force hide all specific IDs
+        const sections = ['overview-section', 'bookings-section', 'addresses-section'];
+        sections.forEach(id => {
+            const s = document.getElementById(id);
+            if (s) s.style.display = 'none';
+        });
+
+        // 3. Force show target
+        const targetId = section + '-section';
+        const target = document.getElementById(targetId);
+        if (target) {
+            target.style.display = 'block';
+        } else {
+            document.getElementById('overview-section').style.display = 'block';
+        }
+    };
+</script>
+<script type="module" src="src/app/Dashboard.js?v=3.0"></script>
+</body>
+</html>
