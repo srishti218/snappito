@@ -6,6 +6,8 @@ def generate_uuid():
     return str(uuid.uuid4())
 
 with app.app_context():
+    # Ensure tables exist
+    db.create_all()
     # Clear existing data
     db.session.query(Service).delete()
     db.session.query(ServiceCategory).delete()
