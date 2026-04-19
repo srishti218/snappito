@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - Snappito</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/components/ui/Toast.css">
+  <style>
+    :root {
+      --primary:      #064e3b; /* Dark Forest Green */
+      --brand-green:  #10b981; /* Primary Green */
+      --secondary:    #f59e0b; /* Amber */
+      --bg-forest:    #022c22;
+      --text-dark:    #1e293b;
+      --text-muted:   #64748b;
+      --border-light: #e2e8f0;
+      --mint-bg:      #f0fdf4;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background-color: var(--bg-forest); 
+      background-image: linear-gradient(-45deg, #022c22, #064e3b, #047857, #10b981);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      min-height: 100vh; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      padding: 40px 20px;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .checkout-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 1000px;
+      border-radius: 32px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+
+    /* Left Column: Form */
+    .booking-form-section { padding: 50px; }
+    .section-title { font-family: 'Outfit', sans-serif; font-size: 24px; color: var(--primary); margin-bottom: 30px; font-weight: 800; }
+    
+    .input-group { margin-bottom: 24px; }
+    .input-group label { display: block; font-size: 14px; font-weight: 600; color: var(--text-dark); margin-bottom: 8px; }
+    .input-group input, .input-group textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      font-size: 15px;
+      color: var(--text-dark);
+      background: #ffffff;
+      transition: border-color 0.2s;
+    }
+    .input-group input:focus, .input-group textarea:focus { outline: none; border-color: var(--brand-green); }
+    
+    .slots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 10px; }
+    .slot-pill {
+      padding: 12px;
+      border: 2px solid var(--border-light);
+      border-radius: 12px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dark);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .slot-pill:hover { border-color: var(--brand-green); }
+    .slot-pill.active { border-color: var(--brand-green); background: #ecfdf5; color: var(--primary); }
+
+    /* Right Column: Summary */
+    .order-summary-section { padding: 50px; background: var(--mint-bg); border-left: 1px solid var(--border-light); display: flex; flex-direction: column; }
+    .summary-item { display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 15px; }
+    .summary-label { color: var(--text-muted); }
+    .summary-value { color: var(--text-dark); font-weight: 600; }
+    .divider { height: 1px; background: var(--border-light); margin: 24px 0; }
+    .total-row { display: flex; justify-content: space-between; font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 40px; }
+    
+    .btn-pay {
+      width: 100%;
+      padding: 20px;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: auto;
+      box-shadow: 0 10px 20px -5px rgba(245, 158, 11, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .btn-pay:hover { background: #ea580c; transform: translateY(-2px); box-shadow: 0 15px 25px -5px rgba(245, 158, 11, 0.5); }
+
+    @media (max-width: 850px) {
+      .checkout-card { grid-template-columns: 1fr; }
+      .order-summary-section { border-left: none; border-top: 1px solid var(--border-light); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="checkout-card">
+  <!-- Left Column -->
+  <div class="booking-form-section">
+    <h2 class="section-title">Customer Details</h2>
+    <form id="booking-form">
+      <div class="input-group">
+        <label>Full Name</label>
+        <input type="text" id="b-name" placeholder="Enter your full name" required>
+      </div>
+      <div class="input-group">
+        <label>Phone Number</label>
+        <input type="tel" id="b-phone" placeholder="0000000000" required maxlength="10">
+      </div>
+      <div class="input-group">
+        <label>Service Address</label>
+        <textarea id="b-address-text" rows="3" placeholder="Enter your full apartment/house address" required></textarea>
+      </div>
+
+      <h2 class="section-title" style="margin-top: 40px; font-size: 20px;">Scheduling</h2>
+      <div class="input-group">
+        <label>Select Date</label>
+        <input type="date" id="b-date" required>
+      </div>
+      <div class="input-group">
+        <label>Select Arrival Time</label>
+        <div class="slots-grid" id="time-slots">
+          <div class="slot-pill" data-time="09:00 AM">09:00 AM - 11:00 AM</div>
+          <div class="slot-pill active" data-time="12:00 PM">12:00 PM - 02:00 PM</div>
+          <div class="slot-pill" data-time="03:00 PM">03:00 PM - 05:00 PM</div>
+          <div class="slot-pill" data-time="06:00 PM">06:00 PM - 08:00 PM</div>
+        </div>
+        <input type="hidden" id="b-time" value="12:00 PM">
+      </div>
+    </form>
+  </div>
+
+  <!-- Right Column -->
+  <div class="order-summary-section">
+    <h2 class="section-title">Order Summary</h2>
+    <div class="summary-item">
+      <span class="summary-label">Service</span>
+      <span class="summary-value" id="summary-service">Loading...</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Tier</span>
+      <span class="summary-value" id="summary-tier">Standard</span>
+    </div>
+    <div class="divider"></div>
+    <div class="total-row">
+      <span>Total</span>
+      <span id="summary-total">₹0</span>
+    </div>
+
+    <div style="flex: 1;"></div>
+
+    <button type="submit" form="booking-form" class="btn-pay" id="submit-btn">Confirm & Pay</button>
+    
+    <p style="text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 20px;">
+      🔒 Secure Checkout by Snappito
+    </p>
+  </div>
+</div>
+
+<script src="src/components/ui/Toast.js"></script>
+<script type="module" src="src/app/Booking.js"></script>
+</body>
+</html>
