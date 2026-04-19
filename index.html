@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snappito | Premium Home Services</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/components/ui/Toast.css">
+  <style>
+    /* ─── Global Variables & Reset ─────────────────────────────── */
+    :root {
+      --primary: #10b981;    /* Mint Green */
+      --primary-dark: #059669;
+      --secondary: #f59e0b;  /* Amber */
+      --secondary-dark: #d97706;
+      --bg-dark: #022c22;    /* Dark Forest Green */
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+    }
+
+    body.dark-mode {
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      background-color: var(--bg-dark);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      color: var(--text-main);
+      overflow-x: hidden;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+    /* ─── Typography ────────────────────────────────────────────── */
+    h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; }
+    
+    /* ─── Utilities ─────────────────────────────────────────────── */
+    .btn {
+      display: inline-block;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      border: none;
+      text-align: center;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+
+    /* ─── Navigation ────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 20px 40px; z-index: 1000;
+      transition: all 0.4s ease;
+      background: transparent;
+    }
+    nav.scrolled {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      padding: 15px 40px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    body.dark-mode nav.scrolled {
+      background: rgba(2, 44, 34, 0.8);
+      border-bottom-color: rgba(255,255,255,0.05);
+    }
+
+    .nav-container { display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-size: 28px; font-weight: 800; color: #10b981; text-decoration: none; letter-spacing: -0.5px; }
+    .logo span { color: var(--secondary); }
+    .nav-links { display: flex; align-items: center; gap: 30px; }
+    .nav-link:hover { opacity: 1; color: var(--primary); }
+
+    .nav-btn-highlight {
+      background: var(--primary); color: white; padding: 12px 24px; border-radius: 50px; text-decoration: none; font-weight: 700; transition: 0.3s;
+    }
+    .nav-btn-highlight:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2); }
+
+    .nav-dashboard-btn {
+      background: rgba(16, 185, 129, 0.1); color: var(--primary); padding: 12px 24px; border-radius: 50px; text-decoration: none; font-weight: 700; border: 1px solid var(--primary);
+    }
+
+    .theme-switch {
+      background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; font-size: 18px;
+    }
+    body.dark-mode .theme-switch { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+    .theme-switch:hover { transform: scale(1.1); }
+
+    /* ─── Hero ──────────────────────────────────────────────────── */
+    .hero {
+      padding: 160px 40px 100px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 60px; min-height: 90vh;
+    }
+    .hero-content { flex: 1; max-width: 600px; }
+    .hero h1 { font-size: 64px; line-height: 1.1; margin-bottom: 24px; font-weight: 800; color: #064e3b; }
+    body.dark-mode .hero h1 { color: #ffffff; }
+    .hero p { font-size: 20px; color: var(--text-muted); margin-bottom: 40px; line-height: 1.6; }
+    .hero-features { display: flex; gap: 24px; margin-top: 50px; }
+    .hero-feature { font-size: 14px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+    .hero-feature::before { content: "✓"; background: rgba(16, 185, 129, 0.1); width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+
+    .hero-image-container { flex: 1; position: relative; }
+    .hero-image { width: 100%; max-width: 550px; border-radius: 30px; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.1)); }
+    .hero-floating-card {
+      position: absolute; bottom: 40px; left: -20px;
+      background: white; padding: 16px 24px; border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 12px;
+      font-weight: 700; font-size: 15px; color: #064e3b; animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0); } }
+
+    /* ─── Section Shared ─────────────────────────────────────────── */
+    section { margin-bottom: 120px; }
+    .scroll-anim { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+    .scroll-anim.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── Catalog Section ───────────────────────────────────────── */
+    .premium-services {
+      padding: 60px; border-radius: 40px;
+      background-size: cover; background-position: center;
+      position: relative; overflow: hidden; color: white;
+    }
+    .premium-services::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(6, 78, 59, 0.95), rgba(2, 44, 34, 0.8)); }
+    .ps-header { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; }
+    .ps-titles h4 { color: var(--secondary); text-transform: uppercase; letter-spacing: 2px; font-size: 14px; margin-bottom: 8px; }
+    .ps-titles h2 { font-size: 42px; font-weight: 800; max-width: 450px; }
+    .ps-view-all { 
+      text-decoration: none; color: white; font-weight: 700; display: flex; align-items: center; gap: 12px;
+      background: rgba(255,255,255,0.1); padding: 12px 24px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.2);
+    }
+    .ps-cards-row { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+    .ps-card { 
+      position: relative; height: 240px; border-radius: 20px; overflow: hidden; background-size: cover; background-position: center; transition: 0.3s;
+    }
+    .ps-card:hover { transform: translateY(-8px); }
+    .ps-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent 70%); }
+    .ps-card-content { position: absolute; bottom: 20px; left: 20px; right: 20px; z-index: 3; display: flex; justify-content: space-between; align-items: center; }
+    .ps-card-content h3 { font-size: 16px; font-weight: 800; color: white; }
+    .ps-badge { position: absolute; top: 15px; left: 15px; z-index: 4; background: var(--secondary); color: black; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 50px; }
+
+    /* ─── Grid & Catalog ────────────────────────────────────────── */
+    #services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; width: 100%; }
+    .catalog-category { margin-bottom: 12px; }
+    .catalog-cat-header {
+      width: 100%; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 18px 24px;
+      display: flex; align-items: center; justify-content: space-between; cursor: pointer; gap: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    }
+    .catalog-service-link {
+        display: flex; align-items: center; justify-content: space-between; padding: 13px 20px;
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;
+        text-decoration: none; color: var(--text-main); transition: 0.2s;
+    }
+    .catalog-service-link:hover { background: rgba(16,185,129,0.08); transform: translateX(4px); }
+    
+    /* ─── UI Polish ────────────────────────────────────────────── */
+    #full-services { padding: 80px 20px; background: #ffffff; border-radius: 40px; }
+    body.dark-mode #full-services { background: var(--glass-bg); }
+
+    /* ─── Footer ────────────────────────────────────────────────── */
+    #contact { background-color: #064e3b; color: white; padding: 80px 20px 40px; text-align: center; border-radius: 40px 40px 0 0; }
+  </style>
+</head>
+
+<body id="top">
+
+<nav id="navbar">
+  <div class="nav-container container">
+    <a href="index.html" class="logo">Snappito<span>⚡</span></a>
+    <div class="nav-links">
+      <a href="#services" class="nav-link">Services</a>
+      <a href="#how-it-works" class="nav-link">How it Works</a>
+      <a href="signup.html" id="nav-action-btn" class="nav-btn-highlight">Get Started</a>
+      <button id="theme-toggle" class="theme-switch" aria-label="Toggle Theme">
+        <span class="icon">🌙</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero container">
+  <div class="hero-content">
+    <h1>Quick Services.<br>Instant Solutions.</h1>
+    <p>Premium cleaning and reliable household services, delivered by trained professionals straight to your door.</p>
+    <a href="#services" class="btn" style="padding: 18px 36px; font-size: 18px; background: linear-gradient(90deg, #f59e0b, #ea580c); color: white; border-radius: 50px;">Explore Services</a>
+    <div class="hero-features">
+      <div class="hero-feature">Verified Experts</div>
+      <div class="hero-feature">Background Checked</div>
+    </div>
+  </div>
+  <div class="hero-image-container">
+    <img src="src/assets/images/hero_expert.png" alt="Snappito Professional" class="hero-image">
+    <div class="hero-floating-card">
+      <span class="amber-icon">⚡</span> Expert nearby: 10 mins away
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- Premium Services Section -->
+  <section id="services" class="premium-services" style="background-image: url('src/assets/images/premium/hero_bg.png');">
+    <div class="ps-header">
+      <div class="ps-titles">
+        <h4>Services</h4>
+        <h2>What Can Your House Help Do?</h2>
+      </div>
+      <a href="#full-services" class="ps-view-all">View All <div style="background:white; color:black; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center;">➔</div></a>
+    </div>
+
+    <div class="ps-cards-row">
+      <a class="ps-card" href="service-detail.html?service=bathroom-cleaning" style="background-image: url('src/assets/images/premium/bathroom.png');">
+        <div class="ps-badge">Most Popular</div>
+        <div class="ps-card-content"><h3>Bathroom</h3><div style="background:white; color:black; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px;">➔</div></div>
+      </a>
+      <a class="ps-card" href="service-detail.html?service=kitchen-cleaning" style="background-image: url('src/assets/images/premium/kitchen.png');">
+        <div class="ps-card-content"><h3>Kitchen</h3><div style="background:white; color:black; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px;">➔</div></div>
+      </a>
+      <a class="ps-card" href="service-detail.html?service=fan-cleaning" style="background-image: url('src/assets/images/premium/fan.png');">
+        <div class="ps-card-content"><h3>Fan</h3><div style="background:white; color:black; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px;">➔</div></div>
+      </a>
+      <a class="ps-card" href="service-detail.html?service=windows-cleaning" style="background-image: url('src/assets/images/premium/window.png');">
+        <div class="ps-card-content"><h3>Windows</h3><div style="background:white; color:black; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px;">➔</div></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Full Services Catalog -->
+  <section id="full-services" class="scroll-anim">
+    <div style="max-width: 800px; margin: 0 auto;">
+      <div style="text-align: center; margin-bottom: 40px;">
+        <h2>Our <span style="color: var(--secondary)">Catalog</span></h2>
+        <p style="color: var(--text-muted);">Browse our complete list of specialized home solutions.</p>
+      </div>
+      <div style="max-width: 500px; margin: 0 auto 50px; position: relative;">
+        <input type="text" id="service-search" placeholder="Search for a service..."
+               style="width: 100%; padding: 16px 20px 16px 54px; border-radius: 50px; background: #f1f5f9; border: 2px solid transparent; color: var(--text-main); font-size: 16px; outline: none; transition: 0.3s;" onfocus="this.style.borderColor='var(--primary)'; this.style.background='white'">
+        <svg style="position: absolute; left: 22px; top: 50%; transform: translateY(-50%); color: #9ca3af;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+      </div>
+      <div id="services-grid">
+        <p style="text-align: center; color: var(--text-muted);">Loading services...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Help CTA -->
+  <section id="help-cta" class="scroll-anim" style="background-color: #e6fdf2; padding: 80px 20px; border-radius: 40px;">
+    <div style="max-width: 700px; margin: 0 auto; background: white; border-radius: 28px; padding: 50px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.05);">
+        <h2 style="color: #064e3b; margin-bottom: 16px;">Can't find what you're looking for?</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">Our custom service team is ready to help. Reach out directly for special requests.</p>
+        <a href="tel:8747858018" class="btn" style="background: var(--secondary); color: white;">Call Us</a>
+    </div>
+  </section>
+
+</main>
+
+<footer id="contact">
+  <div class="container">
+    <h3 style="color: var(--secondary); margin-bottom: 24px;">Who we are</h3>
+    <p style="color: rgba(255,255,255,0.7); max-width: 800px; margin: 0 auto 40px; line-height: 1.8;">Snappito provides elite professional services dedicated to transforming your living spaces with meticulous care.</p>
+    <p>© 2026 Snappito. Built for scale.</p>
+  </div>
+</footer>
+
+<script type="module" src="src/app/Home.js"></script>
+</body>
+</html>
