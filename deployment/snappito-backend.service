@@ -1,0 +1,23 @@
+[Unit]
+Description=Gunicorn service for Snappito Backend
+After=network.target
+
+[Service]
+# User and Group should match your EC2 user (usually 'ubuntu')
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/snappito/backend
+Environment="PATH=/home/ubuntu/snappito/backend/venv/bin"
+ExecStart=/home/ubuntu/snappito/backend/venv/bin/gunicorn \
+    --workers 3 \
+    --bind 127.0.0.1:5000 \
+    --access-logfile /var/log/snappito-access.log \
+    --error-logfile /var/log/snappito-error.log \
+    backend:app
+
+# Restart logic
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
