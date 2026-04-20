@@ -2,6 +2,7 @@
 .env
 .env.local
 backend/.env
+backend/.env.production
 dev_credentials.txt
 dev_credentials_pro.txt
 
