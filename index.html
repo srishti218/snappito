@@ -385,6 +385,32 @@
       }
     });
   });
+
+  // Dynamic Auth State for Navbar
+  function updateNavbarAuth() {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('user_role');
+    const actionBtn = document.getElementById('nav-action-btn');
+    
+    if (token && actionBtn) {
+      const is_admin = (role === 'admin');
+      actionBtn.textContent = is_admin ? 'Admin Center' : 'Dashboard';
+      actionBtn.href = is_admin ? 'admin.html' : 'dashboard.html';
+      actionBtn.classList.add('nav-dashboard-btn');
+      
+      // Optional: hide minor links if logged in
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        if (link.textContent.toLowerCase().includes('works')) {
+          // link.style.display = 'none'; // Keep it clean for members
+        }
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', updateNavbarAuth);
+  // Run once immediately too in case DOM is already parsed
+  updateNavbarAuth();
 </script>
 <script src="src/app/ThemeEngine.js"></script>
 <script type="module" src="src/app/Home.js"></script>
