@@ -45,21 +45,23 @@ export async function loadServices(query = '') {
 function renderSearchResults(services, grid) {
   const serviceList = Array.isArray(services) ? services : (services.results || services.services || []);
   if (serviceList.length === 0) {
-    grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);grid-column:1/-1">No services found. <a href="tel:8747858018" style="color:var(--secondary)">Call us</a> for custom requests.</p>';
+    grid.innerHTML = '<div style="text-align:center;color:var(--text-muted);grid-column:1/-1;padding:40px;"><i class="fas fa-search" style="font-size:40px;opacity:0.2;margin-bottom:15px;display:block;"></i>No services found. <a href="tel:8747858018" style="color:var(--secondary);font-weight:700;">Call us</a> for custom requests.</div>';
     return;
   }
   
   serviceList.forEach(s => {
     const slug = toSlug(s.name);
+    // Use the id field if service_id is not present (standardizing across backend versions)
+    const sid = s.service_id || s.id;
     grid.innerHTML += `
-      <a class="card" href="service-detail.html?service=${slug}&service_id=${s.service_id}" style="text-decoration:none;">
-        <div class="card-img" style="background-image:url('${s.image_url || FALLBACK_IMG}')"></div>
-        <div class="card-content">
-          <h3>${s.name}</h3>
-          <p>${s.description || 'Professional home service'}</p>
-          <div class="price" style="display:flex;align-items:center;justify-content:space-between;">
-            <span>From &#8377;${s.base_price}</span>
-            <span style="font-size:13px;color:var(--secondary);font-weight:700;">View Details →</span>
+      <a class="card" href="service-detail.html?service=${slug}&service_id=${sid}" style="text-decoration:none; display: block; height: 100%;">
+        <div class="card-img" style="height: 200px; background-image:url('${s.image_url || FALLBACK_IMG}'); background-size: cover; background-position: center;"></div>
+        <div class="card-content" style="padding: 24px; background: white; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; border: 1px solid var(--border-light); border-top: none;">
+          <h3 style="font-family: 'Outfit'; color: var(--primary-dark); font-size: 1.2rem; margin-bottom: 12px; font-weight: 800;">${s.name}</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px; height: 3.2em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${s.description || 'Professional home service by our certified regional experts.'}</p>
+          <div class="price" style="display:flex;align-items:center;justify-content:space-between; border-top: 1px solid var(--border-light); padding-top: 15px;">
+            <span style="font-weight: 800; color: var(--primary); font-size: 1.1rem;">₹${s.base_price || s.price}</span>
+            <span style="font-size:12px;color:var(--secondary);font-weight:800;text-transform: uppercase; letter-spacing: 0.5px;">View Details <i class="fas fa-arrow-right"></i></span>
           </div>
         </div>
       </a>`;
