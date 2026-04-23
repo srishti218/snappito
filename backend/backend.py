@@ -834,11 +834,6 @@ def get_user_profiles():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 401
-            "created_at": user.created_at.isoformat() if user.created_at else None
-        }), 200
-
-    except Exception as e:
-        return jsonify({'error': 'Invalid or expired token'}), 401
 
     
 def send_password_reset_email(email, token):
