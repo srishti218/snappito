@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_jwt_extended import JWTManager, jwt_required,create_access_token,get_jwt
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta, timezone
 import random
@@ -805,15 +805,11 @@ def get_user_info():
 
 
 @app.route('/api/user/profile', methods=['GET'])
+@jwt_required()
 def get_user_profiles():
-    auth_header = request.headers.get('Authorization')
-    if not auth_header or not auth_header.startswith("Bearer "):
-        return jsonify({'error': 'Authorization token required'}), 401
-
-    token = auth_header.split(" ")[1]
     try:
-        payload = decode_token(tokens, token)  # only token needed here
-        user = User.query.filter_by(id=payload['id']).first()
+        current_identity = get_jwt_identity()
+        user = User.query.get(current_identity)
 
         if not user:
             return jsonify({'error': 'User not found'}), 404
@@ -823,9 +819,9 @@ def get_user_profiles():
             "full_name": user.full_name,
             "email": user.email,
             "phone": user.phone,
-            "gender": user.gender if hasattr(user, "gender") else None,
+            "gender": getattr(user, "gender", None),
             "dob": user.dob.isoformat() if getattr(user, "dob", None) else None,
-            "profile_image": user.profile_image if hasattr(user, "profile_image") else None,
+            "profile_image": user.profile_image,
             "address": {
                 "line1": getattr(user, "address_line1", None),
                 "city": getattr(user, "city", None),
@@ -833,6 +829,11 @@ def get_user_profiles():
                 "zip_code": getattr(user, "zip_code", None),
                 "country": getattr(user, "country", None)
             },
+            "user_type": user.user_type
+        }), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 401
             "created_at": user.created_at.isoformat() if user.created_at else None
         }), 200
 
