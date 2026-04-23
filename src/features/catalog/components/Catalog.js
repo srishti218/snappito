@@ -43,7 +43,7 @@ export async function loadServices(query = '') {
 }
 
 function renderSearchResults(services, grid) {
-  const serviceList = Array.isArray(services) ? services : (services.services || []);
+  const serviceList = Array.isArray(services) ? services : (services.results || services.services || []);
   if (serviceList.length === 0) {
     grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);grid-column:1/-1">No services found. <a href="tel:8747858018" style="color:var(--secondary)">Call us</a> for custom requests.</p>';
     return;
