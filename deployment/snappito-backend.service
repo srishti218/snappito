@@ -10,7 +10,7 @@ WorkingDirectory=/home/ubuntu/snappito/backend
 Environment="PATH=/home/ubuntu/snappito/backend/venv/bin"
 ExecStart=/home/ubuntu/snappito/backend/venv/bin/gunicorn \
     --workers 3 \
-    --bind 127.0.0.1:5000 \
+    --bind 127.0.0.1:5001 \
     --access-logfile /var/log/snappito-access.log \
     --error-logfile /var/log/snappito-error.log \
     backend:app
