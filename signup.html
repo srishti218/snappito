@@ -2,159 +2,107 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Sign Up - Snappito</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <title>Sign Up - Snappito</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
   <link rel="stylesheet" href="src/components/ui/Toast.css">
   <style>
-    :root {
-      --primary: #10b981;
-      --secondary: #f59e0b;
-      --text-main: #ffffff;
-      --text-muted: rgba(255, 255, 255, 0.8);
-      --glass-bg: rgba(255, 255, 255, 0.1);
-      --glass-border: rgba(255, 255, 255, 0.2);
-      --bg-gradient: linear-gradient(-45deg, #022c22, #064e3b, #047857, #10b981);
-      --bg-fallback: #022c22;
-    }
-
-    body.light-theme {
-      --text-main: #1a2e22;
-      --text-muted: #4b6355;
-      --glass-bg: rgba(255, 255, 255, 0.6);
-      --glass-border: rgba(16, 185, 129, 0.2);
-      --bg-gradient: linear-gradient(-45deg, #ecfdf5, #d1fae5, #a7f3d0, #6ee7b7);
-      --bg-fallback: #ecfdf5;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Inter', sans-serif;
-      color: var(--text-main);
-      background-color: var(--bg-fallback);
-      background-image: var(--bg-gradient);
-      background-size: 400% 400%;
-      animation: gradientBG 15s ease infinite;
-      will-change: background-position;
-      min-height: 100vh;
+      background-color: #f8fafc;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+      min-height: 100vh;
       margin: 0;
-      transition: background 0.3s, color 0.3s;
-    }
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      color: #1e293b;
+      padding: 40px 20px;
     }
     .auth-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 40px;
+      background: white;
       width: 100%;
       max-width: 500px;
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-      text-align: center;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);
+      border: 1px solid #e2e8f0;
     }
-    h2 { font-family: 'Outfit', sans-serif; font-size: 28px; margin-bottom: 25px; }
-    .input-group { text-align: left; margin-bottom: 15px; }
-    label { font-size: 14px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; display: block; }
+    .auth-header {
+      background: white;
+      padding: 30px;
+      text-align: center;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .auth-body {
+      padding: 40px;
+    }
+    h2 { font-family: 'Outfit'; margin-bottom: 30px; font-size: 28px; text-align: center; }
+    .input-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; opacity: 0.8; }
     input {
       width: 100%;
-      padding: 12px 15px;
-      background: rgba(0, 0, 0, 0.2);
-      color: white;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.1);
-      font-size: 15px;
-      font-family: 'Inter', sans-serif;
-      transition: all 0.3s;
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      color: #1e293b;
+      font-size: 16px;
+      outline: none;
+      transition: 0.3s;
+      box-sizing: border-box;
     }
-    input:focus { outline: none; border-color: var(--primary); background: rgba(0,0,0,0.3); }
+    input:focus { border-color: var(--primary); background: rgba(0,0,0,0.3); }
     .btn {
       width: 100%;
-      padding: 14px;
-      background: var(--secondary);
-      color: #111;
-      font-weight: 600;
-      font-family: 'Outfit', sans-serif;
-      font-size: 16px;
-      border-radius: 10px;
+      padding: 16px;
+      border-radius: 12px;
       border: none;
+      background: var(--secondary);
+      color: var(--primary-dark);
+      font-weight: 800;
+      font-size: 16px;
       cursor: pointer;
-      transition: all 0.3s;
-      margin-top: 15px;
+      transition: 0.3s;
+      margin-top: 10px;
     }
-    .btn:hover { background: #fbbf24; transform: translateY(-2px); }
-    .links { margin-top: 25px; font-size: 14px; color: var(--text-muted); }
-    .links a { color: var(--secondary); text-decoration: none; font-weight: 500; }
-    .links a:hover { text-decoration: underline; }
-
-    .phone-input-container {
-        display: flex;
-        align-items: center;
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 10px;
-        overflow: hidden;
-        margin-bottom: 15px;
-    }
-    .phone-input-container:focus-within {
-        border-color: var(--primary);
-        background: rgba(0, 0, 0, 0.3);
-    }
-    .phone-prefix {
-        padding: 0 12px;
-        color: var(--secondary);
-        font-weight: 800;
-        border-right: 1px solid rgba(255,255,255,0.1);
-        font-size: 15px;
-        height: 46px;
-        display: flex;
-        align-items: center;
-        background: rgba(255,255,255,0.03);
-    }
-    .phone-input-container input {
-        border: none !important;
-        background: transparent !important;
-        padding: 12px !important;
-    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
   </style>
 </head>
 <body>
-
 <div class="auth-card">
-  <h2>Create Account</h2>
-  <form id="signupForm">
-    <div class="input-group">
-      <label>Full Name</label>
-      <input type="text" id="fullname" required>
-    </div>
-    <div class="input-group">
-      <label>Email Address</label>
-      <input type="email" id="email" required>
-    </div>
-    <div class="input-group">
-      <label>Phone Number</label>
-      <div class="phone-input-container">
-        <span class="phone-prefix">+91</span>
-        <input type="tel" id="phone" placeholder="0000000000" required pattern="[0-9]{10}">
+  <div class="auth-header">
+    <img src="src/assets/images/logo_white.png" alt="Snappito" style="height: 85px; cursor: pointer;" onclick="window.location.href='index.html'">
+  </div>
+  <div class="auth-body">
+    <h2>Create Account</h2>
+    <form id="signupForm">
+      <div class="input-group">
+        <label>Full Name</label>
+        <input type="text" id="fullname" placeholder="John Doe" required>
       </div>
+      <div class="input-group">
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="john@example.com" required>
+      </div>
+      <div class="input-group">
+        <label>Phone Number</label>
+        <div style="display: flex; gap: 10px;">
+          <input type="text" value="+91" disabled style="width: 75px; text-align: center; background: #f1f5f9; border: 1px solid #e2e8f0; color: #64748b; font-weight: 700;">
+          <input type="tel" id="phone" placeholder="9876543210" required pattern="[0-9]{10}">
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Min. 6 characters" required minlength="6">
+      </div>
+      <button type="submit" class="btn" id="submitBtn">Sign Up</button>
+    </form>
+    <div style="margin-top: 30px; text-align: center; font-size: 14px; opacity: 0.8;">
+      Already have an account? <a href="login.html" style="color: var(--secondary); text-decoration: none; font-weight: 700;">Log In</a><br><br>
+      <a href="index.html" style="text-decoration: none; color: inherit; opacity: 0.6;">← Back to Home</a>
     </div>
-    <div class="input-group">
-      <label>Password</label>
-      <input type="password" id="password" required minlength="6">
-    </div>
-    <button type="submit" class="btn" id="submitBtn">Sign Up</button>
-  </form>
-  <div class="links">
-    Already have an account? <a href="login.html">Log In</a><br><br>
-    <a href="index.html">← Back to Home</a>
   </div>
 </div>
-
 <script src="src/components/ui/Toast.js"></script>
 <script type="module" src="src/app/Auth.js"></script>
 <script>

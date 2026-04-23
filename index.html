@@ -43,6 +43,11 @@
     body.dark-mode {
       --text-main: #f9fafb;
       --text-muted: #9ca3af;
+      --bg-dark: #052e18; /* Lighter dark green than header */
+      --glass-bg: rgba(255,255,255,0.03);
+      --cta-bg: rgba(16, 185, 129, 0.05);
+      --card-bg: rgba(16, 185, 129, 0.06);
+      --section-title: var(--secondary);
       background-color: var(--bg-dark);
     }
 
@@ -77,28 +82,31 @@
     /* ─── Navigation ────────────────────────────────────────────── */
     nav {
       position: fixed; top: 0; left: 0; right: 0;
-      padding: 20px 40px; z-index: 1000;
+      padding: 15px 40px; z-index: 1000;
       transition: all 0.4s ease;
-      background: transparent;
+      background: white;
     }
     nav.scrolled {
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(15px);
       -webkit-backdrop-filter: blur(15px);
-      padding: 15px 40px;
+      padding: 10px 40px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-      border-bottom: 1px solid rgba(0,0,0,0.05);
     }
 
+    body.dark-mode nav {
+      background: #02160a;
+    }
     body.dark-mode nav.scrolled {
-      background: rgba(2, 44, 34, 0.8);
-      border-bottom-color: rgba(255,255,255,0.05);
+      background: rgba(2, 22, 10, 0.95);
     }
 
     .nav-container { display: flex; align-items: center; justify-content: space-between; }
-    .logo { font-size: 28px; font-weight: 800; color: #10b981; text-decoration: none; letter-spacing: -0.5px; }
-    .logo span { color: var(--secondary); }
-    .nav-links { display: flex; align-items: center; gap: 30px; }
+    .logo { display: block; height: 60px; text-decoration: none; transition: 0.3s; }
+    .logo img { height: 100%; width: auto; object-fit: contain; }
+    .logo:hover { transform: scale(1.05); }
+    .nav-links { display: flex; align-items: center; gap: 35px; }
+    .nav-link { color: var(--text-main); text-decoration: none; font-weight: 600; font-size: 15px; opacity: 0.8; transition: 0.3s; }
     .nav-link:hover { opacity: 1; color: var(--primary); }
 
     .nav-btn-highlight {
@@ -131,7 +139,7 @@
     .hero-feature::before { content: "✓"; background: rgba(16, 185, 129, 0.1); width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
 
     .hero-image-container { flex: 1; position: relative; }
-    .hero-image { width: 100%; max-width: 550px; border-radius: 30px; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.1)); }
+    .hero-image { width: 100%; max-width: 550px; max-height: 550px; object-fit: cover; border-radius: 30px; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.1)); }
     .hero-floating-card {
       position: absolute; bottom: 40px; left: -20px;
       background: white; padding: 16px 24px; border-radius: 20px;
@@ -188,7 +196,12 @@
     body.dark-mode #full-services { background: var(--glass-bg); }
 
     /* ─── Footer ────────────────────────────────────────────────── */
-    #contact { background-color: #064e3b; color: white; padding: 80px 20px 40px; text-align: center; border-radius: 40px 40px 0 0; }
+    #contact { background-color: white; color: #064e3b; padding: 80px 20px 40px; text-align: center; border-radius: 40px 40px 0 0; border-top: 1px solid #f1f5f9; }
+
+    /* Misc dynamic text colors */
+    .dynamic-title { color: #064e3b; }
+    body.dark-mode .dynamic-title { color: var(--secondary); }
+    body.dark-mode .dynamic-subtitle { color: var(--primary); }
   </style>
 </head>
 
@@ -196,14 +209,16 @@
 
 <nav id="navbar">
   <div class="nav-container container">
-    <a href="index.html" class="logo">Snappito<span>⚡</span></a>
+    <a href="index.html" class="logo">
+      <img id="main-logo" src="src/assets/images/logo_white_bg.png" alt="Snappito">
+    </a>
     <div class="nav-links">
       <a href="#services" class="nav-link">Services</a>
       <a href="#how-it-works" class="nav-link">How it Works</a>
       <a href="signup.html" id="nav-action-btn" class="nav-btn-highlight">Get Started</a>
-      <button id="theme-toggle" class="theme-switch" aria-label="Toggle Theme">
+      <!-- <button id="theme-toggle" class="theme-switch" aria-label="Toggle Theme">
         <span class="icon">🌙</span>
-      </button>
+      </button> -->
     </div>
   </div>
 </nav>
@@ -219,17 +234,17 @@
     </div>
   </div>
   <div class="hero-image-container">
-    <img src="src/assets/images/hero_expert.png" alt="Snappito Professional" class="hero-image">
+    <img src="src/assets/images/hero_male.png" alt="Snappito Professional" class="hero-image">
     <div class="hero-floating-card">
-      <span class="amber-icon">⚡</span> Expert nearby: 10 mins away
+      <span class="amber-icon">📍</span> Location: Patna
     </div>
   </div>
 </header>
 
 <section id="how-it-works" class="container" style="padding: 100px 0; position: relative;">
   <div style="text-align: center; margin-bottom: 60px;">
-    <h4 style="color: var(--primary); text-transform: uppercase; letter-spacing: 2px; font-size: 14px; margin-bottom: 12px;">Simple 4-Step Process</h4>
-    <h2 style="font-size: 42px; font-weight: 800; color: #064e3b; margin-bottom: 10px;">Experience Service Excellence</h2>
+    <h4 class="dynamic-subtitle" style="color: var(--primary); text-transform: uppercase; letter-spacing: 2px; font-size: 14px; margin-bottom: 12px;">Simple 4-Step Process</h4>
+    <h2 class="dynamic-title" style="font-size: 42px; font-weight: 800; margin-bottom: 10px;">Experience Service Excellence</h2>
     <div style="width: 80px; height: 4px; background: var(--secondary); margin: 0 auto; border-radius: 2px;"></div>
   </div>
 
@@ -318,11 +333,18 @@
   </section>
 
   <!-- Help CTA -->
-  <section id="help-cta" class="scroll-anim" style="background-color: #e6fdf2; padding: 80px 20px; border-radius: 40px;">
-    <div style="max-width: 700px; margin: 0 auto; background: white; border-radius: 28px; padding: 50px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.05);">
-        <h2 style="color: #064e3b; margin-bottom: 16px;">Can't find what you're looking for?</h2>
-        <p style="color: var(--text-muted); margin-bottom: 30px;">Our custom service team is ready to help. Reach out directly for special requests.</p>
-        <a href="tel:8747858018" class="btn" style="background: var(--secondary); color: white;">Call Us</a>
+  <section id="help-cta" class="scroll-anim" style="padding: 80px 20px;">
+    <div style="max-width: 700px; margin: 0 auto; background: var(--cta-bg, #e6fdf2); border-radius: 28px; padding: 50px; text-align: center; border: 1px solid var(--glass-border);">
+        <h2 class="dynamic-title" style="margin-bottom: 16px;">Can't find what you're looking for?</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 18px;">Our custom service team is ready to help. Reach out directly for special requests on WhatsApp or via a quick call.</p>
+        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+            <a href="tel:+918747858018" class="btn" style="background: var(--secondary); color: #1e293b; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-phone-alt"></i> +91 8747858018
+            </a>
+            <a href="https://wa.me/918747858018" target="_blank" class="btn" style="background: #25D366; color: white; display: flex; align-items: center; gap: 10px;">
+                <i class="fab fa-whatsapp" style="font-size: 20px;"></i> WhatsApp Us
+            </a>
+        </div>
     </div>
   </section>
 
@@ -330,9 +352,12 @@
 
 <footer id="contact">
   <div class="container">
-    <h3 style="color: var(--secondary); margin-bottom: 24px;">Who we are</h3>
-    <p style="color: rgba(255,255,255,0.7); max-width: 800px; margin: 0 auto 40px; line-height: 1.8;">Snappito provides elite professional services dedicated to transforming your living spaces with meticulous care.</p>
-    <p>© 2026 Snappito. Built for scale.</p>
+    <div id="footer-logo-container" style="margin-bottom: 35px; background: transparent; display: inline-block; padding: 0; border-radius: 12px;">
+      <img id="footer-logo" src="src/assets/images/logo_white_bg.png" alt="Snappito" style="height: 75px;">
+    </div>
+    <!-- <h3 style="color: var(--primary); margin-bottom: 24px;">Who we are</h3> -->
+    <p style="color: #64748b; max-width: 800px; margin: 0 auto 40px; line-height: 1.8;">Snappito provides elite professional services dedicated to transforming your living spaces with meticulous care.</p>
+    <p style="color: #94a3b8; font-size: 14px; margin-top: 40px;">© 2026 Snappito. Built for scale.</p>
   </div>
 </footer>
 
@@ -361,6 +386,7 @@
     });
   });
 </script>
+<script src="src/app/ThemeEngine.js"></script>
 <script type="module" src="src/app/Home.js"></script>
 </body>
 </html>

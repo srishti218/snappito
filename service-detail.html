@@ -16,34 +16,54 @@
       --bg-light:     #f8fafc;
       --card-bg:      #ffffff;
       --card-border:  #e2e8f0;
+      --price-color:  #1e293b;
     }
+    body.dark-mode {
+      --bg-light:     #052e18;
+      --card-bg:      #083c22;
+      --text-main:    #f8fafc;
+      --text-muted:   #94a3b8;
+      --card-border:  rgba(255,255,255,0.05);
+      --price-color:  #ffffff;
+      --nav-bg:       #02160a;
+    }
+    nav { background: white; border-bottom: 1px solid var(--card-border); padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; transition: 0.3s; }
+    body.dark-mode nav { background: var(--nav-bg); border-bottom: none; }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg-light); color: var(--text-main); line-height: 1.5; }
-    h1,h2,h3,h4 { font-family: 'Outfit', sans-serif; letter-spacing: -0.02em; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg-light); color: var(--text-main); line-height: 1.5; transition: all 0.3s ease; }
+    h1,h2,h3,h4 { font-family: 'Outfit', sans-serif; letter-spacing: -0.02em; color: var(--text-main); }
     .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
     
     .hero-banner { height: 320px; background-size: cover; background-position: center; border-radius: 0 0 40px 40px; }
     .detail-layout { display: grid; grid-template-columns: 1fr 380px; gap: 40px; margin-top: -80px; padding-bottom: 100px; }
     
     .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 32px; padding: 40px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.03), 0 10px 10px -5px rgba(0,0,0,0.02); }
+    body.dark-mode .card { box-shadow: 0 10px 40px rgba(0,0,0,0.4); } 
     
-    .list-item { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; font-size: 15px; }
+    .list-item { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; font-size: 15px; color: var(--text-main); }
     .check-icon { color: var(--primary); font-weight: 800; }
     .cross-icon { color: #ef4444; font-weight: 800; }
 
     .booking-card { position: sticky; top: 40px; }
-    .price-display { font-size: 36px; font-weight: 800; color: #1e293b; margin-bottom: 24px; }
+    .price-display { font-size: 36px; font-weight: 800; color: var(--price-color); margin-bottom: 24px; }
     
     .tier-selector { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
-    .tier-option { padding: 16px 20px; border: 2px solid var(--card-border); border-radius: 20px; cursor: pointer; transition: all 0.2s; position: relative; }
+    .tier-option { padding: 16px 20px; border: 2px solid var(--card-border); border-radius: 20px; cursor: pointer; transition: all 0.2s; position: relative; background: rgba(0,0,0,0.02); }
+    body.dark-mode .tier-option { background: rgba(255,255,255,0.02); }
     .tier-option.active { border-color: var(--primary); background: rgba(16,185,129,0.04); }
-    .tier-option h4 { font-size: 15px; margin-bottom: 2px; }
-    .tier-option span { font-size: 13px; color: var(--text-muted); }
+    .tier-option h4 { font-size: 15px; margin-bottom: 2px; color: var(--text-main); }
+    .tier-option span { font-size: 16px; font-weight: 500; color: var(--text-muted); }
     .btn-book { width: 100%; padding: 18px; border-radius: 50px; background: var(--primary); color: white; border: none; font-weight: 800; font-size: 18px; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 20px -5px rgba(16,185,129,0.3); }
     .btn-book:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 15px 25px -5px rgba(16,185,129,0.4); }
   </style>
 </head>
 <body>
+<nav>
+  <a href="index.html" style="height: 45px;">
+    <img id="nav-logo" src="src/assets/images/logo_white_bg.png" alt="Snappito" style="height: 100%;">
+  </a>
+  <a href="index.html#services" style="text-decoration: none; color: var(--text-main); font-weight: 700; font-size: 14px; opacity: 0.8;">← Back to Services</a>
+</nav>
 
 <div id="service-app">
   <div class="hero-banner" id="hero-img"></div>
@@ -62,7 +82,7 @@
         </div>
 
         <div id="excluded-card" class="card">
-            <h3 style="margin-bottom: 24px; font-size: 20px; color: #1e293b;">What's NOT Included</h3>
+            <h3 style="margin-bottom: 24px; font-size: 20px; color: var(--text-main);">What's NOT Included</h3>
             <div id="excluded-list"></div>
         </div>
       </div>
@@ -91,20 +111,7 @@
 
 <div id="debug-error" style="display: none; background: #fee2e2; color: #991b1b; padding: 20px; border-radius: 12px; margin: 20px; white-space: pre-wrap; font-family: monospace;"></div>
 
-<script>
-  window.onerror = function(msg, url, line, col, error) {
-    const debug = document.getElementById('debug-error');
-    debug.style.display = 'block';
-    debug.innerText = `Error: ${msg}\nUrl: ${url}\nLine: ${line}`;
-    return false;
-  };
-  window.addEventListener('unhandledrejection', function(event) {
-    const debug = document.getElementById('debug-error');
-    debug.style.display = 'block';
-    debug.innerText = `Promise Rejection: ${event.reason}`;
-  });
-</script>
-
+<script src="src/app/ThemeEngine.js"></script>
 <script src="src/components/ui/Toast.js"></script>
 <script type="module" src="src/app/ServiceDetail.js"></script>
 </body>

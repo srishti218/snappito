@@ -10,7 +10,7 @@
   <style>
     :root {
       --primary:      #10b981;
-      --primary-dark: #064e3b;
+      --primary-dark: #02160a;
       --secondary:    #f59e0b;
       --bg-slate:     #f8fafc;
       --card-bg:      #ffffff;
@@ -74,7 +74,9 @@
 <div class="dashboard-layout" id="content" style="display: none;">
   <!-- Sidebar -->
   <aside class="sidebar">
-    <h2 style="margin-bottom: 40px; cursor: pointer;" onclick="window.location.href='index.html'">Snappito</h2>
+    <div style="margin-bottom: 50px; cursor: pointer; height: 75px; text-align: center; display: flex; align-items: center; justify-content: center;" onclick="window.location.href='index.html'">
+      <img src="src/assets/images/logo_dark.png" alt="Snappito" style="height: 100%; width: auto; object-fit: contain;">
+    </div>
     <nav id="sidebar-nav">
       <div class="nav-item active" onclick="switchSection('overview', this)"><i class="fas fa-th-large"></i> Overview</div>
       <div class="nav-item customer-only" onclick="switchSection('bookings', this)"><i class="fas fa-calendar-alt"></i> My Bookings</div>

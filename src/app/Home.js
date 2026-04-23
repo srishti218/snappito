@@ -36,18 +36,9 @@ export function initHome() {
   // Initial load
   loadServices();
   checkAuthState();
-  initTheme();
   
   // Robust Shield: Listen for dynamic catalog loads to hide buttons
   document.addEventListener('catalog-rendered', applyAdminShield);
-}
-
-function applyAdminShield() {
-    const role = localStorage.getItem('user_role');
-    if (role === 'admin') {
-        const ctas = document.querySelectorAll('.hero-btn, .service-card-action, #services-section h2 button, .ps-view-all, .catalog-service-link, .card');
-        ctas.forEach(btn => btn.classList.add('admin-restricted'));
-    }
 }
 
 async function checkAuthState() {
@@ -89,29 +80,13 @@ async function checkAuthState() {
   }
 }
 
-function initTheme() {
-  const themeToggle = document.getElementById('theme-toggle');
-  if (!themeToggle) return;
-
-  const currentTheme = localStorage.getItem('theme') || 'light';
-  applyTheme(currentTheme);
-
-  themeToggle.addEventListener('click', () => {
-    const newTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
-    applyTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-  });
-}
-
-function applyTheme(theme) {
-  const themeToggle = document.getElementById('theme-toggle');
-  if (theme === 'dark') {
-    document.body.classList.add('dark-mode');
-    if (themeToggle) themeToggle.textContent = '☀️';
-  } else {
-    document.body.classList.remove('dark-mode');
-    if (themeToggle) themeToggle.textContent = '🌙';
-  }
+// Admin Shield Logic
+function applyAdminShield() {
+    const role = localStorage.getItem('user_role');
+    if (role === 'admin') {
+        const ctas = document.querySelectorAll('.hero-btn, .service-card-action, #services-section h2 button, .ps-view-all, .catalog-service-link, .card');
+        ctas.forEach(btn => btn.classList.add('admin-restricted'));
+    }
 }
 
 // Auto-init if this script is loaded as a entry

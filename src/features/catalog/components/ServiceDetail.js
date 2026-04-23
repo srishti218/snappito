@@ -71,7 +71,7 @@ export function renderService(service) {
         elements.excludes.innerHTML = (service.excludes || []).map(item => `
             <div class="list-item">
                 <span class="cross-icon">✘</span>
-                <span style="color: #64748b;">${escHtml(item)}</span>
+                <span>${escHtml(item)}</span>
             </div>
         `).join('');
     }
